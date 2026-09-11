@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from typing import Dict, Any, List, Optional
 from .parser import seconds_to_pace_str, seconds_to_time_str
+from .fit_parser import generate_estimated_series
 
 
 HR_MAX = 195  # データセット全体および一般的なランナーの基準最大心拍数推定
@@ -67,15 +68,87 @@ def get_hr_zone(avg_hr: float) -> Dict[str, str]:
         }
 
 
-def calculate_activity_insights(df: pd.DataFrame) -> List[Dict[str, Any]]:
-    """全アクティビティに対して詳細な分析・評価・提案（コーチング）データを生成"""
+def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any]:
+    """折れ線グラフの時系列データから前半・後半・スパートの特徴を抽出"""
+    speeds = series.get("speeds_kmh", [])
+    hrs = series.get("heart_rates", [])
+    cadences = series.get("cadences", [])
+    distances = series.get("distances", [])
+
+    if not speeds or len(speeds) < 4:
+        return {
+            "split_type": "イーブンペース",
+            "split_badge": "⚖️ イーブンペース",
+            "split_desc": "全行程を通して一定の安定したペースで走行しました。",
+            "phase_early": "スタート直後からスムーズにペースに入りました。",
+            "phase_mid": "中盤も安定した巡航ペースを維持しました。",
+            "phase_late": "終盤まで粘り強く走り切りました。",
+            "drift_text": "心拍推移は適正にコントロールされています。",
+        }
+
+    n = len(speeds)
+    half = n // 2
+
+    # 前半・後半の速度
+    first_half_speed = float(np.mean(speeds[:half]))
+    second_half_speed = float(np.mean(speeds[half:]))
+    speed_diff_pct = ((second_half_speed - first_half_speed) / first_half_speed) * 100 if first_half_speed > 0 else 0
+
+    if speed_diff_pct > 2.5:
+        split_type = "ネガティブスプリット"
+        split_badge = "🔥 ネガティブスプリット (後半加速)"
+        split_desc = f"前半平均 {first_half_speed:.1f} km/h に対し、後半平均 {second_half_speed:.1f} km/h と **+{speed_diff_pct:.1f}% ペースアップ** しています。理想的な余力配分とビルドアップができています。"
+    elif speed_diff_pct < -2.5:
+        split_type = "ポジティブスプリット"
+        split_badge = "⚡ ポジティブスプリット (先行逃げ切り)"
+        split_desc = f"前半平均 {first_half_speed:.1f} km/h から後半 {second_half_speed:.1f} km/h に推移。序盤から積極的に攻めたスピード練習となっています。"
+    else:
+        split_type = "イーブンペース"
+        split_badge = "⚖️ イーブンペース (高精度巡航)"
+        split_desc = f"前半（{first_half_speed:.1f} km/h）と後半（{second_half_speed:.1f} km/h）の差が極めて小さく、精密なペース配分ができています。"
+
+    # 心拍ドリフト
+    first_half_hr = float(np.mean(hrs[:half])) if hrs else 0
+    second_half_hr = float(np.mean(hrs[half:])) if hrs else 0
+    hr_diff = second_half_hr - first_half_hr
+
+    if hr_diff >= 8:
+        drift_text = f"後半に心拍数が約 **+{int(round(hr_diff))} bpm 上昇**（心拍ドリフト）。筋疲労や気温・脱水により心肺負荷が増加しています。水分補給とイージージョグでの回復が重要です。"
+    elif hr_diff >= 3:
+        drift_text = f"後半の心拍上昇は **+{int(round(hr_diff))} bpm** と適正範囲内です。持久力がしっかりと維持できています。"
+    else:
+        drift_text = "走行全般にわたって心拍数が極めて安定しており、高い有酸素エコノミーを発揮しています。"
+
+    # 3フェーズ解説
+    start_speed = speeds[0]
+    early_hr = hrs[int(n * 0.2)] if hrs else 0
+    max_s = max(speeds)
+    max_h = max(hrs) if hrs else 0
+
+    phase_early = f"**序盤 (0〜{dist_km * 0.25:.1f}km)**: ウォーミングアップから心拍数 {early_hr} bpm へスムーズに上昇し、安定したリズムを構築。"
+    phase_mid = f"**中盤 ({dist_km * 0.25:.1f}〜{dist_km * 0.75:.1f}km)**: ピッチを安定させ、巡航速度をブレなくキープ。"
+    phase_late = f"**終盤 ({dist_km * 0.75:.1f}〜{dist_km:.1f}km)**: ラストスパートで最高速度 **{max_s:.1f} km/h** に達し、最大心拍 **{max_h} bpm** でゴール。"
+
+    return {
+        "split_type": split_type,
+        "split_badge": split_badge,
+        "split_desc": split_desc,
+        "phase_early": phase_early,
+        "phase_mid": phase_mid,
+        "phase_late": phase_late,
+        "drift_text": drift_text,
+    }
+
+
+def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    """全アクティビティに対して詳細な「評価」「分析」「次回おすすめとリカバリー提案」データを生成"""
     insights_list = []
     total_runs = len(df)
+    if fit_dict is None:
+        fit_dict = {}
 
-    # 全体統計の事前計算（基準用）
     best_pace_sec = df["avg_pace_sec"].min()
     longest_dist = df["distance_km"].max()
-    avg_dataset_cadence = df["avg_cadence"].mean()
 
     for i, row in df.iterrows():
         dist = row["distance_km"]
@@ -88,26 +161,45 @@ def calculate_activity_insights(df: pd.DataFrame) -> List[Dict[str, Any]]:
         duration_sec = row["duration_sec"]
         elevation = row["elevation_gain"]
         date_str = row["date_str"]
+        time_of_day = row["time_of_day"]
 
         # 1. 心拍ゾーン判定
         hr_zone = get_hr_zone(avg_hr)
 
-        # 2. 速度・有酸素効率 (AEI: Speed / HR * 100)
+        # 2. 速度・有酸素効率
         speed_kmh = (3600.0 / pace_sec) if pace_sec > 0 else 0.0
         aei = (speed_kmh / avg_hr * 100.0) if avg_hr > 0 else 0.0
 
-        # 3. 多角評価スコア (0-100)
-        # スピードスコア: 4:30 (270s) を100点、6:30 (390s) を60点とするスケーリング
+        # 3. FIT時系列または推定プロファイルの取得
+        dt_full = f"{date_str} {time_of_day}"
+        fit_data = None
+        for k in fit_dict:
+            if k.startswith(dt_full) or k == date_str:
+                fit_data = fit_dict[k]
+                break
+
+        if fit_data:
+            distance_series = {
+                "has_fit": True,
+                "distances": fit_data["distances"],
+                "speeds_kmh": fit_data["speeds_kmh"],
+                "paces_str": fit_data["paces_str"],
+                "heart_rates": fit_data["heart_rates"],
+                "cadences": fit_data["cadences"],
+            }
+        else:
+            distance_series = generate_estimated_series(
+                dist, pace_sec, avg_hr, max_hr, cadence, row["max_cadence"]
+            )
+
+        # 4. 時系列グラフの分析
+        series_analysis = analyze_time_series(distance_series, dist)
+
+        # 5. 多角評価スコア (0-100)
         speed_score = max(50.0, min(100.0, 100.0 - (pace_sec - 300) * 0.4))
-
-        # 持久・ボリュームスコア: 10km以上を95-100点、5kmを75点、2.5kmを60点
         endurance_score = max(50.0, min(100.0, 50.0 + (dist * 4.8)))
-
-        # フォームスコア: ピッチ174-178spmを100点、乖離に応じて減点
         cadence_diff = abs(cadence - 176)
         form_score = max(60.0, min(100.0, 100.0 - (cadence_diff * 4.0)))
-
-        # 心肺効率スコア: aei = 6.8 を100点、5.5を70点
         aerobic_score = max(50.0, min(100.0, 50.0 + (aei - 5.0) * 28.0))
 
         total_score = round(
@@ -128,26 +220,25 @@ def calculate_activity_insights(df: pd.DataFrame) -> List[Dict[str, Any]]:
             rank = "C"
             rank_class = "from-slate-500 to-gray-600 text-white"
 
-        # 4. バッジ付与
+        # バッジ付与
         badges = []
         if pace_sec <= best_pace_sec + 3:
             badges.append({"name": "最速ペース", "icon": "⚡", "type": "gold"})
         if dist >= longest_dist - 0.1:
-            badges.append({"name": "最長10km走破", "icon": "🏃", "type": "indigo"})
+            badges.append({"name": "最長走破", "icon": "🏃", "type": "indigo"})
         if cadence >= 175:
-            badges.append({"name": "ハイケイデンス (175spm+)", "icon": "🎯", "type": "teal"})
+            badges.append({"name": "理想ピッチ (175spm+)", "icon": "🎯", "type": "teal"})
         if avg_hr >= 174:
-            badges.append({"name": "高負荷LTセッション", "icon": "🔥", "type": "orange"})
+            badges.append({"name": "高負荷LT走", "icon": "🔥", "type": "orange"})
         if aei >= 6.4:
-            badges.append({"name": "高い有酸素効率", "icon": "💎", "type": "cyan"})
-        if stride >= 1.08:
-            badges.append({"name": "ダイナミックストライド", "icon": "🚀", "type": "purple"})
+            badges.append({"name": "有酸素効率優秀", "icon": "💎", "type": "cyan"})
+        badges.append({"name": series_analysis["split_type"], "icon": "📊", "type": "slate"})
 
-        # 5. 前回ランとの比較
+        # 前回比較
         prev_diff = None
         if i > 0:
             prev_row = df.iloc[i - 1]
-            p_pace_diff = pace_sec - prev_row["avg_pace_sec"]  # 負なら速くなった
+            p_pace_diff = pace_sec - prev_row["avg_pace_sec"]
             p_hr_diff = avg_hr - prev_row["avg_hr"]
             p_dist_diff = dist - prev_row["distance_km"]
             prev_diff = {
@@ -160,78 +251,57 @@ def calculate_activity_insights(df: pd.DataFrame) -> List[Dict[str, Any]]:
                 "dist_diff": float(round(p_dist_diff, 2)),
             }
 
-        # 6. コーチング分析・評価・提案コメント生成
-        # 分析サマリー
-        analysis_summary = (
-            f"走行距離 **{dist:.2f} km** を平均ペース **{pace_str}/km** で完走。"
-            f"平均心拍数は **{avg_hr} bpm**（最大 {max_hr} bpm）で、運動強度は【**{hr_zone['name']}（{hr_zone['intensity']}）**】に該当します。"
-        )
+        # 評価ポイントリスト
+        eval_highlights = [
+            f"総合評価 **{rank}ランク（{total_score}点）**。{series_analysis['split_desc']}",
+            f"ピッチ **{cadence} spm** / 歩幅 **{stride:.2f} m** で、{('安定した効率的リズム' if cadence >= 172 else 'ストライド重視のダイナミックなフォーム')}を維持。",
+        ]
+        if prev_diff and prev_diff["pace_improved"]:
+            eval_highlights.append(f"前回（{prev_diff['date']}）よりペースが **{abs(int(prev_diff['pace_diff_sec']))}秒/km 向上**。走力向上の傾向が確認できます。")
 
-        # 評価コメント (Good points & Notice points)
-        good_points = []
-        notice_points = []
+        # 分析テキスト
+        analysis_body = {
+            "summary": f"走行距離 **{dist:.2f} km** を平均ペース **{pace_str}/km** で完走。運動強度は【**{hr_zone['name']}（{hr_zone['intensity']}）**】に該当します。",
+            "phase_early": series_analysis["phase_early"],
+            "phase_mid": series_analysis["phase_mid"],
+            "phase_late": series_analysis["phase_late"],
+            "drift_text": series_analysis["drift_text"],
+            "cadence_eval": f"平均ピッチは **{cadence} spm**（最高 {row['max_cadence']} spm）。接地時間が短く、着地衝撃を分散できています。" if cadence >= 172 else f"平均ピッチ **{cadence} spm**。骨盤の真下に着地する意識でピッチを172〜176前後に高めるとさらに省エネになります。",
+        }
 
-        if cadence >= 172:
-            good_points.append(
-                f"平均ピッチ **{cadence} spm** とリズムが極めて良好です。着地衝撃を分散し、足腰への負担を軽減できています。"
-            )
-        else:
-            notice_points.append(
-                f"平均ピッチは **{cadence} spm** です。ストライドが伸びすぎないよう、骨盤の真下への接地を意識してピッチを172〜176前後に高めるとさらに省エネになります。"
-            )
-
-        if stride >= 1.05:
-            good_points.append(
-                f"平均歩幅 **{stride:.2f} m** と大きなストライドで力強い推進力が得られています。"
-            )
-
-        if avg_hr >= 173:
-            good_points.append(
-                "心肺機能・乳酸耐性を高める非常に刺激的な高強度トレーニングとなりました。"
-            )
-            notice_points.append(
-                "心肺・筋肉への負荷が非常に高いセッションです。心拍が高止まりしているため、しっかりとした休息が必要です。"
-            )
-        elif avg_hr > 0 and avg_hr < 165:
-            good_points.append(
-                "心拍が安定しており、有酸素ベースの強化・毛細血管の発達に適した理想的なコントロールができています。"
-            )
-
-        if prev_diff and prev_diff["pace_improved"] and abs(prev_diff["pace_diff_sec"]) >= 5:
-            good_points.append(
-                f"前回（{prev_diff['date']}）よりペースが **{abs(int(prev_diff['pace_diff_sec']))}秒/km 短縮** され、着実なスピード強化が見られます！"
-            )
-
-        # 提案 (次回メニュー、フォーム意識、リカバリー)
+        # 次回おすすめメニュー & リカバリー提案
         if avg_hr >= 172 or dist >= 10.0:
             next_menu_title = "アクティブリカバリー または 5km イージージョグ"
             next_menu_desc = (
-                "今回は心肺・筋肉ともに高い負荷（Zone 4〜5）がかかりました。疲労を抜いて毛細血管の新生を促すため、"
-                "次回は **心拍数 135〜145 bpm 前後** を意識した **ゆっくりとしたおしゃべりペース（6:15〜6:30/km、4〜5km）** を強く推奨します。"
+                "今回は心拍数170bpm超の高強度LT走でした。筋肉・心肺の疲労を抜いて毛細血管の新生を促すため、"
+                "次回は **心拍数 135〜145 bpm 前後** を上限とした **ゆっくりとしたイージージョグ（6:15〜6:30/km、4〜5km）** を強く推奨します。"
             )
+            form_advice = "無理にスピードを出さず、脱力して腕を自然に振り、足裏全体で柔らかく着地する感覚を意識してください。"
             recovery_hours = "36〜48時間"
-            recovery_tips = "ふくらはぎと股関節の入念なストレッチ、十分な水分・たんぱく質の補給、質の高い睡眠を心がけましょう。"
+            recovery_tips = "ふくらはぎと股関節の入念なストレッチ、温冷交代浴、水分・たんぱく質の補給を重視してください。"
         elif dist <= 5.0 and pace_sec > 330:
             next_menu_title = "ステップアップ走 (6〜7km) または ビルドアップ走"
             next_menu_desc = (
-                "疲労の蓄積は穏やかです。次回は **走行距離を1〜2km伸ばす（6〜7km）** か、"
+                "疲労度は比較的穏やかです。次回は **距離を1〜2km伸ばす（6〜7km）** か、"
                 "ラスト1kmだけ気持ちよくペースアップする **ビルドアップ走** に挑戦すると、持久力とスピード感覚が一段引き上がります。"
             )
+            form_advice = "現在の安定したピッチ（174spm前後）を崩さずに、体幹の前傾を使って自然に推進力を得るフォームを意識しましょう。"
             recovery_hours = "24〜36時間"
             recovery_tips = "足裏とアキレス腱周りを軽くほぐし、翌日または翌々日にはリフレッシュして走れる状態を整えましょう。"
         else:
             next_menu_title = "テンポ走 (6km) または 8〜10km ペース走"
             next_menu_desc = (
-                "バランスの良いトレーニングができています。次回は **現在の安定したピッチ（174spm前後）を維持したまま、"
-                "同じペースで少し距離を延ばすペース走** を行うと、マラソンに向けた確実な脚作りにつながります。"
+                "バランスの良いトレーニングができています。次回は **現在の安定したピッチを維持したまま、"
+                "同じペースで少し距離を延ばすペース走** を行うと、フルマラソン・ハーフマラソンに向けた確実な脚作りにつながります。"
             )
+            form_advice = "後半に疲れが出てきたときほど、背筋を伸ばして目線を遠くに置き、骨盤から脚を運ぶ意識を持ちましょう。"
             recovery_hours = "24〜48時間"
-            recovery_tips = "ランニング後のアイシングや股関節モビリティ運動を行い、疲労の持ち越しを防ぎましょう。"
+            recovery_tips = "入浴後の股関節・ハムストリングスのモビリティストレッチを行い、翌日への疲労持ち越しを防ぎましょう。"
 
         item = {
             "id": i,
             "date": date_str,
-            "time_of_day": row["time_of_day"],
+            "time_of_day": time_of_day,
             "title": row["タイトル"],
             "distance_km": dist,
             "duration_str": row["duration_str"],
@@ -250,23 +320,30 @@ def calculate_activity_insights(df: pd.DataFrame) -> List[Dict[str, Any]]:
             "elevation_gain": elevation,
             "aei": round(aei, 2),
             "speed_kmh": round(speed_kmh, 1),
-            "total_score": total_score,
-            "rank": rank,
-            "rank_class": rank_class,
-            "radar_scores": {
-                "speed": round(speed_score),
-                "endurance": round(endurance_score),
-                "aerobic": round(aerobic_score),
-                "form": round(form_score),
+            "distance_series": distance_series,
+            # ① 評価 (Evaluation)
+            "evaluation": {
+                "total_score": total_score,
+                "rank": rank,
+                "rank_class": rank_class,
+                "radar_scores": {
+                    "speed": round(speed_score),
+                    "endurance": round(endurance_score),
+                    "aerobic": round(aerobic_score),
+                    "form": round(form_score),
+                },
+                "badges": badges,
+                "prev_diff": prev_diff,
+                "highlights": eval_highlights,
+                "split_badge": series_analysis["split_badge"],
             },
-            "badges": badges,
-            "prev_diff": prev_diff,
-            "analysis_summary": analysis_summary,
-            "good_points": good_points,
-            "notice_points": notice_points,
-            "suggestion": {
+            # ② 分析 (Analysis)
+            "analysis": analysis_body,
+            # ③ 次回おすすめとリカバリー提案 (Recommendation)
+            "recommendation": {
                 "menu_title": next_menu_title,
                 "menu_desc": next_menu_desc,
+                "form_advice": form_advice,
                 "recovery_hours": recovery_hours,
                 "recovery_tips": recovery_tips,
             },

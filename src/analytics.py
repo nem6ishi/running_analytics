@@ -91,38 +91,7 @@ def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] 
     """サイト描画に必要な全分析データをまとめる"""
     overview = compute_overview_stats(df)
     monthly = compute_monthly_stats(df)
-    insights = calculate_activity_insights(df)
-
-    if fit_dict is None:
-        fit_dict = {}
-
-    for item in insights:
-        dt_full = f"{item['date']} {item['time_of_day']}"
-        # 秒単位のキーも試す
-        series = None
-        for k in fit_dict:
-            if k.startswith(dt_full) or k == item["date"]:
-                series = fit_dict[k]
-                break
-
-        if series:
-            item["distance_series"] = {
-                "has_fit": True,
-                "distances": series["distances"],
-                "speeds_kmh": series["speeds_kmh"],
-                "paces_str": series["paces_str"],
-                "heart_rates": series["heart_rates"],
-                "cadences": series["cadences"],
-            }
-        else:
-            item["distance_series"] = generate_estimated_series(
-                item["distance_km"],
-                item["pace_sec"],
-                item["avg_hr"],
-                item["max_hr"],
-                item["cadence"],
-                item["max_cadence"]
-            )
+    insights = calculate_activity_insights(df, fit_dict)
 
     # グラフ用データ系列の抽出
     chart_dates = [row["date_str"] for _, row in df.iterrows()]
