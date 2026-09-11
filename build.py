@@ -3,11 +3,13 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from src.parser import load_activities
 from src.analytics import prepare_full_analytics
+from src.fit_parser import load_all_fit_series
 
 
 def build():
     root_dir = Path(__file__).resolve().parent
-    data_path = root_dir / "data" / "Activities.csv"
+    data_dir = root_dir / "data"
+    data_path = data_dir / "Activities.csv"
     templates_dir = root_dir / "templates"
     docs_dir = root_dir / "docs"
     docs_dir.mkdir(parents=True, exist_ok=True)
@@ -19,8 +21,12 @@ def build():
     df = load_activities(data_path)
     print(f"Loaded {len(df)} activities.")
 
+    print(f"Loading FIT files from {data_dir}...")
+    fit_dict = load_all_fit_series(data_dir)
+    print(f"Loaded {len(fit_dict)} FIT activity entries.")
+
     print("Analyzing data & generating insights...")
-    analytics_data = prepare_full_analytics(df)
+    analytics_data = prepare_full_analytics(df, fit_dict)
 
     print("Rendering HTML with Jinja2...")
     env = Environment(loader=FileSystemLoader(templates_dir), autoescape=True)

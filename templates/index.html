@@ -435,15 +435,21 @@
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
             
-            <!-- ★メイン: 速度・心拍数・ケイデンス 統合グラフ (8カラム幅広) -->
+            <!-- ★メイン: 走行距離に対する速度・心拍数・ピッチ 折れ線グラフ (8カラム幅広) -->
             <div class="lg:col-span-8 bg-slate-950/60 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
                 <div>
-                  <span class="text-xs sm:text-sm font-bold text-white flex items-center space-x-1.5">
-                    <span>🏃</span>
-                    <span>速度・心拍数・ケイデンス 統合パフォーマンス</span>
-                  </span>
-                  <p class="text-[11px] text-slate-400">このランの3大主要指標（平均値 & 最高スパート値）を1つのグラフで比較</p>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs sm:text-sm font-bold text-white flex items-center space-x-1.5">
+                      <span>📈</span>
+                      <span>走行距離に対するパフォーマンス推移</span>
+                    </span>
+                    ${act.distance_series && act.distance_series.has_fit ? 
+                      `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">🟢 Garmin FIT 実測ログ</span>` : 
+                      `<span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-800 text-slate-400 border border-slate-700">推定プロファイル</span>`
+                    }
+                  </div>
+                  <p class="text-[11px] text-slate-400">横軸: 走行距離 (0km〜${act.distance_km}km) / 縦軸: 心拍・ケイデンス・速度</p>
                 </div>
                 <div class="flex items-center space-x-2 text-[10px] text-slate-400">
                   <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1"></span>心拍(bpm)</span>
@@ -452,7 +458,7 @@
                 </div>
               </div>
 
-              <div class="w-full h-56 sm:h-64 relative">
+              <div class="w-full h-64 sm:h-72 relative">
                 <canvas id="unifiedMetricChart"></canvas>
               </div>
 
@@ -592,7 +598,7 @@
 
     let unifiedMetricChart = null;
 
-    // ★速度・心拍数・ケイデンス 統合グラフ更新
+    // ★走行距離に対する速度・心拍数・ピッチの折れ線グラフ更新
     function updateUnifiedChart(act) {
       const ctx = document.getElementById('unifiedMetricChart');
       if (!ctx) return;
@@ -600,38 +606,55 @@
         unifiedMetricChart.destroy();
       }
 
-      const maxSpeedKmh = act.max_pace_sec > 0 ? parseFloat((3600.0 / act.max_pace_sec).toFixed(1)) : act.speed_kmh;
+      const series = act.distance_series || {
+        distances: [0, act.distance_km],
+        speeds_kmh: [act.speed_kmh, act.speed_kmh],
+        heart_rates: [act.avg_hr, act.avg_hr],
+        cadences: [act.cadence, act.cadence],
+        paces_str: [act.pace_str, act.pace_str]
+      };
+
+      const labels = series.distances.map(d => d + ' km');
 
       unifiedMetricChart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
-          labels: ['平均値 (Avg)', '最高値 (Peak / Sprint)'],
+          labels: labels,
           datasets: [
             {
               label: '心拍数 (bpm)',
-              data: [act.avg_hr, act.max_hr],
-              backgroundColor: 'rgba(244, 63, 94, 0.85)',
+              data: series.heart_rates,
               borderColor: '#f43f5e',
-              borderWidth: 1.5,
-              borderRadius: 8,
+              backgroundColor: 'rgba(244, 63, 94, 0.08)',
+              borderWidth: 2,
+              tension: 0.25,
+              pointRadius: series.distances.length > 50 ? 0 : 2,
+              pointHoverRadius: 5,
+              fill: false,
               yAxisID: 'y'
             },
             {
               label: 'ケイデンス (spm)',
-              data: [act.cadence, act.max_cadence],
-              backgroundColor: 'rgba(45, 212, 191, 0.85)',
+              data: series.cadences,
               borderColor: '#2dd4bf',
-              borderWidth: 1.5,
-              borderRadius: 8,
+              backgroundColor: 'transparent',
+              borderWidth: 1.8,
+              borderDash: [2, 2],
+              tension: 0.25,
+              pointRadius: series.distances.length > 50 ? 0 : 2,
+              pointHoverRadius: 5,
               yAxisID: 'y'
             },
             {
               label: '速度 (km/h)',
-              data: [act.speed_kmh, maxSpeedKmh],
-              backgroundColor: 'rgba(52, 211, 153, 0.85)',
-              borderColor: '#34d399',
-              borderWidth: 1.5,
-              borderRadius: 8,
+              data: series.speeds_kmh,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.08)',
+              borderWidth: 2,
+              tension: 0.25,
+              pointRadius: series.distances.length > 50 ? 0 : 2,
+              pointHoverRadius: 5,
+              fill: false,
               yAxisID: 'y1'
             }
           ]
@@ -639,27 +662,42 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
           scales: {
             x: {
-              grid: { display: false },
-              ticks: { color: '#f8fafc', font: { size: 12, weight: '600' } }
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: {
+                color: '#94a3b8',
+                maxTicksLimit: 8,
+                font: { size: 10 }
+              },
+              title: {
+                display: true,
+                text: '走行距離 (km)',
+                color: '#64748b',
+                font: { size: 10 }
+              }
             },
             y: {
               position: 'left',
               title: { display: true, text: '心拍数(bpm) / ケイデンス(spm)', color: '#94a3b8', font: { size: 10 } },
-              min: 0,
-              max: 220,
-              grid: { color: 'rgba(255, 255, 255, 0.08)' },
-              ticks: { color: '#94a3b8', stepSize: 50 }
+              min: 100,
+              max: 210,
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: { color: '#94a3b8', stepSize: 25 }
             },
             y1: {
               position: 'right',
-              title: { display: true, text: '走行速度 (km/h)', color: '#34d399', font: { size: 10 } },
-              min: 0,
-              max: 22,
+              title: { display: true, text: '走行速度 (km/h)', color: '#10b981', font: { size: 10 } },
+              min: 6,
+              max: 18,
               grid: { display: false },
               ticks: {
-                color: '#34d399',
+                color: '#10b981',
+                stepSize: 2,
                 callback: v => v + ' km/h'
               }
             }
@@ -671,14 +709,14 @@
             },
             tooltip: {
               callbacks: {
+                title: ctx => `走行距離: ${series.distances[ctx[0].dataIndex]} km`,
                 label: ctx => {
                   const label = ctx.dataset.label;
                   const val = ctx.raw;
+                  const idx = ctx.dataIndex;
                   if (label.includes('速度')) {
-                    const pace = 3600 / val;
-                    const min = Math.floor(pace / 60);
-                    const sec = Math.round(pace % 60);
-                    return `${label}: ${val} km/h (ペース: ${min}:${sec < 10 ? '0' : ''}${sec}/km)`;
+                    const paceStr = (series.paces_str && series.paces_str[idx]) ? series.paces_str[idx] : '--:--';
+                    return `${label}: ${val} km/h (ペース: ${paceStr}/km)`;
                   }
                   return `${label}: ${val}`;
                 }

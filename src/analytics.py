@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 import pandas as pd
 from .parser import seconds_to_pace_str, seconds_to_time_str
 from .coach import calculate_activity_insights
@@ -84,11 +84,45 @@ def compute_monthly_stats(df: pd.DataFrame) -> List[Dict[str, Any]]:
     return monthly_list
 
 
-def prepare_full_analytics(df: pd.DataFrame) -> Dict[str, Any]:
+from .fit_parser import generate_estimated_series
+
+
+def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """サイト描画に必要な全分析データをまとめる"""
     overview = compute_overview_stats(df)
     monthly = compute_monthly_stats(df)
     insights = calculate_activity_insights(df)
+
+    if fit_dict is None:
+        fit_dict = {}
+
+    for item in insights:
+        dt_full = f"{item['date']} {item['time_of_day']}"
+        # 秒単位のキーも試す
+        series = None
+        for k in fit_dict:
+            if k.startswith(dt_full) or k == item["date"]:
+                series = fit_dict[k]
+                break
+
+        if series:
+            item["distance_series"] = {
+                "has_fit": True,
+                "distances": series["distances"],
+                "speeds_kmh": series["speeds_kmh"],
+                "paces_str": series["paces_str"],
+                "heart_rates": series["heart_rates"],
+                "cadences": series["cadences"],
+            }
+        else:
+            item["distance_series"] = generate_estimated_series(
+                item["distance_km"],
+                item["pace_sec"],
+                item["avg_hr"],
+                item["max_hr"],
+                item["cadence"],
+                item["max_cadence"]
+            )
 
     # グラフ用データ系列の抽出
     chart_dates = [row["date_str"] for _, row in df.iterrows()]
