@@ -267,6 +267,15 @@ def detect_workout_structure(
             f"単調なジョグにとどまらず、心肺と速筋に強烈な刺激を入れてレース本番のペース切り替え力・粘りを養う非常に実戦的な構成となっています。"
         )
 
+        fast_laps = [l for l in valid_laps if "疾走" in l.get("role_tag", "")]
+        base_laps = [l for l in valid_laps if "疾走" not in l.get("role_tag", "")]
+        fast_paces = [l["pace_sec"] for l in fast_laps]
+        base_paces = [l["pace_sec"] for l in base_laps]
+        fast_avg_pace = sum(fast_paces) / len(fast_paces) if fast_paces else overall_avg_pace
+        base_avg_pace = sum(base_paces) / len(base_paces) if base_paces else overall_avg_pace
+        best_fast_pace = min(fast_paces) if fast_paces else overall_avg_pace
+        pace_contrast = base_avg_pace - fast_avg_pace
+
         return {
             "type": "変化走 / ファルトレク",
             "badge": "⚡ 変化走 / ファルトレク",
@@ -276,6 +285,10 @@ def detect_workout_structure(
             "phases": phases,
             "is_interval": True,
             "fast_count": fast_count,
+            "fast_avg_pace_sec": fast_avg_pace,
+            "best_fast_pace_sec": best_fast_pace,
+            "base_avg_pace_sec": base_avg_pace,
+            "pace_contrast_sec": pace_contrast,
         }
 
     # B. ビルドアップ走判定
@@ -376,12 +389,22 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
         series_analysis = analyze_time_series(distance_series, dist)
         workout_structure = detect_workout_structure(distance_series.get("laps", []), dist, pace_sec, avg_hr)
 
-        # 5. 多角評価スコア (0-100)
-        speed_score = max(50.0, min(100.0, 100.0 - (pace_sec - 300) * 0.4))
+        # 5. 分析結果を踏まえた多角評価スコア (0-100) & 判定
+        # スピードスコア: 変化走の場合は疾走区間のペースを主軸に評価
+        if workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec"):
+            eval_speed_pace = workout_structure["best_fast_pace_sec"]
+            speed_score = max(60.0, min(100.0, 100.0 - (eval_speed_pace - 270) * 0.45))
+        else:
+            speed_score = max(50.0, min(100.0, 100.0 - (pace_sec - 300) * 0.4))
+
         endurance_score = max(50.0, min(100.0, 50.0 + (dist * 4.8)))
         cadence_diff = abs(cadence - 176)
         form_score = max(60.0, min(100.0, 100.0 - (cadence_diff * 4.0)))
         aerobic_score = max(50.0, min(100.0, 50.0 + (aei - 5.0) * 28.0))
+
+        # 変化走でメリハリ（ペース差40秒以上）がついている場合、緩急コントロールの加点
+        if workout_structure.get("is_interval") and workout_structure.get("pace_contrast_sec", 0) >= 40:
+            form_score = min(100.0, form_score + 5.0)
 
         total_score = round(
             speed_score * 0.3 + endurance_score * 0.25 + aerobic_score * 0.25 + form_score * 0.2
@@ -403,14 +426,14 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
 
         # バッジ付与
         badges = []
-        if pace_sec <= best_pace_sec + 3:
+        if pace_sec <= best_pace_sec + 3 or (workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) <= best_pace_sec):
             badges.append({"name": "最速ペース", "icon": "⚡", "type": "gold"})
         if dist >= longest_dist - 0.1:
             badges.append({"name": "最長走破", "icon": "🏃", "type": "indigo"})
         if cadence >= 175:
             badges.append({"name": "理想ピッチ (175spm+)", "icon": "🎯", "type": "teal"})
-        if avg_hr >= 174:
-            badges.append({"name": "高負荷LT走", "icon": "🔥", "type": "orange"})
+        if avg_hr >= 174 or max_hr >= 185:
+            badges.append({"name": "高負荷LT・VO2max刺激", "icon": "🔥", "type": "orange"})
         if aei >= 6.4:
             badges.append({"name": "有酸素効率優秀", "icon": "💎", "type": "cyan"})
         badges.append({"name": workout_structure["badge"], "icon": "📊", "type": "amber" if workout_structure.get("is_interval") else "slate"})
@@ -432,13 +455,32 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
                 "dist_diff": float(round(p_dist_diff, 2)),
             }
 
+        # 分析結果を踏まえた「総合評価・達成度判定テキスト (conclusion)」
+        if workout_structure.get("is_interval"):
+            fast_c = workout_structure.get("fast_count", 2)
+            best_f_str = seconds_to_pace_str(workout_structure.get("best_fast_pace_sec", pace_sec))
+            contrast_sec = int(round(workout_structure.get("pace_contrast_sec", 60)))
+            eval_conclusion = (
+                f"分析結果の通り、入念なアップから **1km疾走×{fast_c}本（最速 {best_f_str}/km）** へのギアチェンジが極めて鮮やかでした。"
+                f"疾走とつなぎの間で約 **{contrast_sec}秒/km** の明確な緩急差をコントロールできており、レース本番の揺さぶりやスパートに耐える心肺・脚力が高いレベルで発揮されています。"
+            )
+        elif workout_structure.get("type") == "ビルドアップ走":
+            eval_conclusion = (
+                "分析結果の通り、前半から後半にかけて段階的にペースを引き上げるビルドアップを完遂。"
+                "余力を残しながら終盤に追い込む理想的なペース配分ができています。"
+            )
+        else:
+            eval_conclusion = (
+                f"分析結果の通り、全区間を通してペースのブレが小さく、一定のピッチ（{cadence}spm）と有酸素リズムを保って走り切った安定度の高い巡航走です。"
+            )
+
         # 評価ポイントリスト
         eval_highlights = [
-            f"総合評価 **{rank}ランク（{total_score}点）**。{workout_structure['summary_title']}",
+            f"総合判定 **{rank}ランク（{total_score}点）**。{eval_conclusion}",
             f"ピッチ **{cadence} spm** / 歩幅 **{stride:.2f} m** で、{('安定した効率的リズム' if cadence >= 172 else 'ストライド重視のダイナミックなフォーム')}を維持。",
         ]
         if prev_diff and prev_diff["pace_improved"]:
-            eval_highlights.append(f"前回（{prev_diff['date']}）よりペースが **{abs(int(prev_diff['pace_diff_sec']))}秒/km 向上**。走力向上の傾向が確認できます。")
+            eval_highlights.append(f"前回（{prev_diff['date']}）より全体平均ペースが **{abs(int(prev_diff['pace_diff_sec']))}秒/km 向上**。")
 
         # 分析テキスト
         analysis_body = {
@@ -514,11 +556,12 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
             "aei": round(aei, 2),
             "speed_kmh": round(speed_kmh, 1),
             "distance_series": distance_series,
-            # ① 評価 (Evaluation)
+            # ② 評価 (Evaluation: 分析結果に基づく総合判定)
             "evaluation": {
                 "total_score": total_score,
                 "rank": rank,
                 "rank_class": rank_class,
+                "conclusion": eval_conclusion,
                 "radar_scores": {
                     "speed": round(speed_score),
                     "endurance": round(endurance_score),
