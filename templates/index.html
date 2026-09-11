@@ -408,9 +408,16 @@
                   {{ item.cadence }} spm <span class="text-slate-600">/</span> {{ item.stride }} m
                 </td>
                 <td class="py-3 px-4 whitespace-nowrap">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium {{ item.hr_zone.bg_color }}">
-                    {{ item.hr_zone.name }}
-                  </span>
+                  <div class="flex flex-col gap-1">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium {{ item.hr_zone.bg_color }}">
+                      {{ item.hr_zone.name }}
+                    </span>
+                    {% if item.analysis and item.analysis.workout_structure %}
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border {{ item.analysis.workout_structure.badge_color }}">
+                      {{ item.analysis.workout_structure.badge }}
+                    </span>
+                    {% endif %}
+                  </div>
                 </td>
                 <td class="py-3 px-4 whitespace-nowrap text-center">
                   <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br {{ item.rank_class }} font-bold text-xs shadow-sm">
@@ -495,6 +502,71 @@
         </li>
       `).join('');
 
+      // ワークアウト構造・走りの意図HTML
+      const ws = an.workout_structure || {
+        type: '通常走',
+        badge: '🏃 通常走',
+        badge_color: 'bg-slate-800 text-slate-300 border-slate-700',
+        summary_title: '【通常走】全体巡航',
+        summary_desc: '全体を通して一定のペースを維持して走行しました。',
+        phases: [],
+        is_interval: false
+      };
+
+      let phasesTimelineHtml = '';
+      if (ws.phases && ws.phases.length > 0) {
+        phasesTimelineHtml = `
+          <div class="space-y-2 pt-1">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>⏱️</span>
+              <span>セッション構成・フェーズ別実績</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${Math.min(ws.phases.length, 5)} gap-2.5">
+              ${ws.phases.map((p, idx) => `
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-xl p-3 space-y-1.5 shadow-inner">
+                  <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black border ${p.badge_color}">
+                      ${p.tag || 'フェーズ'}
+                    </span>
+                    <span class="text-[11px] text-slate-400 font-mono font-medium">${p.distance_km} km</span>
+                  </div>
+                  <div class="text-xs font-bold text-white tracking-tight">
+                    ${p.name}
+                  </div>
+                  <div class="flex items-baseline justify-between pt-0.5">
+                    <div>
+                      <span class="text-base font-black text-white font-mono tracking-tight">${p.pace_str}</span>
+                      <span class="text-[10px] text-slate-400">/km</span>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xs font-bold text-rose-400 font-mono">${p.avg_hr}</span>
+                      <span class="text-[9px] text-slate-500">bpm</span>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-slate-300 leading-snug pt-0.5">${p.desc.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      const workoutBreakdownHtml = `
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900/95 to-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-md">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+            <div class="space-y-1">
+              <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border ${ws.badge_color}">${ws.badge}</span>
+                <span class="text-[11px] text-slate-400 font-medium">🎯 トレーニング意図の自動解析</span>
+              </div>
+              <h4 class="text-base sm:text-lg font-black text-white tracking-tight">${ws.summary_title}</h4>
+            </div>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${ws.summary_desc.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')}</p>
+          ${phasesTimelineHtml}
+        </div>
+      `;
+
       // ラップスプリットHTML
       const laps = (act.distance_series && act.distance_series.laps) ? act.distance_series.laps : [];
       let lapsHtml = '';
@@ -508,7 +580,7 @@
             <div class="flex items-center justify-between text-xs">
               <span class="font-bold text-slate-300 flex items-center space-x-1.5">
                 <span>⏱️</span>
-                <span>1km ごとのラップスプリット詳細</span>
+                <span>1km ごとのラップスプリット詳細（走りの役割別）</span>
               </span>
               <span class="text-slate-400 text-[11px]">全 ${laps.length} ラップ</span>
             </div>
@@ -516,13 +588,14 @@
               <table class="w-full text-left text-xs">
                 <thead>
                   <tr class="text-slate-400 border-b border-slate-800/80 text-[11px]">
-                    <th class="py-2 px-3">ラップ</th>
-                    <th class="py-2 px-3">距離</th>
-                    <th class="py-2 px-3">ペース</th>
-                    <th class="py-2 px-3">タイム</th>
-                    <th class="py-2 px-3">平均心拍</th>
-                    <th class="py-2 px-3">高低差</th>
-                    <th class="py-2 px-3 min-w-[100px]">相対ペース</th>
+                    <th class="py-2.5 px-3">ラップ</th>
+                    <th class="py-2.5 px-3">区間の役割</th>
+                    <th class="py-2.5 px-3">距離</th>
+                    <th class="py-2.5 px-3">ペース</th>
+                    <th class="py-2.5 px-3">タイム</th>
+                    <th class="py-2.5 px-3">平均心拍</th>
+                    <th class="py-2.5 px-3">高低差</th>
+                    <th class="py-2.5 px-3 min-w-[100px]">相対ペース</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/40 text-slate-300">
@@ -530,17 +603,24 @@
                     const isFastest = (l.pace_sec === minPace);
                     const barWidth = maxPace > minPace ? Math.max(20, 100 - ((l.pace_sec - minPace) / (maxPace - minPace)) * 60) : 80;
                     const barColor = isFastest ? 'bg-emerald-400' : 'bg-indigo-400';
+                    const roleBadge = l.role_badge || 'bg-slate-800 text-slate-400 border-slate-700';
+                    const roleTag = l.role_tag || '巡航';
                     return `
                       <tr class="hover:bg-slate-800/30 transition">
-                        <td class="py-2 px-3 font-semibold text-white whitespace-nowrap">Lap ${l.lap_index}</td>
-                        <td class="py-2 px-3 text-slate-400 whitespace-nowrap">${l.distance_km} km</td>
-                        <td class="py-2 px-3 font-mono font-bold whitespace-nowrap ${isFastest ? 'text-emerald-400' : 'text-slate-200'}">
+                        <td class="py-2.5 px-3 font-semibold text-white whitespace-nowrap">Lap ${l.lap_index}</td>
+                        <td class="py-2.5 px-3 whitespace-nowrap">
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${roleBadge}">
+                            ${roleTag}
+                          </span>
+                        </td>
+                        <td class="py-2.5 px-3 text-slate-400 whitespace-nowrap">${l.distance_km} km</td>
+                        <td class="py-2.5 px-3 font-mono font-bold whitespace-nowrap ${isFastest ? 'text-emerald-400' : 'text-slate-200'}">
                           ${l.pace_str} /km ${isFastest ? '<span class="text-[9px] px-1 rounded bg-emerald-500/20 text-emerald-300 ml-1">最速</span>' : ''}
                         </td>
-                        <td class="py-2 px-3 font-mono text-slate-300 whitespace-nowrap">${l.time_str}</td>
-                        <td class="py-2 px-3 text-rose-400 font-medium whitespace-nowrap">${l.avg_hr ? l.avg_hr + ' bpm' : '--'}</td>
-                        <td class="py-2 px-3 text-slate-400 text-[11px] whitespace-nowrap">+${l.ascent}m / -${l.descent}m</td>
-                        <td class="py-2 px-3">
+                        <td class="py-2.5 px-3 font-mono text-slate-300 whitespace-nowrap">${l.time_str}</td>
+                        <td class="py-2.5 px-3 text-rose-400 font-medium whitespace-nowrap">${l.avg_hr ? l.avg_hr + ' bpm' : '--'}</td>
+                        <td class="py-2.5 px-3 text-slate-400 text-[11px] whitespace-nowrap">+${l.ascent}m / -${l.descent}m</td>
+                        <td class="py-2.5 px-3">
                           <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
                             <div class="${barColor} h-full rounded-full transition-all duration-300" style="width: ${barWidth}%;"></div>
                           </div>
@@ -570,7 +650,8 @@
               <span class="text-xs px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 font-medium">${act.title}</span>
               <span class="text-xs px-2.5 py-1 rounded-md ${act.hr_zone.bg_color} font-medium">${act.hr_zone.name} (${act.hr_zone.intensity})</span>
             </div>
-            <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs px-3 py-1 rounded-full border font-semibold ${ws.badge_color}">${ws.badge}</span>
               <span class="text-xs px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-semibold">${ev.split_badge}</span>
             </div>
           </div>
@@ -660,6 +741,9 @@
               <span class="text-xs px-2.5 py-1 rounded-full ${act.hr_zone.bg_color} font-medium">${act.hr_zone.name}</span>
             </div>
           </div>
+
+          <!-- トレーニング構成 & 走りの意図（Workout Breakdown）カード -->
+          ${workoutBreakdownHtml}
 
           <!-- 走行距離に対する折れ線グラフ -->
           <div>

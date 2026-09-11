@@ -140,6 +140,183 @@ def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any
     }
 
 
+def detect_workout_structure(
+    laps: List[Dict[str, Any]], dist_km: float, avg_pace_sec: float, avg_hr: int
+) -> Dict[str, Any]:
+    """ラップデータや時系列からトレーニングの構造（アップ、疾走、つなぎ、ダウン等）を自動判定"""
+    if not laps or len(laps) < 3:
+        return {
+            "type": "持続走 (ペース走)",
+            "badge": "🏃 ペース走",
+            "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
+            "summary_title": f"{dist_km:.1f}km 持続走 (イーブンペース)",
+            "summary_desc": f"全行程（{dist_km:.2f}km）を平均ペース **{seconds_to_pace_str(avg_pace_sec)}/km**、平均心拍 **{avg_hr} bpm** で巡航しました。安定した有酸素ペースを刻むトレーニングです。",
+            "phases": [],
+            "is_interval": False,
+        }
+
+    valid_laps = [l for l in laps if l.get("distance_km", 0) >= 0.4]
+    if len(valid_laps) < 3:
+        return {
+            "type": "持続走 (ペース走)",
+            "badge": "🏃 ペース走",
+            "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
+            "summary_title": f"{dist_km:.1f}km ペース走",
+            "summary_desc": f"全行程を通して一定のペースで走行しました。",
+            "phases": [],
+            "is_interval": False,
+        }
+
+    paces = [l["pace_sec"] for l in valid_laps]
+    overall_avg_pace = sum(paces) / len(paces)
+
+    # 1. 疾走（fast）ラップの判定: 全体平均より12秒以上速く、かつ前後のラップより18秒以上速い
+    lap_roles = []
+    for i, l in enumerate(valid_laps):
+        p = l["pace_sec"]
+        prev_p = valid_laps[i - 1]["pace_sec"] if i > 0 else p
+        next_p = valid_laps[i + 1]["pace_sec"] if i < len(valid_laps) - 1 else p
+
+        is_fast = (p < overall_avg_pace - 12) and (prev_p - p >= 18 or next_p - p >= 18)
+        lap_roles.append("fast" if is_fast else "base")
+
+    fast_count = lap_roles.count("fast")
+
+    # A. 変化走 / ファルトレク / インターバル判定 (急加速と緩走が交互に存在)
+    if fast_count >= 1 and "base" in lap_roles:
+        first_fast_idx = lap_roles.index("fast")
+        last_fast_idx = len(lap_roles) - 1 - list(reversed(lap_roles)).index("fast")
+
+        phases = []
+        # ① ウォーミングアップ
+        if first_fast_idx > 0:
+            wu_laps = valid_laps[:first_fast_idx]
+            wu_dist = sum(l["distance_km"] for l in wu_laps)
+            wu_avg_pace = sum(l["pace_sec"] for l in wu_laps) / len(wu_laps)
+            wu_avg_hr = sum(l["avg_hr"] for l in wu_laps) / len(wu_laps)
+            for l in wu_laps:
+                l["role_tag"] = "アップ"
+                l["role_badge"] = "bg-slate-800 text-slate-300 border-slate-700"
+
+            phases.append({
+                "name": f"ウォーミングアップ (1〜{first_fast_idx}km)",
+                "tag": "ウォーミングアップ",
+                "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
+                "distance_km": round(wu_dist, 1),
+                "pace_str": seconds_to_pace_str(wu_avg_pace),
+                "avg_hr": int(round(wu_avg_hr)),
+                "desc": f"最初の **{wu_dist:.0f}km** は無理をせず平均 **{seconds_to_pace_str(wu_avg_pace)}/km**（心拍 {int(round(wu_avg_hr))} bpm）でゆっくり走行。徐々に心拍を上げて筋肉を温める理想的なアップです。",
+            })
+
+        # ② 疾走 & つなぎ
+        fast_seq = 1
+        for i in range(first_fast_idx, last_fast_idx + 1):
+            l = valid_laps[i]
+            role = lap_roles[i]
+            if role == "fast":
+                l["role_tag"] = f"🔥 疾走 {fast_seq}本目"
+                l["role_badge"] = "bg-rose-500/20 text-rose-300 border-rose-500/30"
+                phases.append({
+                    "name": f"疾走 {fast_seq}本目 ({l['lap_index']}km目)",
+                    "tag": f"🔥 疾走 {fast_seq}本目",
+                    "badge_color": "bg-rose-500/20 text-rose-300 border-rose-500/30",
+                    "distance_km": l["distance_km"],
+                    "pace_str": l["pace_str"],
+                    "avg_hr": l["avg_hr"],
+                    "desc": f"一気にギアを上げ **{l['pace_str']}/km** まで急加速（平均心拍 **{l['avg_hr']} bpm**）。乳酸閾値（LT）を超える強い刺激を注入。",
+                })
+                fast_seq += 1
+            else:
+                l["role_tag"] = "🧊 つなぎ・リカバリー"
+                l["role_badge"] = "bg-sky-500/20 text-sky-300 border-sky-500/30"
+                phases.append({
+                    "name": f"つなぎ・リカバリー ({l['lap_index']}km目)",
+                    "tag": "🧊 つなぎ",
+                    "badge_color": "bg-sky-500/20 text-sky-300 border-sky-500/30",
+                    "distance_km": l["distance_km"],
+                    "pace_str": l["pace_str"],
+                    "avg_hr": l["avg_hr"],
+                    "desc": f"**{l['pace_str']}/km** まで意図的にペースを落とし、呼吸と筋疲労を整えながら次の疾走に備えるつなぎジョグ。",
+                })
+
+        # ③ クールダウン
+        if last_fast_idx < len(valid_laps) - 1:
+            cd_laps = valid_laps[last_fast_idx + 1:]
+            cd_dist = sum(l["distance_km"] for l in cd_laps)
+            cd_avg_pace = sum(l["pace_sec"] for l in cd_laps) / len(cd_laps)
+            cd_avg_hr = sum(l["avg_hr"] for l in cd_laps) / len(cd_laps)
+            for l in cd_laps:
+                l["role_tag"] = "クールダウン"
+                l["role_badge"] = "bg-slate-800 text-slate-400 border-slate-700"
+
+            phases.append({
+                "name": f"クールダウン ({last_fast_idx + 2}〜{len(valid_laps)}km)",
+                "tag": "クールダウン",
+                "badge_color": "bg-slate-800 text-slate-400 border-slate-700",
+                "distance_km": round(cd_dist, 1),
+                "pace_str": seconds_to_pace_str(cd_avg_pace),
+                "avg_hr": int(round(cd_avg_hr)),
+                "desc": f"疾走終了後の息を整えながら **{seconds_to_pace_str(cd_avg_pace)}/km** でリラックスしてフィニッシュ。",
+            })
+
+        wu_title = f"{first_fast_idx}kmアップ ＋ " if first_fast_idx > 0 else ""
+        summary_title = f"【変化走 / ファルトレク】{wu_title}1km疾走 × {fast_count}本（つなぎジョグ挟み）"
+        summary_desc = (
+            f"最初の{first_fast_idx}kmをウォーミングアップとしてゆっくり走った後、"
+            f"**「1km早めに走る ＋ 1kmゆっくり走る」緩急走を{fast_count}セット** 行った高強度トレーニングです。"
+            f"単調なジョグにとどまらず、心肺と速筋に強烈な刺激を入れてレース本番のペース切り替え力・粘りを養う非常に実戦的な構成となっています。"
+        )
+
+        return {
+            "type": "変化走 / ファルトレク",
+            "badge": "⚡ 変化走 / ファルトレク",
+            "badge_color": "bg-amber-500/20 text-amber-300 border-amber-500/30",
+            "summary_title": summary_title,
+            "summary_desc": summary_desc,
+            "phases": phases,
+            "is_interval": True,
+            "fast_count": fast_count,
+        }
+
+    # B. ビルドアップ走判定
+    half = len(valid_laps) // 2
+    first_half_avg = sum(paces[:half]) / half
+    second_half_avg = sum(paces[half:]) / (len(valid_laps) - half)
+    if first_half_avg - second_half_avg > 18:
+        for i, l in enumerate(valid_laps):
+            if i < half:
+                l["role_tag"] = "前半巡航"
+                l["role_badge"] = "bg-slate-800 text-slate-300 border-slate-700"
+            else:
+                l["role_tag"] = "後半加速"
+                l["role_badge"] = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+
+        return {
+            "type": "ビルドアップ走",
+            "badge": "📈 ビルドアップ走",
+            "badge_color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+            "summary_title": f"【ビルドアップ走】前半 {seconds_to_pace_str(first_half_avg)} → 後半 {seconds_to_pace_str(second_half_avg)}/km",
+            "summary_desc": f"前半（{seconds_to_pace_str(first_half_avg)}/km）から後半（{seconds_to_pace_str(second_half_avg)}/km）にかけて段階的にペースを引き上げるビルドアップ走です。余力を残しながら終盤に追い込む理想的なペース配分ができています。",
+            "phases": [],
+            "is_interval": False,
+        }
+
+    # C. イーブンペース持続走
+    for l in valid_laps:
+        l["role_tag"] = "巡航"
+        l["role_badge"] = "bg-slate-800 text-slate-400 border-slate-700"
+
+    return {
+        "type": "持続走 (ペース走)",
+        "badge": "⚖️ イーブンペース走",
+        "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
+        "summary_title": f"【ペース走】平均 {seconds_to_pace_str(overall_avg_pace)}/km 安定巡航",
+        "summary_desc": f"全行程を通してペースのばらつきが小さく、一定のピッチと有酸素リズムを保って走り切った安定したトレーニングです。",
+        "phases": [],
+        "is_interval": False,
+    }
+
+
 def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
     """全アクティビティに対して詳細な「評価」「分析」「次回おすすめとリカバリー提案」データを生成"""
     insights_list = []
@@ -195,8 +372,9 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
                 dist, pace_sec, avg_hr, max_hr, cadence, row["max_cadence"], elevation
             )
 
-        # 4. 時系列グラフの分析
+        # 4. 時系列グラフの分析 & ワークアウト構造の自動検出
         series_analysis = analyze_time_series(distance_series, dist)
+        workout_structure = detect_workout_structure(distance_series.get("laps", []), dist, pace_sec, avg_hr)
 
         # 5. 多角評価スコア (0-100)
         speed_score = max(50.0, min(100.0, 100.0 - (pace_sec - 300) * 0.4))
@@ -235,7 +413,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
             badges.append({"name": "高負荷LT走", "icon": "🔥", "type": "orange"})
         if aei >= 6.4:
             badges.append({"name": "有酸素効率優秀", "icon": "💎", "type": "cyan"})
-        badges.append({"name": series_analysis["split_type"], "icon": "📊", "type": "slate"})
+        badges.append({"name": workout_structure["badge"], "icon": "📊", "type": "amber" if workout_structure.get("is_interval") else "slate"})
 
         # 前回比較
         prev_diff = None
@@ -256,7 +434,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
 
         # 評価ポイントリスト
         eval_highlights = [
-            f"総合評価 **{rank}ランク（{total_score}点）**。{series_analysis['split_desc']}",
+            f"総合評価 **{rank}ランク（{total_score}点）**。{workout_structure['summary_title']}",
             f"ピッチ **{cadence} spm** / 歩幅 **{stride:.2f} m** で、{('安定した効率的リズム' if cadence >= 172 else 'ストライド重視のダイナミックなフォーム')}を維持。",
         ]
         if prev_diff and prev_diff["pace_improved"]:
@@ -265,6 +443,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
         # 分析テキスト
         analysis_body = {
             "summary": f"走行距離 **{dist:.2f} km** を平均ペース **{pace_str}/km** で完走。運動強度は【**{hr_zone['name']}（{hr_zone['intensity']}）**】に該当します。",
+            "workout_structure": workout_structure,
             "phase_early": series_analysis["phase_early"],
             "phase_mid": series_analysis["phase_mid"],
             "phase_late": series_analysis["phase_late"],
@@ -273,7 +452,18 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
         }
 
         # 次回おすすめメニュー & リカバリー提案
-        if avg_hr >= 172 or dist >= 10.0:
+        if workout_structure.get("is_interval"):
+            fast_c = workout_structure.get("fast_count", 2)
+            next_menu_title = "完全休養 または 4km 超スロージョグ (アクティブリカバリー)"
+            next_menu_desc = (
+                f"今回は **1km疾走×{fast_c}本のファルトレク（変化走）** で最大心拍 **{max_hr} bpm** まで追い込んだ高強度トレーニングでした。"
+                "速筋線維の微細損傷や乳酸疲労を抜くため、次回は **心拍数 130〜140 bpm を超えない極めてゆっくりとしたリカバリージョグ**、"
+                "または完全休養とし、超回復（筋力・心肺機能の向上）を促進させましょう。"
+            )
+            form_advice = "スピードは完全に意識せず、脱力して手足をリラックスさせ、血流を促すことだけに集中してください。"
+            recovery_hours = "48時間"
+            recovery_tips = "ふくらはぎ・ハムストリングスのフォームローラーほぐし、温冷交代浴、クエン酸とたんぱく質の積極的摂取を推奨します。"
+        elif avg_hr >= 172 or dist >= 10.0:
             next_menu_title = "アクティブリカバリー または 5km イージージョグ"
             next_menu_desc = (
                 "今回は心拍数170bpm超の高強度LT走でした。筋肉・心肺の疲労を抜いて毛細血管の新生を促すため、"
