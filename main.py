@@ -1,5 +1,10 @@
+import sys
+from build import build
+
+
 def main():
-    print("Hello from running-analytics!")
+    print("Running Analytics Builder")
+    build()
 
 
 if __name__ == "__main__":

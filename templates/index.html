@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running Analytics & AI Coach</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <span class="text-xl">🏃</span>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white tracking-tight leading-tight">Running Analytics</h1>
+          <p class="text-xs text-slate-400">Personal Log & Coaching Insights</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span>
+          21 Activities Logged
+        </span>
+        <a href="#coach-section" class="hidden sm:inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+          🎯 ラン個別分析
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+    <!-- KPI Overview Cards -->
+    <section>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">All-Time Statistics</h2>
+        <span class="text-xs text-slate-500">2026.04 - 2026.09</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <!-- 総距離 -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+          <div class="text-xs font-medium text-slate-400">総走行距離</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white mt-1 tracking-tight">
+            {{ overview.total_distance_km }} <span class="text-sm font-normal text-emerald-400">km</span>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-1">全{{ overview.total_runs }}回のアクティビティ</div>
+        </div>
+        <!-- 平均ペース -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="text-xs font-medium text-slate-400">平均ペース</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white mt-1 tracking-tight">
+            {{ overview.avg_pace_str }} <span class="text-sm font-normal text-slate-400">/km</span>
+          </div>
+          <div class="text-[11px] text-emerald-400 mt-1">最速 {{ overview.best_pace_str }} /km</div>
+        </div>
+        <!-- 平均心拍 -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="text-xs font-medium text-slate-400">平均心拍数</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white mt-1 tracking-tight">
+            {{ overview.avg_hr }} <span class="text-sm font-normal text-rose-400">bpm</span>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-1">Zone 4 (乳酸閾値帯寄り)</div>
+        </div>
+        <!-- 平均ピッチ -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="text-xs font-medium text-slate-400">平均ピッチ</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white mt-1 tracking-tight">
+            {{ overview.avg_cadence }} <span class="text-sm font-normal text-teal-400">spm</span>
+          </div>
+          <div class="text-[11px] text-teal-400 mt-1">理想リズム (170-180)</div>
+        </div>
+        <!-- 平均歩幅 -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="text-xs font-medium text-slate-400">平均歩幅</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white mt-1 tracking-tight">
+            {{ overview.avg_stride_m }} <span class="text-sm font-normal text-purple-400">m</span>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-1">ストライド安定</div>
+        </div>
+        <!-- 総カロリー & 時間 -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="text-xs font-medium text-slate-400">総消費エネルギー</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white mt-1 tracking-tight">
+            {{ overview.total_calories }} <span class="text-sm font-normal text-amber-400">kcal</span>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-1">総時間 {{ overview.total_time_str }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity Insights & Coaching Section -->
+    <section id="coach-section" class="scroll-mt-20">
+      <div class="bg-gradient-to-b from-slate-900/90 to-slate-900/50 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl relative">
+        
+        <!-- Section Header with Selector -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+          <div>
+            <div class="inline-flex items-center space-x-2 text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-2">
+              <span>🤖</span>
+              <span>AI Coaching & Activity Insights</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">各ランニングの分析・評価・提案</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-0.5">心拍負荷・ペース・ピッチ・ストライドから走行内容を総合診断し、次回へのアクションを提案します</p>
+          </div>
+
+          <!-- Selector -->
+          <div class="flex items-center space-x-2 w-full md:w-auto">
+            <label for="activity-select" class="text-xs text-slate-400 whitespace-nowrap">表示アクティビティ:</label>
+            <select id="activity-select" class="bg-slate-800 border border-slate-700 text-white text-xs sm:text-sm rounded-xl px-3 py-2 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition cursor-pointer">
+              {% for item in reversed_insights %}
+              <option value="{{ item.id }}">{{ item.date }} - {{ item.distance_km }}km ({{ item.pace_str }})</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Container for Selected Activity -->
+        <div id="insight-container" class="mt-6 space-y-6">
+          <!-- JSで動的にコンテンツが挿入されます -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">パフォーマンス推移 & 相関トレンド</h2>
+          <p class="text-xs sm:text-sm text-slate-400">日々のトレーニング進化と心肺効率の可視化</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- 月別走行距離 & 回数 -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-sm">
+          <h3 class="text-sm font-semibold text-slate-200 mb-1">月別走行距離 & 出走回数</h3>
+          <p class="text-xs text-slate-500 mb-4">月ごとのボリューム推移</p>
+          <div class="relative h-64">
+            <canvas id="monthlyChart"></canvas>
+          </div>
+        </div>
+
+        <!-- ペース & 心拍数推移 -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-sm">
+          <h3 class="text-sm font-semibold text-slate-200 mb-1">ペース & 平均心拍数の推移</h3>
+          <p class="text-xs text-slate-500 mb-4">ペース（分/km）は上にいくほど高速</p>
+          <div class="relative h-64">
+            <canvas id="paceHrChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 心拍数 vs ペース (散布図) -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-sm">
+          <h3 class="text-sm font-semibold text-slate-200 mb-1">有酸素効率 (心拍数 vs ペース)</h3>
+          <p class="text-xs text-slate-500 mb-4">左下（低心拍かつ速いペース）にあるほど有酸素能力が高い状態</p>
+          <div class="relative h-64">
+            <canvas id="scatterChart"></canvas>
+          </div>
+        </div>
+
+        <!-- ピッチ vs ストライド推移 -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-sm">
+          <h3 class="text-sm font-semibold text-slate-200 mb-1">ピッチ (spm) と 歩幅 (m) の推移</h3>
+          <p class="text-xs text-slate-500 mb-4">ランニングフォームとケイデンスの安定性</p>
+          <div class="relative h-64">
+            <canvas id="formChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity Log Table -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">アクティビティ履歴一覧</h2>
+          <p class="text-xs sm:text-sm text-slate-400">行をクリックすると上の「個別分析・評価・提案」にジャンプします</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-800/60 text-slate-400 uppercase font-semibold text-[11px] border-b border-slate-800">
+              <tr>
+                <th class="py-3.5 px-4">日付</th>
+                <th class="py-3.5 px-4">距離</th>
+                <th class="py-3.5 px-4">タイム</th>
+                <th class="py-3.5 px-4">平均ペース</th>
+                <th class="py-3.5 px-4">平均心拍</th>
+                <th class="py-3.5 px-4">ピッチ / 歩幅</th>
+                <th class="py-3.5 px-4">強度ゾーン</th>
+                <th class="py-3.5 px-4 text-center">総合スコア</th>
+                <th class="py-3.5 px-4 text-right">アクション</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/50 text-slate-300">
+              {% for item in reversed_insights %}
+              <tr class="hover:bg-slate-800/40 transition cursor-pointer group" onclick="selectActivity({{ item.id }})">
+                <td class="py-3 px-4 font-medium text-white whitespace-nowrap">
+                  {{ item.date }}
+                  <span class="text-xs text-slate-500 block sm:inline sm:ml-1">{{ item.time_of_day }}</span>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap font-semibold text-emerald-400">
+                  {{ item.distance_km }} km
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-slate-300">
+                  {{ item.duration_str }}
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap font-medium text-slate-200">
+                  {{ item.pace_str }} <span class="text-[10px] text-slate-500">/km</span>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <span class="inline-flex items-center text-rose-400">
+                    {{ item.avg_hr }} <span class="text-[10px] text-slate-500 ml-0.5">bpm</span>
+                  </span>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-slate-400">
+                  {{ item.cadence }} spm <span class="text-slate-600">/</span> {{ item.stride }} m
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium {{ item.hr_zone.bg_color }}">
+                    {{ item.hr_zone.name }}
+                  </span>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-center">
+                  <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br {{ item.rank_class }} font-bold text-xs shadow-sm">
+                    {{ item.rank }}
+                  </span>
+                  <span class="text-xs text-slate-400 ml-1 font-semibold">{{ item.total_score }}点</span>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-right">
+                  <button class="px-2.5 py-1 text-xs rounded-md bg-slate-800 text-slate-300 group-hover:bg-emerald-500 group-hover:text-white transition">
+                    分析を見る →
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-8 mt-16 text-center text-xs text-slate-500">
+    <p>Running Analytics Dashboard • Powered by Python & Tailwind CSS</p>
+    <p class="mt-1">Generated for GitHub Pages</p>
+  </footer>
+
+  <!-- Embedded Data & Client Scripts -->
+  <script>
+    const activities = {{ insights_json | safe }};
+    const chartData = {{ chart_data_json | safe }};
+
+    let radarChart = null;
+
+    // アクティビティ選択描画
+    function renderActivity(activityId) {
+      const act = activities.find(a => a.id === activityId) || activities[activities.length - 1];
+      const container = document.getElementById('insight-container');
+
+      // バッジHTML
+      const badgesHtml = act.badges.map(b => `
+        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 border border-slate-700 text-slate-200">
+          <span class="mr-1.5">${b.icon}</span> ${b.name}
+        </span>
+      `).join('');
+
+      // 前回比HTML
+      let prevDiffHtml = '';
+      if (act.prev_diff) {
+        const p = act.prev_diff;
+        prevDiffHtml = `
+          <div class="mt-2 text-xs flex flex-wrap items-center gap-2 text-slate-400">
+            <span class="text-slate-500">前回 (${p.date}) 比:</span>
+            <span class="font-medium ${p.pace_improved ? 'text-emerald-400' : 'text-rose-400'}">
+              ペース: ${p.pace_diff_str}
+            </span>
+            <span class="text-slate-600">•</span>
+            <span class="font-medium ${p.hr_diff <= 0 ? 'text-emerald-400' : 'text-amber-400'}">
+              心拍: ${p.hr_diff_str}
+            </span>
+          </div>
+        `;
+      }
+
+      // 良い点リスト
+      const goodsHtml = act.good_points.map(g => `
+        <li class="flex items-start text-xs sm:text-sm text-slate-300">
+          <span class="text-emerald-400 mr-2 flex-shrink-0">✓</span>
+          <span>${g}</span>
+        </li>
+      `).join('');
+
+      // 注意点リスト
+      const noticesHtml = act.notice_points.map(n => `
+        <li class="flex items-start text-xs sm:text-sm text-slate-300">
+          <span class="text-amber-400 mr-2 flex-shrink-0">!</span>
+          <span>${n}</span>
+        </li>
+      `).join('');
+
+      container.innerHTML = `
+        <!-- Top Metrics & Score Header -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- Left: Basic Stats & Badges -->
+          <div class="lg:col-span-8 space-y-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 font-mono font-medium">${act.date} ${act.time_of_day}</span>
+              <span class="text-xs px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 font-medium">${act.title}</span>
+              <span class="text-xs px-2.5 py-1 rounded-md ${act.hr_zone.bg_color} font-medium">${act.hr_zone.name} (${act.hr_zone.intensity})</span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+              <div>
+                <span class="text-[11px] text-slate-500 font-medium block">距離</span>
+                <span class="text-2xl font-black text-emerald-400 tracking-tight">${act.distance_km}</span>
+                <span class="text-xs text-slate-400">km</span>
+              </div>
+              <div>
+                <span class="text-[11px] text-slate-500 font-medium block">ペース</span>
+                <span class="text-2xl font-black text-white tracking-tight">${act.pace_str}</span>
+                <span class="text-xs text-slate-400">/km</span>
+              </div>
+              <div>
+                <span class="text-[11px] text-slate-500 font-medium block">平均 / 最大心拍</span>
+                <span class="text-2xl font-black text-rose-400 tracking-tight">${act.avg_hr}</span>
+                <span class="text-xs text-slate-400">/ ${act.max_hr}</span>
+              </div>
+              <div>
+                <span class="text-[11px] text-slate-500 font-medium block">ピッチ / 歩幅</span>
+                <span class="text-2xl font-black text-teal-400 tracking-tight">${act.cadence}</span>
+                <span class="text-xs text-slate-400">spm (${act.stride}m)</span>
+              </div>
+            </div>
+
+            ${prevDiffHtml}
+
+            <!-- Badges -->
+            ${badgesHtml ? `<div class="flex flex-wrap items-center gap-2 pt-1">${badgesHtml}</div>` : ''}
+
+            <!-- Summary Text -->
+            <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-xl text-xs sm:text-sm text-slate-300 leading-relaxed">
+              ${act.analysis_summary}
+            </div>
+          </div>
+
+          <!-- Right: Total Score & Radar Chart -->
+          <div class="lg:col-span-4 bg-slate-950/70 border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center">
+            <div class="flex items-center space-x-3 mb-2">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${act.rank_class} flex items-center justify-center font-black text-xl shadow-lg">
+                ${act.rank}
+              </div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Overall Score</div>
+                <div class="text-3xl font-black text-white">${act.total_score} <span class="text-xs font-normal text-slate-400">/ 100</span></div>
+              </div>
+            </div>
+
+            <div class="w-full max-w-[220px] h-[190px] relative mt-1">
+              <canvas id="radarChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Coaching Recommendations Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          
+          <!-- 1. 分析と評価ポイント -->
+          <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 md:col-span-1 space-y-3">
+            <div class="flex items-center space-x-2 text-xs font-bold text-slate-300 uppercase tracking-wider">
+              <span class="text-emerald-400">🔍</span>
+              <span>分析 & 評価ポイント</span>
+            </div>
+            
+            <ul class="space-y-2">
+              ${goodsHtml}
+              ${noticesHtml}
+            </ul>
+          </div>
+
+          <!-- 2. 次回のおすすめトレーニングメニュー -->
+          <div class="bg-gradient-to-br from-slate-900 to-emerald-950/30 border border-emerald-500/30 rounded-2xl p-4 md:col-span-1 space-y-2.5">
+            <div class="flex items-center space-x-2 text-xs font-bold text-emerald-400 uppercase tracking-wider">
+              <span>🎯</span>
+              <span>次回のおすすめメニュー</span>
+            </div>
+            <h4 class="text-sm font-bold text-white">${act.suggestion.menu_title}</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">${act.suggestion.menu_desc}</p>
+          </div>
+
+          <!-- 3. リカバリー & コンディショニング -->
+          <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 md:col-span-1 space-y-2.5">
+            <div class="flex items-center space-x-2 text-xs font-bold text-slate-300 uppercase tracking-wider">
+              <span class="text-indigo-400">🛌</span>
+              <span>リカバリー & ケア提案</span>
+            </div>
+            <div class="text-xs">
+              <span class="text-slate-400">推奨休息・回復時間:</span>
+              <span class="font-bold text-indigo-300 ml-1">${act.suggestion.recovery_hours}</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">${act.suggestion.recovery_tips}</p>
+          </div>
+
+        </div>
+      `;
+
+      // レーダーチャート更新
+      updateRadarChart(act.radar_scores);
+    }
+
+    function updateRadarChart(scores) {
+      const ctx = document.getElementById('radarChart');
+      if (!ctx) return;
+      if (radarChart) {
+        radarChart.destroy();
+      }
+
+      radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['スピード', '持久力', '心肺効率', 'フォーム'],
+          datasets: [{
+            label: 'スコア',
+            data: [scores.speed, scores.endurance, scores.aerobic, scores.form],
+            backgroundColor: 'rgba(16, 185, 129, 0.25)',
+            borderColor: '#10b981',
+            borderWidth: 2,
+            pointBackgroundColor: '#10b981',
+            pointBorderColor: '#ffffff',
+            pointRadius: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              min: 40,
+              max: 100,
+              ticks: { display: false, stepSize: 20 },
+              grid: { color: 'rgba(255, 255, 255, 0.08)' },
+              angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+              pointLabels: {
+                color: '#94a3b8',
+                font: { size: 10, weight: '500' }
+              }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    function selectActivity(id) {
+      document.getElementById('activity-select').value = id;
+      renderActivity(id);
+      const coachSection = document.getElementById('coach-section');
+      coachSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // セレクター変更監視
+    document.getElementById('activity-select').addEventListener('change', (e) => {
+      renderActivity(parseInt(e.target.value));
+    });
+
+    // 初期化：最新のランを表示
+    const latestId = activities[activities.length - 1].id;
+    document.getElementById('activity-select').value = latestId;
+    renderActivity(latestId);
+
+    // ==========================================
+    // トレンドチャート描画 (Chart.js)
+    // ==========================================
+
+    // 1. 月別走行距離 & 回数
+    new Chart(document.getElementById('monthlyChart'), {
+      type: 'bar',
+      data: {
+        labels: chartData.monthly_labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: '走行距離 (km)',
+            data: chartData.monthly_distances,
+            backgroundColor: '#10b981',
+            borderRadius: 6,
+            yAxisID: 'y'
+          },
+          {
+            type: 'line',
+            label: '出走回数',
+            data: chartData.monthly_runs,
+            borderColor: '#38bdf8',
+            backgroundColor: '#38bdf8',
+            tension: 0.3,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+          y: {
+            title: { display: true, text: 'km', color: '#94a3b8' },
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: { color: '#94a3b8' }
+          },
+          y1: {
+            position: 'right',
+            title: { display: true, text: '回', color: '#94a3b8' },
+            grid: { display: false },
+            ticks: { color: '#94a3b8', stepSize: 1 }
+          }
+        },
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+        }
+      }
+    });
+
+    // 2. ペース & 心拍数推移
+    new Chart(document.getElementById('paceHrChart'), {
+      type: 'line',
+      data: {
+        labels: chartData.dates,
+        datasets: [
+          {
+            label: '平均ペース (分/km)',
+            data: chartData.paces_min,
+            borderColor: '#34d399',
+            backgroundColor: 'rgba(52, 211, 153, 0.1)',
+            yAxisID: 'yPace',
+            tension: 0.2
+          },
+          {
+            label: '平均心拍 (bpm)',
+            data: chartData.avg_hrs,
+            borderColor: '#f43f5e',
+            backgroundColor: 'transparent',
+            borderDash: [4, 4],
+            yAxisID: 'yHr',
+            tension: 0.2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 7 } },
+          yPace: {
+            reverse: true, // ペースは小さいほど速いので反転
+            title: { display: true, text: 'ペース (分/km)', color: '#94a3b8' },
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: {
+              color: '#94a3b8',
+              callback: val => {
+                const min = Math.floor(val);
+                const sec = Math.round((val - min) * 60);
+                return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+              }
+            }
+          },
+          yHr: {
+            position: 'right',
+            title: { display: true, text: '心拍数 (bpm)', color: '#94a3b8' },
+            grid: { display: false },
+            ticks: { color: '#94a3b8' }
+          }
+        },
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+        }
+      }
+    });
+
+    // 3. 有酸素効率 散布図 (心拍数 vs ペース)
+    new Chart(document.getElementById('scatterChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: '各アクティビティ',
+          data: chartData.scatter_hr_pace,
+          backgroundColor: '#818cf8',
+          pointRadius: 6,
+          pointHoverRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            title: { display: true, text: 'ペース (分/km)', color: '#94a3b8' },
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: {
+              color: '#94a3b8',
+              callback: val => {
+                const min = Math.floor(val);
+                const sec = Math.round((val - min) * 60);
+                return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+              }
+            }
+          },
+          y: {
+            title: { display: true, text: '平均心拍数 (bpm)', color: '#94a3b8' },
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: { color: '#94a3b8' }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const p = ctx.raw;
+                const min = Math.floor(p.x);
+                const sec = Math.round((p.x - min) * 60);
+                return `${p.date}: ${p.dist}km | ${min}:${sec < 10 ? '0' : ''}${sec}/km | ${p.y} bpm`;
+              }
+            }
+          },
+          legend: { display: false }
+        }
+      }
+    });
+
+    // 4. ピッチ vs 歩幅
+    new Chart(document.getElementById('formChart'), {
+      type: 'line',
+      data: {
+        labels: chartData.dates,
+        datasets: [
+          {
+            label: '平均ピッチ (spm)',
+            data: chartData.cadences,
+            borderColor: '#2dd4bf',
+            backgroundColor: 'transparent',
+            yAxisID: 'yCadence',
+            tension: 0.2
+          },
+          {
+            label: '平均歩幅 (m)',
+            data: chartData.strides,
+            borderColor: '#c084fc',
+            backgroundColor: 'transparent',
+            yAxisID: 'yStride',
+            tension: 0.2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 7 } },
+          yCadence: {
+            title: { display: true, text: 'ピッチ (spm)', color: '#94a3b8' },
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: { color: '#94a3b8' }
+          },
+          yStride: {
+            position: 'right',
+            title: { display: true, text: '歩幅 (m)', color: '#94a3b8' },
+            grid: { display: false },
+            ticks: { color: '#94a3b8' }
+          }
+        },
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
