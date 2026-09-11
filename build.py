@@ -46,6 +46,12 @@ def build():
         reversed_insights=analytics_data["reversed_insights"],
         insights_json=json.dumps(analytics_data["insights"], ensure_ascii=False, default=json_default),
         chart_data_json=json.dumps(analytics_data["chart_data"], ensure_ascii=False, default=json_default),
+        personal_records=analytics_data["personal_records"],
+        race_predictions=analytics_data["race_predictions"],
+        weekly_workload=analytics_data["weekly_workload"],
+        weekly_workload_json=json.dumps(analytics_data["weekly_workload"], ensure_ascii=False, default=json_default),
+        form_evolution=analytics_data["form_evolution"],
+        form_evolution_json=json.dumps(analytics_data["form_evolution"], ensure_ascii=False, default=json_default),
     )
 
     output_html_path = docs_dir / "index.html"

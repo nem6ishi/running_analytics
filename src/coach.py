@@ -186,10 +186,13 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
                 "paces_str": fit_data["paces_str"],
                 "heart_rates": fit_data["heart_rates"],
                 "cadences": fit_data["cadences"],
+                "altitudes": fit_data.get("altitudes", []),
+                "coordinates": fit_data.get("coordinates", []),
+                "laps": fit_data.get("laps", []),
             }
         else:
             distance_series = generate_estimated_series(
-                dist, pace_sec, avg_hr, max_hr, cadence, row["max_cadence"]
+                dist, pace_sec, avg_hr, max_hr, cadence, row["max_cadence"], elevation
             )
 
         # 4. 時系列グラフの分析

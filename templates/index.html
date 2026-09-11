@@ -25,6 +25,9 @@
   </script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Leaflet CSS & JS (GPS Route Map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap');
     body {
@@ -59,6 +62,70 @@
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+    <!-- ========================================== -->
+    <!-- 🏆 Personal Records (自己ベスト殿堂) -->
+    <!-- ========================================== -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="text-base">🏆</span>
+          <h2 class="text-sm font-bold uppercase tracking-wider text-amber-400">Personal Records (自己ベスト殿堂)</h2>
+        </div>
+        <span class="text-xs text-slate-500">全{{ overview.total_runs }}走の中での最高記録</span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <!-- 最長走行距離 -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-indigo-500/20 rounded-2xl p-3.5 space-y-1 relative overflow-hidden group hover:border-indigo-500/40 transition">
+          <div class="flex items-center justify-between text-[11px] text-indigo-300 font-medium">
+            <span>🏃 最長走破距離</span>
+            <span class="text-indigo-400 font-mono text-[10px]">{{ personal_records.longest_dist.date }}</span>
+          </div>
+          <div class="text-2xl font-black text-white tracking-tight">{{ personal_records.longest_dist.val }}</div>
+          <div class="text-[11px] text-slate-400">タイム {{ personal_records.longest_dist.time }} ({{ personal_records.longest_dist.pace }}/km)</div>
+        </div>
+
+        <!-- 最速平均ペース -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/40 border border-emerald-500/20 rounded-2xl p-3.5 space-y-1 relative overflow-hidden group hover:border-emerald-500/40 transition">
+          <div class="flex items-center justify-between text-[11px] text-emerald-300 font-medium">
+            <span>⚡ 最速ペース</span>
+            <span class="text-emerald-400 font-mono text-[10px]">{{ personal_records.best_pace.date }}</span>
+          </div>
+          <div class="text-2xl font-black text-white tracking-tight">{{ personal_records.best_pace.val }}</div>
+          <div class="text-[11px] text-slate-400">距離 {{ personal_records.best_pace.dist }} (平均心拍 {{ personal_records.best_pace.hr }})</div>
+        </div>
+
+        <!-- 推定最速5km -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/40 border border-amber-500/20 rounded-2xl p-3.5 space-y-1 relative overflow-hidden group hover:border-amber-500/40 transition">
+          <div class="flex items-center justify-between text-[11px] text-amber-300 font-medium">
+            <span>⏱️ 最速5km換算</span>
+            <span class="text-amber-400 font-mono text-[10px]">{{ personal_records.best_5k.date }}</span>
+          </div>
+          <div class="text-2xl font-black text-white tracking-tight">{{ personal_records.best_5k.val }}</div>
+          <div class="text-[11px] text-slate-400">平均ペース {{ personal_records.best_5k.pace }}</div>
+        </div>
+
+        <!-- 最高有酸素効率 (AEI) -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/40 border border-cyan-500/20 rounded-2xl p-3.5 space-y-1 relative overflow-hidden group hover:border-cyan-500/40 transition">
+          <div class="flex items-center justify-between text-[11px] text-cyan-300 font-medium">
+            <span>💎 最高有酸素効率</span>
+            <span class="text-cyan-400 font-mono text-[10px]">{{ personal_records.best_aei.date }}</span>
+          </div>
+          <div class="text-2xl font-black text-white tracking-tight">{{ personal_records.best_aei.val }}</div>
+          <div class="text-[11px] text-slate-400">{{ personal_records.best_aei.pace }}/km • {{ personal_records.best_aei.hr }}</div>
+        </div>
+
+        <!-- 月間最多走行距離 -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-purple-950/40 border border-purple-500/20 rounded-2xl p-3.5 space-y-1 relative overflow-hidden group hover:border-purple-500/40 transition col-span-2 sm:col-span-1">
+          <div class="flex items-center justify-between text-[11px] text-purple-300 font-medium">
+            <span>📅 月間最多走行</span>
+            <span class="text-purple-400 font-mono text-[10px]">{{ personal_records.best_month.date }}</span>
+          </div>
+          <div class="text-2xl font-black text-white tracking-tight">{{ personal_records.best_month.val }}</div>
+          <div class="text-[11px] text-slate-400">歴代最高ボリューム達成月</div>
+        </div>
+      </div>
+    </section>
 
     <!-- KPI Overview Cards -->
     <section>
@@ -116,6 +183,89 @@
           <div class="text-[11px] text-slate-500 mt-1">総時間 {{ overview.total_time_str }}</div>
         </div>
       </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- 📊 レイヤー1: 総合フィットネス ＆ 負荷・コンディション管理 (Fitness & Fatigue) -->
+    <!-- ======================================================= -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- レース予想タイム (Race Predictor) -->
+      <div class="lg:col-span-6 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span class="text-base">🎯</span>
+              <h3 class="text-sm font-bold text-white tracking-tight">予想レースタイム (Race Predictor)</h3>
+            </div>
+            <span class="text-[11px] text-slate-400">リーゲル公式 × 直近ベスト走力</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">現在の心肺・走力レベルから算出した目標完走タイムの目安です</p>
+
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            {% for pred in race_predictions %}
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3.5 space-y-1">
+              <div class="flex items-center space-x-1.5 text-xs text-slate-400 font-medium">
+                <span>{{ pred.icon }}</span>
+                <span>{{ pred.name }}</span>
+              </div>
+              <div class="text-xl sm:text-2xl font-black text-white tracking-tight">{{ pred.time_str }}</div>
+              <div class="text-[11px] text-emerald-400 font-medium">平均 {{ pred.pace_str }}/km</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800/50 text-[11px] text-slate-400 leading-relaxed">
+          💡 <span class="text-slate-300 font-medium">アドバイス:</span> 長距離（ハーフ・フル）の達成には、月間走行距離と10km超の持続走（ロング走）の継続が鍵となります。
+        </div>
+      </div>
+
+      <!-- 週間走行負荷 ＆ 怪我予防ゲージ (Weekly Mileage & Safe Training) -->
+      <div class="lg:col-span-6 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-base">🛡️</span>
+            <h3 class="text-sm font-bold text-white tracking-tight">週間走行負荷 ＆ 怪我予防管理</h3>
+          </div>
+          <span class="text-xs px-2.5 py-0.5 rounded-full border {{ weekly_workload.status_badge }} font-medium">
+            {{ weekly_workload.status }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
+            <span class="text-[11px] text-slate-500 font-medium block">今週の走行</span>
+            <span class="text-lg sm:text-xl font-bold text-white">{{ weekly_workload.current_week_dist }}</span>
+            <span class="text-xs text-slate-400">km</span>
+          </div>
+          <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
+            <span class="text-[11px] text-slate-500 font-medium block">前週の走行</span>
+            <span class="text-lg sm:text-xl font-bold text-slate-300">{{ weekly_workload.prev_week_dist }}</span>
+            <span class="text-xs text-slate-400">km</span>
+          </div>
+          <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
+            <span class="text-[11px] text-slate-500 font-medium block">前週比負荷</span>
+            <span class="text-lg sm:text-xl font-bold {{ weekly_workload.status_color }}">{{ weekly_workload.ratio_pct }}%</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-300 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/60 leading-relaxed">
+          {{ weekly_workload.desc }}
+        </p>
+
+        <!-- 週間チャート -->
+        <div class="space-y-1 pt-1">
+          <div class="text-[11px] text-slate-400 flex justify-between">
+            <span>直近8週間の走行距離 (km)</span>
+            <span class="text-slate-500">緑: 今週 / 薄緑: 過去週</span>
+          </div>
+          <div class="h-28 relative">
+            <canvas id="weeklyWorkloadChart"></canvas>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <!-- Activity Insights & Coaching Section -->
@@ -202,16 +352,24 @@
 
     <!-- Activity Log Table -->
     <section class="space-y-4">
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">アクティビティ履歴一覧</h2>
           <p class="text-xs sm:text-sm text-slate-400">行をクリックすると上の「個別分析・評価・提案」にジャンプします</p>
+        </div>
+
+        <!-- 距離別フィルターボタン -->
+        <div class="flex items-center space-x-1.5 bg-slate-900 border border-slate-800 p-1 rounded-xl text-xs">
+          <button onclick="filterActivities('all')" id="filter-all" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-white font-medium transition">すべて</button>
+          <button onclick="filterActivities('short')" id="filter-short" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">5km未満</button>
+          <button onclick="filterActivities('mid')" id="filter-mid" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">5〜10km</button>
+          <button onclick="filterActivities('long')" id="filter-long" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">10km以上</button>
         </div>
       </div>
 
       <div class="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm">
+          <table class="w-full text-left text-xs sm:text-sm" id="activity-table">
             <thead class="bg-slate-800/60 text-slate-400 uppercase font-semibold text-[11px] border-b border-slate-800">
               <tr>
                 <th class="py-3.5 px-4">日付</th>
@@ -227,7 +385,7 @@
             </thead>
             <tbody class="divide-y divide-slate-800/50 text-slate-300">
               {% for item in reversed_insights %}
-              <tr class="hover:bg-slate-800/40 transition cursor-pointer group" onclick="selectActivity({{ item.id }})">
+              <tr class="activity-row hover:bg-slate-800/40 transition cursor-pointer group" data-dist="{{ item.distance_km }}" onclick="selectActivity({{ item.id }})">
                 <td class="py-3 px-4 font-medium text-white whitespace-nowrap">
                   {{ item.date }}
                   <span class="text-xs text-slate-500 block sm:inline sm:ml-1">{{ item.time_of_day }}</span>
@@ -286,10 +444,14 @@
     const activities = {{ insights_json | safe }};
     const chartData = {{ chart_data_json | safe }};
     const overview = {{ overview_json | safe }};
+    const weeklyWorkload = {{ weekly_workload_json | safe }};
+    const formEvolution = {{ form_evolution_json | safe }};
 
     let radarChart = null;
-    let benchmarkChart = null;
-    let rangeChart = null;
+    let routeMap = null;
+    let routePolyline = null;
+    let startMarker = null;
+    let endMarker = null;
 
     // アクティビティ選択描画
     function renderActivity(activityId) {
@@ -332,6 +494,66 @@
           <span>${h}</span>
         </li>
       `).join('');
+
+      // ラップスプリットHTML
+      const laps = (act.distance_series && act.distance_series.laps) ? act.distance_series.laps : [];
+      let lapsHtml = '';
+      if (laps.length > 0) {
+        const paceSecs = laps.map(l => l.pace_sec).filter(p => p > 0);
+        const minPace = Math.min(...paceSecs);
+        const maxPace = Math.max(...paceSecs);
+
+        lapsHtml = `
+          <div class="bg-slate-900/40 border border-slate-800/70 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-slate-300 flex items-center space-x-1.5">
+                <span>⏱️</span>
+                <span>1km ごとのラップスプリット詳細</span>
+              </span>
+              <span class="text-slate-400 text-[11px]">全 ${laps.length} ラップ</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="text-slate-400 border-b border-slate-800/80 text-[11px]">
+                    <th class="py-2 px-3">ラップ</th>
+                    <th class="py-2 px-3">距離</th>
+                    <th class="py-2 px-3">ペース</th>
+                    <th class="py-2 px-3">タイム</th>
+                    <th class="py-2 px-3">平均心拍</th>
+                    <th class="py-2 px-3">高低差</th>
+                    <th class="py-2 px-3 min-w-[100px]">相対ペース</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/40 text-slate-300">
+                  ${laps.map(l => {
+                    const isFastest = (l.pace_sec === minPace);
+                    const barWidth = maxPace > minPace ? Math.max(20, 100 - ((l.pace_sec - minPace) / (maxPace - minPace)) * 60) : 80;
+                    const barColor = isFastest ? 'bg-emerald-400' : 'bg-indigo-400';
+                    return `
+                      <tr class="hover:bg-slate-800/30 transition">
+                        <td class="py-2 px-3 font-semibold text-white whitespace-nowrap">Lap ${l.lap_index}</td>
+                        <td class="py-2 px-3 text-slate-400 whitespace-nowrap">${l.distance_km} km</td>
+                        <td class="py-2 px-3 font-mono font-bold whitespace-nowrap ${isFastest ? 'text-emerald-400' : 'text-slate-200'}">
+                          ${l.pace_str} /km ${isFastest ? '<span class="text-[9px] px-1 rounded bg-emerald-500/20 text-emerald-300 ml-1">最速</span>' : ''}
+                        </td>
+                        <td class="py-2 px-3 font-mono text-slate-300 whitespace-nowrap">${l.time_str}</td>
+                        <td class="py-2 px-3 text-rose-400 font-medium whitespace-nowrap">${l.avg_hr ? l.avg_hr + ' bpm' : '--'}</td>
+                        <td class="py-2 px-3 text-slate-400 text-[11px] whitespace-nowrap">+${l.ascent}m / -${l.descent}m</td>
+                        <td class="py-2 px-3">
+                          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div class="${barColor} h-full rounded-full transition-all duration-300" style="width: ${barWidth}%;"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
 
       // 心拍ゾーンメーターの位置計算 (120bpm〜195bpmの範囲を0%〜100%にマッピング)
       const hrMin = 120;
@@ -527,6 +749,32 @@
             </div>
           </div>
 
+          <!-- 1kmごとのラップスプリット詳細表 -->
+          ${lapsHtml}
+
+          <!-- GPS走行ルートマップ -->
+          <div class="bg-slate-900/40 border border-slate-800/70 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-slate-300 flex items-center space-x-1.5">
+                <span>🗺️</span>
+                <span>GPS 走行ルートマップ (OpenStreetMap)</span>
+              </span>
+              <span class="text-[11px] text-emerald-400 font-medium" id="map-status-label">
+                ${(act.distance_series && act.distance_series.coordinates && act.distance_series.coordinates.length > 0) ? '🟢 実測GPSログ描画' : '⚪ GPS座標未記録'}
+              </span>
+            </div>
+
+            <!-- Leaflet Map Container -->
+            <div id="route-map-wrapper" class="relative rounded-xl overflow-hidden border border-slate-800 h-64 sm:h-72 w-full bg-slate-950">
+              <div id="route-map" class="w-full h-full"></div>
+              <div id="no-gps-message" class="${(act.distance_series && act.distance_series.coordinates && act.distance_series.coordinates.length > 0) ? 'hidden' : ''} absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 text-slate-400 space-y-2 p-4 text-center">
+                <span class="text-3xl">📡</span>
+                <span class="text-xs font-semibold text-slate-300">GPS座標データがありません</span>
+                <p class="text-[11px] text-slate-500 max-w-sm">このアクティビティは Garmin FITファイル未配置のため推定表示です。Garmin Connectから「.fit」ファイルを data/ に追加すると実測走行ルートが表示されます。</p>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- ========================================== -->
@@ -566,9 +814,10 @@
         </div>
       `;
 
-      // グラフ群を描画・更新
+      // グラフ群・マップを描画・更新
       updateUnifiedChart(act);
       updateRadarChart(ev.radar_scores || { speed: 70, endurance: 70, aerobic: 70, form: 70 });
+      updateRouteMap(act.distance_series ? act.distance_series.coordinates : []);
     }
 
     let unifiedMetricChart = null;
@@ -586,53 +835,71 @@
         speeds_kmh: [act.speed_kmh, act.speed_kmh],
         heart_rates: [act.avg_hr, act.avg_hr],
         cadences: [act.cadence, act.cadence],
-        paces_str: [act.pace_str, act.pace_str]
+        paces_str: [act.pace_str, act.pace_str],
+        altitudes: [0, 0]
       };
 
       const labels = series.distances.map(d => d + ' km');
+
+      const datasets = [
+        {
+          label: '心拍数 (bpm)',
+          data: series.heart_rates,
+          borderColor: '#f43f5e',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          tension: 0.25,
+          pointRadius: series.distances.length > 50 ? 0 : 2,
+          pointHoverRadius: 5,
+          fill: false,
+          yAxisID: 'y'
+        },
+        {
+          label: 'ケイデンス (spm)',
+          data: series.cadences,
+          borderColor: '#2dd4bf',
+          backgroundColor: 'transparent',
+          borderWidth: 1.8,
+          borderDash: [2, 2],
+          tension: 0.25,
+          pointRadius: series.distances.length > 50 ? 0 : 2,
+          pointHoverRadius: 5,
+          yAxisID: 'y'
+        },
+        {
+          label: '速度 (km/h)',
+          data: series.speeds_kmh,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.08)',
+          borderWidth: 2,
+          tension: 0.25,
+          pointRadius: series.distances.length > 50 ? 0 : 2,
+          pointHoverRadius: 5,
+          fill: false,
+          yAxisID: 'y1'
+        }
+      ];
+
+      if (series.altitudes && series.altitudes.length > 0) {
+        datasets.push({
+          label: '標高 (m)',
+          data: series.altitudes,
+          borderColor: '#a855f7',
+          backgroundColor: 'rgba(168, 85, 247, 0.1)',
+          borderWidth: 1.5,
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          fill: true,
+          yAxisID: 'yAlt'
+        });
+      }
 
       unifiedMetricChart = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
-          datasets: [
-            {
-              label: '心拍数 (bpm)',
-              data: series.heart_rates,
-              borderColor: '#f43f5e',
-              backgroundColor: 'rgba(244, 63, 94, 0.08)',
-              borderWidth: 2,
-              tension: 0.25,
-              pointRadius: series.distances.length > 50 ? 0 : 2,
-              pointHoverRadius: 5,
-              fill: false,
-              yAxisID: 'y'
-            },
-            {
-              label: 'ケイデンス (spm)',
-              data: series.cadences,
-              borderColor: '#2dd4bf',
-              backgroundColor: 'transparent',
-              borderWidth: 1.8,
-              borderDash: [2, 2],
-              tension: 0.25,
-              pointRadius: series.distances.length > 50 ? 0 : 2,
-              pointHoverRadius: 5,
-              yAxisID: 'y'
-            },
-            {
-              label: '速度 (km/h)',
-              data: series.speeds_kmh,
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.08)',
-              borderWidth: 2,
-              tension: 0.25,
-              pointRadius: series.distances.length > 50 ? 0 : 2,
-              pointHoverRadius: 5,
-              fill: false,
-              yAxisID: 'y1'
-            }
-          ]
+          datasets: datasets
         },
         options: {
           responsive: true,
@@ -675,6 +942,11 @@
                 stepSize: 2,
                 callback: v => v + ' km/h'
               }
+            },
+            yAlt: {
+              position: 'right',
+              display: false, // グラフ内にスケール線を表示せず背景プロファイルとして配置
+              grid: { display: false }
             }
           },
           plugins: {
@@ -693,6 +965,9 @@
                     const paceStr = (series.paces_str && series.paces_str[idx]) ? series.paces_str[idx] : '--:--';
                     return `${label}: ${val} km/h (ペース: ${paceStr}/km)`;
                   }
+                  if (label.includes('標高')) {
+                    return `${label}: ${val} m`;
+                  }
                   return `${label}: ${val}`;
                 }
               }
@@ -700,6 +975,74 @@
           }
         }
       });
+    }
+
+    // ★GPS走行ルートマップ更新 (Leaflet)
+    function updateRouteMap(coordinates) {
+      const mapWrapper = document.getElementById('route-map-wrapper');
+      const noGpsMessage = document.getElementById('no-gps-message');
+      const mapStatus = document.getElementById('map-status-label');
+      if (!mapWrapper) return;
+
+      if (!coordinates || coordinates.length < 2) {
+        if (noGpsMessage) noGpsMessage.classList.remove('hidden');
+        if (mapStatus) mapStatus.textContent = '⚪ GPS座標未記録';
+        return;
+      }
+
+      if (noGpsMessage) noGpsMessage.classList.add('hidden');
+      if (mapStatus) mapStatus.textContent = `🟢 実測GPSログ (${coordinates.length}地点)`;
+
+      if (!routeMap) {
+        routeMap = L.map('route-map', { zoomControl: true, attributionControl: false });
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          maxZoom: 19,
+          subdomains: 'abcd',
+        }).addTo(routeMap);
+      }
+
+      if (routePolyline) {
+        routeMap.removeLayer(routePolyline);
+      }
+      if (startMarker) {
+        routeMap.removeLayer(startMarker);
+      }
+      if (endMarker) {
+        routeMap.removeLayer(endMarker);
+      }
+
+      // ルート線 (ネオングリーン)
+      routePolyline = L.polyline(coordinates, {
+        color: '#10b981',
+        weight: 5,
+        opacity: 0.9,
+        lineJoin: 'round'
+      }).addTo(routeMap);
+
+      // スタート・ゴールピン
+      const startPt = coordinates[0];
+      const endPt = coordinates[coordinates.length - 1];
+
+      startMarker = L.circleMarker(startPt, {
+        radius: 6,
+        color: '#ffffff',
+        fillColor: '#10b981',
+        fillOpacity: 1,
+        weight: 2
+      }).addTo(routeMap).bindPopup('スタート');
+
+      endMarker = L.circleMarker(endPt, {
+        radius: 6,
+        color: '#ffffff',
+        fillColor: '#f43f5e',
+        fillOpacity: 1,
+        weight: 2
+      }).addTo(routeMap).bindPopup('ゴール');
+
+      if (routePolyline && typeof routePolyline.getBounds === 'function') {
+        routeMap.fitBounds(routePolyline.getBounds(), { padding: [30, 30] });
+      }
+      setTimeout(() => { if (routeMap) routeMap.invalidateSize(); }, 300);
     }
 
     // 1. レーダーチャート更新
@@ -748,139 +1091,71 @@
       });
     }
 
-    // 2. ベンチマーク比較チャート更新 (全体平均=100%基準)
-    function updateBenchmarkChart(act) {
-      const ctx = document.getElementById('benchmarkChart');
-      if (!ctx) return;
-      if (benchmarkChart) {
-        benchmarkChart.destroy();
-      }
 
-      // 相対比率 (全体平均 = 100%)
-      // 速度比 (時速で計算、速いほど100%超)
-      const avgSpeed = 3600.0 / overview.avg_pace_sec;
-      const speedPct = (act.speed_kmh / avgSpeed) * 100.0;
-      const hrPct = (act.avg_hr / overview.avg_hr) * 100.0;
-      const cadencePct = (act.cadence / overview.avg_cadence) * 100.0;
-      const stridePct = (act.stride / overview.avg_stride_m) * 100.0;
 
-      benchmarkChart = new Chart(ctx, {
+    // 距離別フィルター機能
+    function filterActivities(type) {
+      const rows = document.querySelectorAll('.activity-row');
+      const buttons = ['all', 'short', 'mid', 'long'];
+      buttons.forEach(b => {
+        const btn = document.getElementById('filter-' + b);
+        if (btn) {
+          if (b === type) {
+            btn.className = 'px-3 py-1.5 rounded-lg bg-emerald-500 text-white font-medium transition';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
+          }
+        }
+      });
+
+      rows.forEach(row => {
+        const d = parseFloat(row.getAttribute('data-dist') || '0');
+        let show = true;
+        if (type === 'short') show = (d < 5.0);
+        else if (type === 'mid') show = (d >= 5.0 && d < 10.0);
+        else if (type === 'long') show = (d >= 10.0);
+        row.style.display = show ? '' : 'none';
+      });
+    }
+
+    // 週間走行負荷チャート描画
+    function initWeeklyWorkloadChart(data) {
+      const ctx = document.getElementById('weeklyWorkloadChart');
+      if (!ctx || !data) return;
+
+      const lastIdx = data.distances.length - 1;
+      const bgColors = data.distances.map((_, i) => i === lastIdx ? '#10b981' : 'rgba(52, 211, 153, 0.35)');
+
+      new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['速度(ペース)', '心拍数', 'ピッチ', '歩幅'],
+          labels: data.labels,
           datasets: [{
-            label: '全体平均比 (%)',
-            data: [speedPct.toFixed(1), hrPct.toFixed(1), cadencePct.toFixed(1), stridePct.toFixed(1)],
-            backgroundColor: [
-              speedPct >= 100 ? '#10b981' : '#f59e0b',
-              hrPct <= 100 ? '#10b981' : '#f43f5e',
-              cadencePct >= 100 ? '#2dd4bf' : '#94a3b8',
-              stridePct >= 100 ? '#c084fc' : '#94a3b8'
-            ],
-            borderRadius: 6
+            label: '週間距離',
+            data: data.distances,
+            backgroundColor: bgColors,
+            borderRadius: 4
           }]
         },
         options: {
-          indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          scales: {
-            x: {
-              min: 80,
-              max: 120,
-              grid: { color: 'rgba(255, 255, 255, 0.08)' },
-              ticks: {
-                color: '#94a3b8',
-                callback: v => v + '%'
-              }
-            },
-            y: {
-              grid: { display: false },
-              ticks: { color: '#cbd5e1', font: { size: 10 } }
-            }
-          },
           plugins: {
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: ctx => {
-                  const idx = ctx.dataIndex;
-                  if (idx === 0) return `今回: ${act.pace_str}/km (平均: ${overview.avg_pace_str}/km) - ${ctx.raw}%`;
-                  if (idx === 1) return `今回: ${act.avg_hr}bpm (平均: ${overview.avg_hr}bpm) - ${ctx.raw}%`;
-                  if (idx === 2) return `今回: ${act.cadence}spm (平均: ${overview.avg_cadence}spm) - ${ctx.raw}%`;
-                  if (idx === 3) return `今回: ${act.stride}m (平均: ${overview.avg_stride_m}m) - ${ctx.raw}%`;
-                  return `${ctx.raw}%`;
-                }
+                label: ctx => `${ctx.raw} km (${data.runs[ctx.dataIndex]}回)`
               }
             }
-          }
-        }
-      });
-    }
-
-    // 3. パフォーマンスレンジ比較 (平均 vs 最高)
-    function updateRangeChart(act) {
-      const ctx = document.getElementById('rangeChart');
-      if (!ctx) return;
-      if (rangeChart) {
-        rangeChart.destroy();
-      }
-
-      const maxSpeedKmh = act.max_pace_sec > 0 ? (3600.0 / act.max_pace_sec) : act.speed_kmh;
-
-      rangeChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['心拍数(bpm)', 'ピッチ(spm)', '時速(km/h)'],
-          datasets: [
-            {
-              label: '平均値',
-              data: [act.avg_hr, act.cadence, act.speed_kmh],
-              backgroundColor: '#38bdf8',
-              borderRadius: 6
-            },
-            {
-              label: '最高値',
-              data: [act.max_hr, act.max_cadence, maxSpeedKmh.toFixed(1)],
-              backgroundColor: '#a855f7',
-              borderRadius: 6
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          },
           scales: {
             x: {
               grid: { display: false },
-              ticks: { color: '#cbd5e1', font: { size: 10 } }
+              ticks: { color: '#94a3b8', font: { size: 9 } }
             },
             y: {
-              grid: { color: 'rgba(255, 255, 255, 0.08)' },
-              ticks: { color: '#94a3b8' }
-            }
-          },
-          plugins: {
-            legend: {
-              position: 'top',
-              labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 12 }
-            },
-            tooltip: {
-              callbacks: {
-                label: ctx => {
-                  const datasetLabel = ctx.dataset.label;
-                  const idx = ctx.dataIndex;
-                  if (idx === 0) return `${datasetLabel}: ${ctx.raw} bpm`;
-                  if (idx === 1) return `${datasetLabel}: ${ctx.raw} spm`;
-                  if (idx === 2) {
-                    const pace = 3600 / ctx.raw;
-                    const min = Math.floor(pace / 60);
-                    const sec = Math.round(pace % 60);
-                    return `${datasetLabel}: ${ctx.raw} km/h (${min}:${sec < 10 ? '0' : ''}${sec}/km)`;
-                  }
-                  return `${datasetLabel}: ${ctx.raw}`;
-                }
-              }
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#64748b', font: { size: 9 }, callback: v => v + 'km' }
             }
           }
         }
@@ -903,6 +1178,7 @@
     const latestId = activities[activities.length - 1].id;
     document.getElementById('activity-select').value = latestId;
     renderActivity(latestId);
+    initWeeklyWorkloadChart(weeklyWorkload);
 
     // ==========================================
     // トレンドチャート描画 (Chart.js)
