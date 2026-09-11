@@ -1221,51 +1221,77 @@
 
         </div>
 
-        <!-- NEW: Activity Performance Graphs (3 Charts Grid) -->
-        <div class="pt-2">
-          <div class="flex items-center justify-between mb-3">
+        <!-- Activity Performance Graphs: 速度・心拍数・ケイデンス統合グラフ -->
+        <div class="pt-2 space-y-4">
+          <div class="flex items-center justify-between">
             <h3 class="text-sm font-bold text-white flex items-center space-x-2">
               <span class="text-emerald-400">📊</span>
               <span>このランのパフォーマンス詳細グラフ</span>
             </h3>
-            <span class="text-[11px] text-slate-400">選択中アクティビティの固有メトリクス</span>
+            <span class="text-[11px] text-slate-400">速度・心拍数・ケイデンス統合可視化</span>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Graph 1: 総合バランス (レーダーチャート) -->
-            <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 flex flex-col items-center">
-              <div class="w-full flex items-center justify-between mb-1">
-                <span class="text-xs font-semibold text-slate-300">総合バランス</span>
-                <span class="text-[10px] text-slate-500">4項目評価</span>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            
+            <!-- ★メイン: 速度・心拍数・ケイデンス 統合グラフ (8カラム幅広) -->
+            <div class="lg:col-span-8 bg-slate-950/60 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                <div>
+                  <span class="text-xs sm:text-sm font-bold text-white flex items-center space-x-1.5">
+                    <span>🏃</span>
+                    <span>速度・心拍数・ケイデンス 統合パフォーマンス</span>
+                  </span>
+                  <p class="text-[11px] text-slate-400">このランの3大主要指標（平均値 & 最高スパート値）を1つのグラフで比較</p>
+                </div>
+                <div class="flex items-center space-x-2 text-[10px] text-slate-400">
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1"></span>心拍(bpm)</span>
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-teal-400 mr-1"></span>ケイデンス(spm)</span>
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>速度(km/h)</span>
+                </div>
               </div>
-              <div class="w-full h-48 relative">
+
+              <div class="w-full h-56 sm:h-64 relative">
+                <canvas id="unifiedMetricChart"></canvas>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2 pt-3 mt-2 border-t border-slate-800/80 text-center text-xs">
+                <div class="bg-slate-900/60 p-2 rounded-xl border border-slate-800/60">
+                  <span class="text-[10px] text-slate-500 block">心拍数 (平均/最大)</span>
+                  <span class="font-bold text-rose-400">${act.avg_hr}</span> <span class="text-slate-500">/</span> <span class="font-bold text-rose-300">${act.max_hr} bpm</span>
+                </div>
+                <div class="bg-slate-900/60 p-2 rounded-xl border border-slate-800/60">
+                  <span class="text-[10px] text-slate-500 block">ケイデンス (平均/最高)</span>
+                  <span class="font-bold text-teal-400">${act.cadence}</span> <span class="text-slate-500">/</span> <span class="font-bold text-teal-300">${act.max_cadence} spm</span>
+                </div>
+                <div class="bg-slate-900/60 p-2 rounded-xl border border-slate-800/60">
+                  <span class="text-[10px] text-slate-500 block">速度・ペース (平均/最高)</span>
+                  <span class="font-bold text-emerald-400">${act.speed_kmh}</span> <span class="text-slate-500">/</span> <span class="font-bold text-emerald-300">${(act.max_pace_sec > 0 ? (3600.0 / act.max_pace_sec).toFixed(1) : act.speed_kmh)} km/h</span>
+                  <div class="text-[10px] text-slate-400">${act.pace_str} / ${act.max_pace_str}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- サブ: 総合バランス (レーダーチャート 4カラム) -->
+            <div class="lg:col-span-4 bg-slate-950/60 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs sm:text-sm font-bold text-white flex items-center space-x-1.5">
+                  <span>⚖️</span>
+                  <span>総合バランス評価</span>
+                </span>
+                <span class="text-[10px] text-slate-500">4項目レーダー</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mb-1">スピード・持久・心肺・フォームの調和</p>
+              
+              <div class="w-full h-56 relative flex items-center justify-center">
                 <canvas id="radarChart"></canvas>
               </div>
-            </div>
 
-            <!-- Graph 2: 今回 vs 全体平均 ベンチマーク比較 (バーチャート) -->
-            <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 flex flex-col">
-              <div class="w-full flex items-center justify-between mb-1">
-                <span class="text-xs font-semibold text-slate-300">今回 vs 全体平均</span>
-                <span class="text-[10px] text-emerald-400">ベンチマーク比</span>
-              </div>
-              <p class="text-[11px] text-slate-500 mb-1">全体平均を100%とした時の相対値 (%)</p>
-              <div class="w-full h-44 relative">
-                <canvas id="benchmarkChart"></canvas>
+              <!-- 全体平均ベンチマーク簡易バッジ -->
+              <div class="pt-2 border-t border-slate-800/80 text-center">
+                <span class="text-[11px] text-slate-400">全体平均比: 速度 <b class="${act.speed_kmh >= (3600/overview.avg_pace_sec) ? 'text-emerald-400' : 'text-amber-400'}">${((act.speed_kmh / (3600/overview.avg_pace_sec))*100).toFixed(0)}%</b> • 心拍 <b class="${act.avg_hr <= overview.avg_hr ? 'text-emerald-400' : 'text-rose-400'}">${((act.avg_hr / overview.avg_hr)*100).toFixed(0)}%</b> • ピッチ <b class="text-teal-400">${((act.cadence / overview.avg_cadence)*100).toFixed(0)}%</b></span>
               </div>
             </div>
 
-            <!-- Graph 3: パフォーマンスレンジ (平均 vs 最高) -->
-            <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 flex flex-col">
-              <div class="w-full flex items-center justify-between mb-1">
-                <span class="text-xs font-semibold text-slate-300">平均値 vs 最高値</span>
-                <span class="text-[10px] text-purple-400">出力レンジ</span>
-              </div>
-              <p class="text-[11px] text-slate-500 mb-1">心拍数(bpm) / ピッチ(spm) / 時速(km/h)</p>
-              <div class="w-full h-44 relative">
-                <canvas id="rangeChart"></canvas>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1358,9 +1384,107 @@
       `;
 
       // グラフ群を描画・更新
+      updateUnifiedChart(act);
       updateRadarChart(act.radar_scores);
-      updateBenchmarkChart(act);
-      updateRangeChart(act);
+    }
+
+    let unifiedMetricChart = null;
+
+    // ★速度・心拍数・ケイデンス 統合グラフ更新
+    function updateUnifiedChart(act) {
+      const ctx = document.getElementById('unifiedMetricChart');
+      if (!ctx) return;
+      if (unifiedMetricChart) {
+        unifiedMetricChart.destroy();
+      }
+
+      const maxSpeedKmh = act.max_pace_sec > 0 ? parseFloat((3600.0 / act.max_pace_sec).toFixed(1)) : act.speed_kmh;
+
+      unifiedMetricChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['平均値 (Avg)', '最高値 (Peak / Sprint)'],
+          datasets: [
+            {
+              label: '心拍数 (bpm)',
+              data: [act.avg_hr, act.max_hr],
+              backgroundColor: 'rgba(244, 63, 94, 0.85)',
+              borderColor: '#f43f5e',
+              borderWidth: 1.5,
+              borderRadius: 8,
+              yAxisID: 'y'
+            },
+            {
+              label: 'ケイデンス (spm)',
+              data: [act.cadence, act.max_cadence],
+              backgroundColor: 'rgba(45, 212, 191, 0.85)',
+              borderColor: '#2dd4bf',
+              borderWidth: 1.5,
+              borderRadius: 8,
+              yAxisID: 'y'
+            },
+            {
+              label: '速度 (km/h)',
+              data: [act.speed_kmh, maxSpeedKmh],
+              backgroundColor: 'rgba(52, 211, 153, 0.85)',
+              borderColor: '#34d399',
+              borderWidth: 1.5,
+              borderRadius: 8,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#f8fafc', font: { size: 12, weight: '600' } }
+            },
+            y: {
+              position: 'left',
+              title: { display: true, text: '心拍数(bpm) / ケイデンス(spm)', color: '#94a3b8', font: { size: 10 } },
+              min: 0,
+              max: 220,
+              grid: { color: 'rgba(255, 255, 255, 0.08)' },
+              ticks: { color: '#94a3b8', stepSize: 50 }
+            },
+            y1: {
+              position: 'right',
+              title: { display: true, text: '走行速度 (km/h)', color: '#34d399', font: { size: 10 } },
+              min: 0,
+              max: 22,
+              grid: { display: false },
+              ticks: {
+                color: '#34d399',
+                callback: v => v + ' km/h'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#cbd5e1', font: { size: 11, weight: '500' }, boxWidth: 14 }
+            },
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  const label = ctx.dataset.label;
+                  const val = ctx.raw;
+                  if (label.includes('速度')) {
+                    const pace = 3600 / val;
+                    const min = Math.floor(pace / 60);
+                    const sec = Math.round(pace % 60);
+                    return `${label}: ${val} km/h (ペース: ${min}:${sec < 10 ? '0' : ''}${sec}/km)`;
+                  }
+                  return `${label}: ${val}`;
+                }
+              }
+            }
+          }
+        }
+      });
     }
 
     // 1. レーダーチャート更新
