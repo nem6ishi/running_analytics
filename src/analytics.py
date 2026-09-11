@@ -29,6 +29,11 @@ def compute_overview_stats(df: pd.DataFrame) -> Dict[str, Any]:
     aei_series = (speed_kmh / df["avg_hr"]) * 100.0
     avg_aei = aei_series.mean()
 
+    # 期間 (YYYY.MM - YYYY.MM)
+    start_date = df["datetime"].min().strftime("%Y.%m")
+    end_date = df["datetime"].max().strftime("%Y.%m")
+    date_range = f"{start_date} - {end_date}"
+
     return {
         "total_distance_km": round(total_dist, 1),
         "total_runs": total_runs,
@@ -43,6 +48,7 @@ def compute_overview_stats(df: pd.DataFrame) -> Dict[str, Any]:
         "avg_aei": round(avg_aei, 2),
         "best_pace_str": seconds_to_pace_str(best_pace_sec),
         "max_dist_km": round(max_dist, 2),
+        "date_range": date_range,
     }
 
 
