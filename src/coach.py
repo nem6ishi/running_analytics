@@ -238,6 +238,8 @@ def calculate_activity_insights(df: pd.DataFrame) -> List[Dict[str, Any]]:
             "duration_sec": duration_sec,
             "pace_str": pace_str,
             "pace_sec": pace_sec,
+            "max_pace_str": seconds_to_pace_str(row["max_pace_sec"]),
+            "max_pace_sec": row["max_pace_sec"],
             "avg_hr": avg_hr,
             "max_hr": max_hr,
             "hr_zone": hr_zone,

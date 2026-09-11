@@ -35,6 +35,7 @@ def build():
 
     rendered_html = template.render(
         overview=analytics_data["overview"],
+        overview_json=json.dumps(analytics_data["overview"], ensure_ascii=False, default=json_default),
         monthly=analytics_data["monthly"],
         reversed_insights=analytics_data["reversed_insights"],
         insights_json=json.dumps(analytics_data["insights"], ensure_ascii=False, default=json_default),

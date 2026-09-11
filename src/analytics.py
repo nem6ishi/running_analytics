@@ -24,6 +24,11 @@ def compute_overview_stats(df: pd.DataFrame) -> Dict[str, Any]:
     minutes = (total_sec % 3600) // 60
     total_time_str = f"{hours}時間{minutes}分"
 
+    # 有酸素効率 (速度 / 心拍数 * 100)
+    speed_kmh = 3600.0 / df["avg_pace_sec"]
+    aei_series = (speed_kmh / df["avg_hr"]) * 100.0
+    avg_aei = aei_series.mean()
+
     return {
         "total_distance_km": round(total_dist, 1),
         "total_runs": total_runs,
@@ -31,9 +36,11 @@ def compute_overview_stats(df: pd.DataFrame) -> Dict[str, Any]:
         "total_calories": f"{total_cal:,}",
         "avg_pace_str": seconds_to_pace_str(avg_pace_sec),
         "avg_pace_sec": round(avg_pace_sec, 1),
+        "avg_pace_min": round(avg_pace_sec / 60.0, 2),
         "avg_hr": round(avg_hr),
         "avg_cadence": round(avg_cadence),
         "avg_stride_m": round(avg_stride, 2),
+        "avg_aei": round(avg_aei, 2),
         "best_pace_str": seconds_to_pace_str(best_pace_sec),
         "max_dist_km": round(max_dist, 2),
     }
