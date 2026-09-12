@@ -16,7 +16,6 @@ def parse_fit_file(fit_path: Path) -> Optional[Dict[str, Any]]:
 
     records = []
     start_time_jst = None
-    coords_raw = []
 
     for record in fitfile.get_messages("record"):
         values = record.get_values()
@@ -47,13 +46,7 @@ def parse_fit_file(fit_path: Path) -> Optional[Dict[str, Any]]:
         # 標高
         altitude = values.get("enhanced_altitude") or values.get("altitude") or 0.0
 
-        # GPS座標 (semicircles -> degrees)
-        lat = values.get("position_lat")
-        lon = values.get("position_long")
-        if lat is not None and lon is not None:
-            deg_lat = lat * (180.0 / (2**31))
-            deg_lon = lon * (180.0 / (2**31))
-            coords_raw.append([round(deg_lat, 6), round(deg_lon, 6)])
+        # GPS座標は抽出しない（地図非掲載ルールおよびプライバシー保護）
 
         records.append({
             "distance_km": round(distance / 1000.0, 2),
@@ -111,14 +104,6 @@ def parse_fit_file(fit_path: Path) -> Optional[Dict[str, Any]]:
     else:
         df_sampled = df_rec
 
-    # GPS座標の間引き (最大80点程度)
-    coords_sampled = []
-    if coords_raw:
-        c_step = max(1, len(coords_raw) // 80)
-        coords_sampled = coords_raw[::c_step]
-        if coords_raw[-1] != coords_sampled[-1]:
-            coords_sampled.append(coords_raw[-1])
-
     date_key = start_time_jst.strftime("%Y-%m-%d %H:%M:%S")
 
     return {
@@ -131,7 +116,7 @@ def parse_fit_file(fit_path: Path) -> Optional[Dict[str, Any]]:
         "cadences": df_sampled["cadence"].tolist(),
         "altitudes": df_sampled["altitude"].tolist(),
         "total_points": len(df_sampled),
-        "coordinates": coords_sampled,
+        "coordinates": [],
         "laps": laps,
     }
 

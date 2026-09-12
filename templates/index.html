@@ -25,9 +25,6 @@
   </script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Leaflet CSS & JS (GPS Route Map) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap');
     body {
@@ -455,10 +452,6 @@
     const formEvolution = {{ form_evolution_json | safe }};
 
     let radarChart = null;
-    let routeMap = null;
-    let routePolyline = null;
-    let startMarker = null;
-    let endMarker = null;
 
     // アクティビティ選択描画
     function renderActivity(activityId) {
@@ -719,29 +712,6 @@
           <!-- 1kmごとのラップスプリット詳細表 -->
           ${lapsHtml}
 
-          <!-- GPS走行ルートマップ -->
-          <div class="bg-slate-900/40 border border-slate-800/70 rounded-2xl p-4 space-y-3">
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-bold text-slate-300 flex items-center space-x-1.5">
-                <span>🗺️</span>
-                <span>GPS 走行ルートマップ (OpenStreetMap)</span>
-              </span>
-              <span class="text-[11px] text-emerald-400 font-medium" id="map-status-label">
-                ${(act.distance_series && act.distance_series.coordinates && act.distance_series.coordinates.length > 0) ? '🟢 実測GPSログ描画' : '⚪ GPS座標未記録'}
-              </span>
-            </div>
-
-            <!-- Leaflet Map Container -->
-            <div id="route-map-wrapper" class="relative rounded-xl overflow-hidden border border-slate-800 h-64 sm:h-72 w-full bg-slate-950">
-              <div id="route-map" class="w-full h-full"></div>
-              <div id="no-gps-message" class="${(act.distance_series && act.distance_series.coordinates && act.distance_series.coordinates.length > 0) ? 'hidden' : ''} absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 text-slate-400 space-y-2 p-4 text-center">
-                <span class="text-3xl">📡</span>
-                <span class="text-xs font-semibold text-slate-300">GPS座標データがありません</span>
-                <p class="text-[11px] text-slate-500 max-w-sm">このアクティビティは Garmin FITファイル未配置のため推定表示です。Garmin Connectから「.fit」ファイルを data/ に追加すると実測走行ルートが表示されます。</p>
-              </div>
-            </div>
-          </div>
-
           <!-- 心拍ゾーン負荷メーター -->
           <div class="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-4 space-y-2">
             <div class="flex items-center justify-between text-xs">
@@ -893,10 +863,9 @@
         </div>
       `;
 
-      // グラフ群・マップを描画・更新
+      // グラフ群を描画・更新
       updateUnifiedChart(act);
       updateRadarChart(ev.radar_scores || { speed: 70, endurance: 70, aerobic: 70, form: 70 });
-      updateRouteMap(act.distance_series ? act.distance_series.coordinates : []);
     }
 
     let unifiedMetricChart = null;
@@ -1054,74 +1023,6 @@
           }
         }
       });
-    }
-
-    // ★GPS走行ルートマップ更新 (Leaflet)
-    function updateRouteMap(coordinates) {
-      const mapWrapper = document.getElementById('route-map-wrapper');
-      const noGpsMessage = document.getElementById('no-gps-message');
-      const mapStatus = document.getElementById('map-status-label');
-      if (!mapWrapper) return;
-
-      if (!coordinates || coordinates.length < 2) {
-        if (noGpsMessage) noGpsMessage.classList.remove('hidden');
-        if (mapStatus) mapStatus.textContent = '⚪ GPS座標未記録';
-        return;
-      }
-
-      if (noGpsMessage) noGpsMessage.classList.add('hidden');
-      if (mapStatus) mapStatus.textContent = `🟢 実測GPSログ (${coordinates.length}地点)`;
-
-      if (!routeMap) {
-        routeMap = L.map('route-map', { zoomControl: true, attributionControl: false });
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          maxZoom: 19,
-          subdomains: 'abcd',
-        }).addTo(routeMap);
-      }
-
-      if (routePolyline) {
-        routeMap.removeLayer(routePolyline);
-      }
-      if (startMarker) {
-        routeMap.removeLayer(startMarker);
-      }
-      if (endMarker) {
-        routeMap.removeLayer(endMarker);
-      }
-
-      // ルート線 (ネオングリーン)
-      routePolyline = L.polyline(coordinates, {
-        color: '#10b981',
-        weight: 5,
-        opacity: 0.9,
-        lineJoin: 'round'
-      }).addTo(routeMap);
-
-      // スタート・ゴールピン
-      const startPt = coordinates[0];
-      const endPt = coordinates[coordinates.length - 1];
-
-      startMarker = L.circleMarker(startPt, {
-        radius: 6,
-        color: '#ffffff',
-        fillColor: '#10b981',
-        fillOpacity: 1,
-        weight: 2
-      }).addTo(routeMap).bindPopup('スタート');
-
-      endMarker = L.circleMarker(endPt, {
-        radius: 6,
-        color: '#ffffff',
-        fillColor: '#f43f5e',
-        fillOpacity: 1,
-        weight: 2
-      }).addTo(routeMap).bindPopup('ゴール');
-
-      if (routePolyline && typeof routePolyline.getBounds === 'function') {
-        routeMap.fitBounds(routePolyline.getBounds(), { padding: [30, 30] });
-      }
-      setTimeout(() => { if (routeMap) routeMap.invalidateSize(); }, 300);
     }
 
     // 1. レーダーチャート更新
