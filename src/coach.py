@@ -389,49 +389,15 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
         series_analysis = analyze_time_series(distance_series, dist)
         workout_structure = detect_workout_structure(distance_series.get("laps", []), dist, pace_sec, avg_hr)
 
-        # 5. 分析結果を踏まえた多角評価スコア (0-100) & 判定
-        # スピードスコア: 変化走の場合は疾走区間のペースを主軸に評価
-        if workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec"):
-            eval_speed_pace = workout_structure["best_fast_pace_sec"]
-            speed_score = max(60.0, min(100.0, 100.0 - (eval_speed_pace - 270) * 0.45))
-        else:
-            speed_score = max(50.0, min(100.0, 100.0 - (pace_sec - 300) * 0.4))
-
-        endurance_score = max(50.0, min(100.0, 50.0 + (dist * 4.8)))
-        cadence_diff = abs(cadence - 176)
-        form_score = max(60.0, min(100.0, 100.0 - (cadence_diff * 4.0)))
-        aerobic_score = max(50.0, min(100.0, 50.0 + (aei - 5.0) * 28.0))
-
-        # 変化走でメリハリ（ペース差40秒以上）がついている場合、緩急コントロールの加点
-        if workout_structure.get("is_interval") and workout_structure.get("pace_contrast_sec", 0) >= 40:
-            form_score = min(100.0, form_score + 5.0)
-
-        total_score = round(
-            speed_score * 0.3 + endurance_score * 0.25 + aerobic_score * 0.25 + form_score * 0.2
-        )
-        total_score = max(55, min(99, total_score))
-
-        if total_score >= 90:
-            rank = "S"
-            rank_class = "from-amber-400 to-yellow-500 text-slate-900"
-        elif total_score >= 80:
-            rank = "A"
-            rank_class = "from-indigo-500 to-purple-600 text-white"
-        elif total_score >= 70:
-            rank = "B"
-            rank_class = "from-teal-500 to-emerald-600 text-white"
-        else:
-            rank = "C"
-            rank_class = "from-slate-500 to-gray-600 text-white"
-
+        # 5. 分析結果を踏まえた多角評価（点数・レーダーを廃止し、3つの柱＋総括へ刷新）
         # バッジ付与
         badges = []
         if pace_sec <= best_pace_sec + 3 or (workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) <= best_pace_sec):
-            badges.append({"name": "最速ペース", "icon": "⚡", "type": "gold"})
+            badges.append({"name": "最速ペース更新", "icon": "⚡", "type": "gold"})
         if dist >= longest_dist - 0.1:
             badges.append({"name": "最長走破", "icon": "🏃", "type": "indigo"})
-        if cadence >= 175:
-            badges.append({"name": "理想ピッチ (175spm+)", "icon": "🎯", "type": "teal"})
+        if cadence >= 174:
+            badges.append({"name": f"理想ピッチ ({cadence}spm)", "icon": "🎯", "type": "teal"})
         if avg_hr >= 174 or max_hr >= 185:
             badges.append({"name": "高負荷LT・VO2max刺激", "icon": "🔥", "type": "orange"})
         if aei >= 6.4:
@@ -455,32 +421,86 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
                 "dist_diff": float(round(p_dist_diff, 2)),
             }
 
-        # 分析結果を踏まえた「総合評価・達成度判定テキスト (conclusion)」
+        # --- 評価の3本柱（Pillars）と総括（Overall Summary）の生成 ---
+
+        # 1. セッション総合総括 (Overall Summary)
         if workout_structure.get("is_interval"):
             fast_c = workout_structure.get("fast_count", 2)
             best_f_str = seconds_to_pace_str(workout_structure.get("best_fast_pace_sec", pace_sec))
             contrast_sec = int(round(workout_structure.get("pace_contrast_sec", 60)))
-            eval_conclusion = (
-                f"分析結果の通り、入念なアップから **1km疾走×{fast_c}本（最速 {best_f_str}/km）** へのギアチェンジが極めて鮮やかでした。"
-                f"疾走とつなぎの間で約 **{contrast_sec}秒/km** の明確な緩急差をコントロールできており、レース本番の揺さぶりやスパートに耐える心肺・脚力が高いレベルで発揮されています。"
+            overall_summary = (
+                f"変化走としての狙いを完璧に完遂。2本目の疾走を本日最速（**{best_f_str}/km**）で締めくくる"
+                f"理想的な余力配分と、最大心拍 **{max_hr} bpm** への強力な心肺刺激を達成した質の高いセッションです。"
             )
         elif workout_structure.get("type") == "ビルドアップ走":
-            eval_conclusion = (
-                "分析結果の通り、前半から後半にかけて段階的にペースを引き上げるビルドアップを完遂。"
-                "余力を残しながら終盤に追い込む理想的なペース配分ができています。"
+            overall_summary = (
+                "前半の巡航から後半にかけて段階的にペースを引き上げるビルドアップを完遂。"
+                "終盤までペースを崩さず、力強いスパートで締めくくる理想的な余力管理を達成しました。"
+            )
+        elif dist >= 8.0:
+            overall_summary = (
+                f"**{dist:.1f}km** の距離を平均 **{pace_str}/km** の安定したペースで走り切りました。"
+                "脚筋力・持久力の確実なベース構築と有酸素エコノミーの向上が得られています。"
             )
         else:
-            eval_conclusion = (
-                f"分析結果の通り、全区間を通してペースのブレが小さく、一定のピッチ（{cadence}spm）と有酸素リズムを保って走り切った安定度の高い巡航走です。"
+            overall_summary = (
+                f"全区間を通してペース・ピッチのブレが極めて小さく、"
+                f"一定の有酸素リズム（平均心拍 **{avg_hr} bpm**）を維持した安定度の高いトレーニングです。"
             )
 
-        # 評価ポイントリスト
-        eval_highlights = [
-            f"総合判定 **{rank}ランク（{total_score}点）**。{eval_conclusion}",
-            f"ピッチ **{cadence} spm** / 歩幅 **{stride:.2f} m** で、{('安定した効率的リズム' if cadence >= 172 else 'ストライド重視のダイナミックなフォーム')}を維持。",
+        # 2. 柱A: トレーニング狙いの達成度 (Workout Execution)
+        if workout_structure.get("is_interval"):
+            fast_c = workout_structure.get("fast_count", 2)
+            best_f_str = seconds_to_pace_str(workout_structure.get("best_fast_pace_sec", pace_sec))
+            execution_title = "トレーニング狙いの達成度"
+            execution_points = [
+                "**アップの自制**: 最初のウォーミングアップ区間を無理のないペースで入り、心拍を160台で徐々に高めて急加速に耐える身体を万全に準備。",
+                f"**疾走のキレと余力管理**: 1本目から2本目（最速 **{best_f_str}/km**）へとさらに一段ペースを引き上げ、最後まで失速せず追い込みを完遂。",
+                f"**つなぎのメリハリ**: 疾走の合間に意図的にペースを落とし、呼吸と心拍を整える緩急差（約 **{int(round(workout_structure.get('pace_contrast_sec', 60)))}秒/km**）をコントロール。",
+            ]
+        elif workout_structure.get("type") == "ビルドアップ走":
+            execution_title = "ペース配分とビルドアップ達成度"
+            execution_points = [
+                "**前半のコントロール**: スタートから冷静に抑えめのペースを保ち、後半へのエネルギーを温存。",
+                "**後半の加速**: 中盤以降に段階的にギアを上げ、ネガティブスプリット（後半加速）を達成。",
+                "**ラストスパート**: 終盤もフォームを崩さず、最も速いペースでゴールへ到達。",
+            ]
+        else:
+            execution_title = "ペース維持と巡航精度"
+            execution_points = [
+                f"**イーブンペース巡航**: 設定した巡航速度（**{pace_str}/km**）から大きな乱れがなく、精密なペース感覚を発揮。",
+                "**ラップの均一性**: 各1kmごとのタイム差が小さく、オーバーペースや中盤のタレを完璧に防止。",
+                "**有酸素リズム**: 心肺への急激な負荷変動を作らず、最後まで一定のリズムを維持。",
+            ]
+
+        # 3. 柱B: 生理的刺激と適応効果 (Physiological Benefits)
+        if avg_hr >= 174 or max_hr >= 185:
+            physio_title = "生理的刺激と得られた効果"
+            physio_points = [
+                f"**VO2max・LT心肺刺激**: 最大心拍 **{max_hr} bpm**（乳酸閾値〜無酸素領域）に到達し、レース本番のペース変化やスパートに耐える心肺機能を強力に強化。",
+                "**速筋線維の動員**: 高速巡航により、通常のジョグでは使われない大腿・臀部の速筋線維を動員し、推進力と脚のバネを刺激。",
+                "**有酸素ベース維持**: 高強度でありながらアップやつなぎジョグを含めたことで、毛細血管の新生と基礎有酸素の土台も同時にキープ。",
+            ]
+        else:
+            physio_title = "生理的刺激と得られた効果"
+            physio_points = [
+                f"**有酸素エコノミーの向上**: 心拍ゾーン【{hr_zone['name']}】での滞在により、脂肪燃焼効率と毛細血管網の発達を促進。",
+                "**筋持久力・耐疲労性**: 衝撃に耐える腱・関節の強化と、長時間一定出力を出し続ける筋持久力を養うベース作り。",
+                "**疲労蓄積の抑制**: 無酸素領域への過度な突入を避けたことで、翌日への過度な筋疲労の残存を抑え、持続可能な練習リズムを形成。",
+            ]
+
+        # 4. 柱C: フォーム再現性とコントロール力 (Biomechanics & Control)
+        mechanics_title = "フォーム再現性とコントロール"
+        cadence_comment = (
+            f"平均 **{cadence} spm** の理想的なピッチを維持。上下動が少なく着地衝撃を分散できる省エネな足回転です。"
+            if cadence >= 172 else
+            f"平均ピッチ **{cadence} spm**、歩幅 **{stride:.2f} m**。ダイナミックなストライドを活かした推進力を発揮。"
+        )
+        mechanics_points = [
+            f"**ピッチ＆リズム**: {cadence_comment}",
+            f"**推進力バランス**: 歩幅 **{stride:.2f} m** とピッチが調和し、無理な力みなく推進力へと変換。",
+            f"**疲労・心拍制御**: {series_analysis['drift_text']}",
         ]
-        if prev_diff and prev_diff["pace_improved"]:
-            eval_highlights.append(f"前回（{prev_diff['date']}）より全体平均ペースが **{abs(int(prev_diff['pace_diff_sec']))}秒/km 向上**。")
 
         # 分析テキスト
         analysis_body = {
@@ -556,21 +576,23 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
             "aei": round(aei, 2),
             "speed_kmh": round(speed_kmh, 1),
             "distance_series": distance_series,
-            # ② 評価 (Evaluation: 分析結果に基づく総合判定)
+            # ② 評価 (Evaluation: 分析結果に基づく多角判定)
             "evaluation": {
-                "total_score": total_score,
-                "rank": rank,
-                "rank_class": rank_class,
-                "conclusion": eval_conclusion,
-                "radar_scores": {
-                    "speed": round(speed_score),
-                    "endurance": round(endurance_score),
-                    "aerobic": round(aerobic_score),
-                    "form": round(form_score),
+                "overall_summary": overall_summary,
+                "execution": {
+                    "title": execution_title,
+                    "points": execution_points,
+                },
+                "physiological": {
+                    "title": physio_title,
+                    "points": physio_points,
+                },
+                "mechanics": {
+                    "title": mechanics_title,
+                    "points": mechanics_points,
                 },
                 "badges": badges,
                 "prev_diff": prev_diff,
-                "highlights": eval_highlights,
                 "split_badge": series_analysis["split_badge"],
             },
             # ② 分析 (Analysis)
