@@ -334,7 +334,7 @@ def main():
         print("📤 GitHub へ変更を push します...")
         print("=" * 60)
         try:
-            subprocess.run(["git", "add", "data/", "docs/"], cwd=root_dir, check=True)
+            subprocess.run(["git", "add", "docs/"], cwd=root_dir, check=True)
             commit_res = subprocess.run(
                 ["git", "commit", "-m", f"Sync Garmin activities ({synced_count} new)"],
                 cwd=root_dir,
