@@ -166,9 +166,11 @@ def build_csv_row_from_activity(act: Dict[str, Any]) -> Dict[str, str]:
 def sync_activities(
     client: Garmin,
     data_dir: Path,
-    limit: int = 15,
+    limit: Optional[int] = None,
+    fetch_all: bool = False,
 ) -> int:
-    """Garmin Connect から未取得のランニングアクティビティとFITファイルをダウンロード"""
+    """Garmin Connect から過去・最新のランニングアクティビティとFITファイルを自動同期"""
+    import time
     data_dir.mkdir(parents=True, exist_ok=True)
     csv_path = data_dir / "Activities.csv"
 
@@ -189,12 +191,37 @@ def sync_activities(
         if fit_id.isdigit():
             existing_fit_ids.add(int(fit_id))
 
-    print(f"📡 Garmin Connect から最新 {limit} 件のアクティビティを取得中...")
-    try:
-        activities = client.get_activities(0, limit)
-    except Exception as e:
-        print(f"❌ アクティビティ一覧の取得に失敗しました: {e}")
-        return 0
+    # 3. アクティビティをページネーションで取得
+    target_count_str = "全件" if fetch_all else f"最大 {limit} 件"
+    print(f"📡 Garmin Connect からアクティビティ一覧を取得中 ({target_count_str})...")
+
+    activities = []
+    start = 0
+    batch_size = 50
+
+    while True:
+        try:
+            req_limit = batch_size
+            if not fetch_all and limit is not None:
+                remaining = limit - len(activities)
+                if remaining <= 0:
+                    break
+                req_limit = min(batch_size, remaining)
+
+            batch = client.get_activities(start, req_limit)
+            if not batch:
+                break
+            activities.extend(batch)
+            start += len(batch)
+            print(f"  ... {len(activities)} 件取得済み (開始位置: {start})")
+
+            # 取得件数がバッチサイズ未満ならこれ以上データなし
+            if len(batch) < req_limit:
+                break
+            time.sleep(0.3)
+        except Exception as e:
+            print(f"⚠️ アクティビティ一覧の取得中断 ({e})。取得済み {len(activities)} 件で処理を継続します。")
+            break
 
     # ランニングのアクティビティのみ抽出
     running_activities = []
@@ -203,9 +230,9 @@ def sync_activities(
         if any(k in act_type for k in ["running", "treadmill", "trail"]):
             running_activities.append(act)
 
-    print(f"🏃 ランニングアクティビティ: {len(running_activities)} 件検出")
+    print(f"🏃 ランニングアクティビティ: 全 {len(running_activities)} 件検出 (既存FITファイル保有: {len(existing_fit_ids)} 件)")
 
-    # 未取得のアクティビティを特定
+    # 未取得のアクティビティ（CSV未登録、またはFIT未ダウンロード）を特定
     new_activities = []
     for act in running_activities:
         act_id = act.get("activityId")
@@ -219,19 +246,19 @@ def sync_activities(
             new_activities.append(act)
 
     if not new_activities:
-        print("🎉 すべてのランニングデータは最新です！新しいデータはありません。")
+        print("🎉 すべてのランニングデータ（FITファイル＆サマリー）は最新・完全同期済みです！")
         return 0
 
-    print(f"📥 {len(new_activities)} 件の新しいランニングデータをダウンロードします...")
+    print(f"📥 {len(new_activities)} 件のアクティビティについて、FITファイルまたはCSVサマリーを取得します...")
     downloaded_count = 0
     new_csv_rows = []
 
-    for act in new_activities:
+    for idx, act in enumerate(new_activities, 1):
         act_id = act["activityId"]
         name = act.get("activityName", "ラン")
         date_str = act.get("startTimeLocal", "")
         dist_km = round(act.get("distance", 0.0) / 1000.0, 2)
-        print(f"\n📦 [{date_str}] {name} ({dist_km} km / ID: {act_id})")
+        print(f"\n📦 [{idx}/{len(new_activities)}] [{date_str}] {name} ({dist_km} km / ID: {act_id})")
 
         # FIT ファイルダウンロード
         fit_dest = data_dir / f"{act_id}_ACTIVITY.fit"
@@ -247,6 +274,7 @@ def sync_activities(
                                 of.write(zf.read())
                             print(f"  💾 保存完了: {fit_dest.name} ({fit_dest.stat().st_size:,} bytes)")
                             fit_found = True
+                            time.sleep(0.5)
                             break
                         elif zip_info.filename.endswith(".fit.gz"):
                             import gzip
@@ -256,6 +284,7 @@ def sync_activities(
                                     of.write(uncompressed)
                             print(f"  💾 保存完了: {fit_dest.name} ({fit_dest.stat().st_size:,} bytes)")
                             fit_found = True
+                            time.sleep(0.5)
                             break
                     if not fit_found:
                         print(f"  ⚠️ ZIP内に .fit ファイルが見つかりませんでした。")
@@ -296,6 +325,7 @@ def sync_activities(
 
 def main():
     parser = argparse.ArgumentParser(description="Garmin Connect からランニングデータを自動同期")
+    parser.add_argument("--all", action="store_true", help="過去の全アクティビティを対象に同期する")
     parser.add_argument("--limit", type=int, default=15, help="チェックする最新アクティビティ件数 (デフォルト: 15)")
     parser.add_argument("--relogin", action="store_true", help="トークンを破棄して再ログインする")
     parser.add_argument("--no-build", action="store_true", help="データ同期後に build.py を実行しない")
@@ -314,7 +344,7 @@ def main():
     client = get_garmin_client(token_dir, relogin=args.relogin)
 
     # 2. 同期実行
-    synced_count = sync_activities(client, data_dir, limit=args.limit)
+    synced_count = sync_activities(client, data_dir, limit=args.limit, fetch_all=args.all)
 
     # 3. ビルド実行
     if not args.no_build:
