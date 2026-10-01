@@ -1,7 +1,8 @@
-# Environment variables
+# Environment variables & Tokens
 .env
 .env.local
 .env*.local
+.garmin_tokens/
 
 # Deployment
 .vercel
