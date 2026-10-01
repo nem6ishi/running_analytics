@@ -1,7 +1,10 @@
 from typing import Dict, Any, List, Optional
+from datetime import datetime, timedelta
 import pandas as pd
+from config import TARGET_DISTANCE_KM, TARGET_TIME_SEC, TARGET_PACE_SEC, TARGET_LABEL
 from .parser import seconds_to_pace_str, seconds_to_time_str
 from .coach import calculate_activity_insights
+from .vdot import calculate_vdot, get_training_paces, predict_race_times_vdot
 
 
 def compute_overview_stats(df: pd.DataFrame) -> Dict[str, Any]:
@@ -145,37 +148,190 @@ def compute_personal_records(df: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
-def compute_race_predictions(df: pd.DataFrame) -> List[Dict[str, Any]]:
-    """リーゲル公式（Riegel's Formula）に基づくレース予想タイム"""
-    df_5k = df[(df["distance_km"] >= 4.5) & (df["distance_km"] <= 6.0)]
-    if not df_5k.empty:
-        base_row = df_5k.loc[df_5k["avg_pace_sec"].idxmin()]
-        base_dist = 5.0
-        base_time = base_row["avg_pace_sec"] * 5.0
-    else:
-        base_row = df.loc[df["avg_pace_sec"].idxmin()]
-        base_dist = float(base_row["distance_km"])
-        base_time = float(base_row["duration_sec"])
-
+def compute_race_predictions(df: pd.DataFrame, current_vdot: float = 40.0) -> List[Dict[str, Any]]:
+    """VDOTに基づく科学的レース予想タイム"""
+    vdot_preds = predict_race_times_vdot(current_vdot)
+    results = []
     targets = [
         ("5km", 5.0, "⚡"),
         ("10km", 10.0, "🏃"),
         ("ハーフマラソン", 21.0975, "🏅"),
         ("フルマラソン", 42.195, "👑"),
     ]
-
-    predictions = []
     for name, d, icon in targets:
-        pred_time_sec = base_time * ((d / base_dist) ** 1.06)
-        pred_pace_sec = pred_time_sec / d
-        predictions.append({
-            "name": name,
-            "icon": icon,
-            "distance_km": d,
-            "time_str": seconds_to_time_str(int(round(pred_time_sec))),
-            "pace_str": seconds_to_pace_str(pred_pace_sec),
-        })
-    return predictions
+        if name in vdot_preds:
+            p = vdot_preds[name]
+            results.append({
+                "name": name,
+                "icon": icon,
+                "distance_km": d,
+                "time_str": p["time_str"],
+                "pace_str": p["pace_str"],
+            })
+    return results
+
+
+def compute_vdot_analytics(df: pd.DataFrame) -> Dict[str, Any]:
+    """全走行データから VDOT スコアと 5大トレーニングペース（E / M / T / I / R）を算出"""
+    valid_runs = df[df["distance_km"] >= 3.0].copy()
+    if valid_runs.empty:
+        valid_runs = df[df["distance_km"] >= 1.0].copy()
+    
+    if valid_runs.empty:
+        default_paces = get_training_paces(40.0)
+        return {
+            "current_vdot": 40.0,
+            "peak_vdot": 40.0,
+            "paces": default_paces,
+            "race_predictions": predict_race_times_vdot(40.0)
+        }
+
+    # 各アクティビティの VDOT 計算
+    vdots = []
+    for _, row in valid_runs.iterrows():
+        d_m = row["distance_km"] * 1000.0
+        t_s = row["duration_sec"]
+        v = calculate_vdot(d_m, t_s)
+        if v > 0:
+            vdots.append((row["datetime"], v))
+
+    if not vdots:
+        return {"current_vdot": 40.0, "peak_vdot": 40.0, "paces": get_training_paces(40.0), "race_predictions": predict_race_times_vdot(40.0)}
+
+    peak_vdot = max(v for _, v in vdots)
+
+    # 直近走力 (直近5走の加重平均)
+    recent_vdots = [v for _, v in vdots[-5:]]
+    weights = list(range(1, len(recent_vdots) + 1))
+    current_vdot = sum(v * w for v, w in zip(recent_vdots, weights)) / sum(weights)
+    current_vdot = round(current_vdot, 1)
+
+    paces = get_training_paces(current_vdot)
+    race_preds = predict_race_times_vdot(current_vdot)
+
+    return {
+        "current_vdot": current_vdot,
+        "peak_vdot": round(peak_vdot, 1),
+        "paces": paces,
+        "race_predictions": race_preds,
+    }
+
+
+def compute_sub50_progress(df: pd.DataFrame, insights: List[Dict[str, Any]], current_vdot: float) -> Dict[str, Any]:
+    """10km 50分（サブ50）達成プログレストラッカー"""
+    # 1. サブ50 (5:00/km以内) を連続維持できた過去最長距離
+    max_sustained_km = 0.0
+    latest_sustained_km = 0.0
+    for act in insights:
+        ev = act.get("evaluation", {})
+        s = ev.get("sub50_sustained_km", 0.0)
+        if s > max_sustained_km:
+            max_sustained_km = s
+
+    if insights:
+        latest_sustained_km = insights[-1].get("evaluation", {}).get("sub50_sustained_km", 0.0)
+
+    # 2. 現在の推定 10km タイム (VDOTベース)
+    vdot_preds = predict_race_times_vdot(current_vdot)
+    ten_k_info = vdot_preds.get("10km", {})
+    est_10k_sec = ten_k_info.get("time_sec", 3120.0)
+    est_10k_time_str = ten_k_info.get("time_str", "52:00")
+    est_10k_pace_str = ten_k_info.get("pace_str", "5:12")
+
+    # 3. 目標 (3000秒 = 50:00) とのギャップ
+    gap_time_sec = est_10k_sec - TARGET_TIME_SEC
+    gap_pace_sec = (est_10k_sec / TARGET_DISTANCE_KM) - TARGET_PACE_SEC
+
+    if gap_time_sec <= 0:
+        gap_status = "目標ペース圏内 (50分切り可能)"
+        gap_color = "text-emerald-400"
+        gap_badge = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+        gap_time_str = f"-{abs(int(round(gap_time_sec)))}秒 (クリア)"
+        gap_pace_str = f"-{abs(int(round(gap_pace_sec)))}秒/km"
+    else:
+        gap_status = f"あと {int(round(gap_time_sec // 60))}分{int(round(gap_time_sec % 60)):02d}秒 短縮が必要"
+        gap_color = "text-amber-400"
+        gap_badge = "bg-amber-500/20 text-amber-300 border-amber-500/40"
+        gap_time_str = f"+{int(round(gap_time_sec // 60))}分{int(round(gap_time_sec % 60)):02d}秒"
+        gap_pace_str = f"+{int(round(gap_pace_sec))}秒/km"
+
+    # 進捗率 (60分=0%, 50分=100%)
+    progress_pct = max(10.0, min(100.0, round(((3600.0 - est_10k_sec) / 600.0) * 100.0, 1)))
+
+    return {
+        "target_label": TARGET_LABEL,
+        "target_time_str": "50:00",
+        "target_pace_str": "5:00 /km",
+        "est_10k_time_str": est_10k_time_str,
+        "est_10k_pace_str": est_10k_pace_str,
+        "gap_time_str": gap_time_str,
+        "gap_pace_str": gap_pace_str,
+        "gap_status": gap_status,
+        "gap_color": gap_color,
+        "gap_badge": gap_badge,
+        "progress_pct": progress_pct,
+        "max_sustained_km": round(max_sustained_km, 1),
+        "latest_sustained_km": round(latest_sustained_km, 1),
+    }
+
+
+def compute_calendar_heatmap(df: pd.DataFrame) -> List[Dict[str, Any]]:
+    """カレンダーヒートマップ用デイリー集計データ (全期間)"""
+    if df.empty:
+        return []
+
+    # 日付ごとの集計
+    daily = (
+        df.groupby("date_str")
+        .agg(
+            distance_km=("distance_km", "sum"),
+            runs=("distance_km", "count"),
+            avg_pace_sec=("avg_pace_sec", "mean"),
+            avg_hr=("avg_hr", "mean"),
+        )
+        .reset_index()
+    )
+
+    daily_map = {
+        row["date_str"]: {
+            "distance_km": round(float(row["distance_km"]), 2),
+            "runs": int(row["runs"]),
+            "pace_str": seconds_to_pace_str(row["avg_pace_sec"]),
+            "avg_hr": int(row["avg_hr"]),
+        }
+        for _, row in daily.iterrows()
+    }
+
+    start_dt = df["datetime"].min().date()
+    end_dt = df["datetime"].max().date()
+    min_start = end_dt - timedelta(days=150)
+    if start_dt > min_start:
+        start_dt = min_start
+
+    heatmap_list = []
+    curr = start_dt
+    while curr <= end_dt:
+        date_str = curr.strftime("%Y-%m-%d")
+        if date_str in daily_map:
+            info = daily_map[date_str]
+            heatmap_list.append({
+                "date": date_str,
+                "distance_km": info["distance_km"],
+                "runs": info["runs"],
+                "pace_str": info["pace_str"],
+                "avg_hr": info["avg_hr"],
+            })
+        else:
+            heatmap_list.append({
+                "date": date_str,
+                "distance_km": 0.0,
+                "runs": 0,
+                "pace_str": "--:--",
+                "avg_hr": 0,
+            })
+        curr += timedelta(days=1)
+
+    return heatmap_list
 
 
 def compute_weekly_workload(df: pd.DataFrame) -> Dict[str, Any]:
@@ -266,9 +422,14 @@ def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] 
     monthly = compute_monthly_stats(df)
     insights = calculate_activity_insights(df, fit_dict)
     personal_records = compute_personal_records(df)
-    race_predictions = compute_race_predictions(df)
+
+    # VDOT & トレーニングゾーン分析
+    vdot_data = compute_vdot_analytics(df)
+    race_predictions = compute_race_predictions(df, vdot_data["current_vdot"])
+    sub50_progress = compute_sub50_progress(df, insights, vdot_data["current_vdot"])
     weekly_workload = compute_weekly_workload(df)
     form_evolution = compute_form_evolution(df)
+    calendar_heatmap = compute_calendar_heatmap(df)
 
     # グラフ用データ系列の抽出
     chart_dates = [row["date_str"] for _, row in df.iterrows()]
@@ -299,9 +460,12 @@ def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] 
         "reversed_insights": reversed_insights,
         "latest_insight": latest_insight,
         "personal_records": personal_records,
+        "vdot_data": vdot_data,
         "race_predictions": race_predictions,
+        "sub50_progress": sub50_progress,
         "weekly_workload": weekly_workload,
         "form_evolution": form_evolution,
+        "calendar_heatmap": calendar_heatmap,
         "chart_data": {
             "dates": chart_dates,
             "distances": chart_distances,
@@ -317,3 +481,4 @@ def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] 
             "monthly_runs": [m["runs"] for m in monthly],
         },
     }
+

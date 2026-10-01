@@ -1,15 +1,14 @@
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, List, Optional
+from config import HR_MAX, HR_ZONES, TARGET_PACE_SEC, TARGET_DISTANCE_KM, TARGET_TIME_SEC
 from .parser import seconds_to_pace_str, seconds_to_time_str
 from .fit_parser import generate_estimated_series
-
-
-HR_MAX = 195  # データセット全体および一般的なランナーの基準最大心拍数推定
+from .vdot import calculate_vdot, get_training_paces
 
 
 def get_hr_zone(avg_hr: float) -> Dict[str, str]:
-    """平均心拍数から心拍ゾーン・強度を判定"""
+    """平均心拍数から心拍ゾーン・強度を判定 (config.HR_ZONES 準拠)"""
     if avg_hr <= 0:
         return {
             "zone": "Zone 0",
@@ -22,54 +21,24 @@ def get_hr_zone(avg_hr: float) -> Dict[str, str]:
 
     pct = (avg_hr / HR_MAX) * 100
     if pct < 65:
-        return {
-            "zone": "Zone 1",
-            "name": "アクティブリカバリー",
-            "intensity": "超低強度 (回復)",
-            "color": "emerald",
-            "bg_color": "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-            "desc": "疲労抜き・毛細血管の発達を促す回復ペース",
-        }
+        z = HR_ZONES["zone1"]
+        return {"zone": "Zone 1", "name": z["label"], "intensity": z["intensity"], "color": z["color"], "bg_color": z["bg_color"], "desc": z["desc"]}
     elif pct < 76:
-        return {
-            "zone": "Zone 2",
-            "name": "基礎有酸素 (イージー)",
-            "intensity": "低強度 (脂肪燃焼・持久力基礎)",
-            "color": "blue",
-            "bg_color": "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
-            "desc": "スタミナの土台を築く最も重要なおしゃべりペース",
-        }
+        z = HR_ZONES["zone2"]
+        return {"zone": "Zone 2", "name": z["label"], "intensity": z["intensity"], "color": z["color"], "bg_color": z["bg_color"], "desc": z["desc"]}
     elif pct < 86:
-        return {
-            "zone": "Zone 3",
-            "name": "テンポ走 (有酸素強化)",
-            "intensity": "中強度 (持久力向上)",
-            "color": "amber",
-            "bg_color": "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
-            "desc": "少し息が上がるが維持できるマラソンペース帯",
-        }
+        z = HR_ZONES["zone3"]
+        return {"zone": "Zone 3", "name": z["label"], "intensity": z["intensity"], "color": z["color"], "bg_color": z["bg_color"], "desc": z["desc"]}
     elif pct < 93:
-        return {
-            "zone": "Zone 4",
-            "name": "乳酸閾値 (LT / しきい値)",
-            "intensity": "高強度 (スピード持久力)",
-            "color": "orange",
-            "bg_color": "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300",
-            "desc": "乳酸が溜まり始めるギリギリの粘り・勝負ペース",
-        }
+        z = HR_ZONES["zone4"]
+        return {"zone": "Zone 4", "name": z["label"], "intensity": z["intensity"], "color": z["color"], "bg_color": z["bg_color"], "desc": z["desc"]}
     else:
-        return {
-            "zone": "Zone 5",
-            "name": "無酸素 / VO2max",
-            "intensity": "最高強度 (最大酸素摂取量)",
-            "color": "rose",
-            "bg_color": "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300",
-            "desc": "レース終盤やインターバル走のスプリント負荷",
-        }
+        z = HR_ZONES["zone5"]
+        return {"zone": "Zone 5", "name": z["label"], "intensity": z["intensity"], "color": z["color"], "bg_color": z["bg_color"], "desc": z["desc"]}
 
 
 def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any]:
-    """折れ線グラフの時系列データから前半・後半・スパートの特徴を抽出"""
+    """折れ線グラフの時系列データから前半・後半・有酸素デカップリング（Pw:Hr）の特徴を抽出"""
     speeds = series.get("speeds_kmh", [])
     hrs = series.get("heart_rates", [])
     cadences = series.get("cadences", [])
@@ -84,6 +53,11 @@ def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any
             "phase_mid": "中盤も安定した巡航ペースを維持しました。",
             "phase_late": "終盤まで粘り強く走り切りました。",
             "drift_text": "心拍推移は適正にコントロールされています。",
+            "decoupling_pct": 0.0,
+            "decoupling_grade": "-",
+            "decoupling_status": "データ不足",
+            "decoupling_badge": "bg-slate-800 text-slate-400 border-slate-700",
+            "decoupling_desc": "時系列データが少ないためデカップリング率は算出対象外です。",
         }
 
     n = len(speeds)
@@ -119,6 +93,38 @@ def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any
     else:
         drift_text = "走行全般にわたって心拍数が極めて安定しており、高い有酸素エコノミーを発揮しています。"
 
+    # 有酸素デカップリング (Aerobic Decoupling: Pw:Hr / Pa:Hr)
+    # EF (Efficiency Factor) = 速度(km/h) / 心拍数(bpm)
+    ef_first = (first_half_speed / first_half_hr) if first_half_hr > 0 else 0
+    ef_second = (second_half_speed / second_half_hr) if second_half_hr > 0 else 0
+
+    if ef_first > 0:
+        # デカップリング率 (%): 前半の効率から後半の効率が何%低下したか
+        decoupling_pct = round(((ef_first - ef_second) / ef_first) * 100.0, 1)
+    else:
+        decoupling_pct = 0.0
+
+    if decoupling_pct <= 3.0:
+        decoupling_grade = "S"
+        decoupling_status = "極めて安定 (スタミナ十分)"
+        decoupling_badge = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+        decoupling_desc = f"デカップリング率 {decoupling_pct:+.1f}%。前半と後半で有酸素エコノミーが衰えず、目標ペースを押し切る十分なスタミナベースがあります。"
+    elif decoupling_pct <= 5.0:
+        decoupling_grade = "A"
+        decoupling_status = "適正範囲 (有酸素ベース合格)"
+        decoupling_badge = "bg-teal-500/20 text-teal-300 border-teal-500/30"
+        decoupling_desc = f"デカップリング率 {decoupling_pct:+.1f}%。運動生理学上の合格ライン（5%以内）を維持。筋疲労を抑えて粘り強く走れています。"
+    elif decoupling_pct <= 8.0:
+        decoupling_grade = "B"
+        decoupling_status = "軽度デカップリング (スタミナ低下)"
+        decoupling_badge = "bg-amber-500/20 text-amber-300 border-amber-500/30"
+        decoupling_desc = f"デカップリング率 {decoupling_pct:+.1f}%。後半に同じ出力を維持できず心肺負担が増加（または速度が低下）。毛細血管網の基礎持久力不足が伺えます。"
+    else:
+        decoupling_grade = "C"
+        decoupling_status = "重度デカップリング (有酸素枯渇)"
+        decoupling_badge = "bg-rose-500/20 text-rose-300 border-rose-500/30"
+        decoupling_desc = f"デカップリング率 {decoupling_pct:+.1f}%。後半に著しい失速または心拍急上昇が発生。設定ペースに対し心肺・脚持久力がオーバーキャパシティです。"
+
     # 3フェーズ解説
     start_speed = speeds[0]
     early_hr = hrs[int(n * 0.2)] if hrs else 0
@@ -141,6 +147,11 @@ def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any
         "phase_mid": phase_mid,
         "phase_late": phase_late,
         "drift_text": drift_text,
+        "decoupling_pct": decoupling_pct,
+        "decoupling_grade": decoupling_grade,
+        "decoupling_status": decoupling_status,
+        "decoupling_badge": decoupling_badge,
+        "decoupling_desc": decoupling_desc,
     }
 
 
@@ -393,37 +404,36 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
         series_analysis = analyze_time_series(distance_series, dist)
         workout_structure = detect_workout_structure(distance_series.get("laps", []), dist, pace_sec, avg_hr)
 
-        # 5. 分析結果を踏まえた多角評価（点数・レーダーを廃止し、3つの柱＋総括へ刷新）
-        # バッジ付与
-        badges = []
-        if pace_sec <= best_pace_sec + 3 or (workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) <= best_pace_sec):
-            badges.append({"name": "最速ペース更新", "icon": "⚡", "type": "gold"})
-        if dist >= longest_dist - 0.1:
-            badges.append({"name": "最長走破", "icon": "🏃", "type": "indigo"})
-        if cadence >= 174:
-            badges.append({"name": f"理想ピッチ ({cadence}spm)", "icon": "🎯", "type": "teal"})
-        if avg_hr >= 174 or max_hr >= 185:
-            badges.append({"name": "高負荷LT・VO2max刺激", "icon": "🔥", "type": "orange"})
-        if aei >= 6.4:
-            badges.append({"name": "有酸素効率優秀", "icon": "💎", "type": "cyan"})
-        badges.append({"name": workout_structure["badge"], "icon": "📊", "type": "amber" if workout_structure.get("is_interval") else "slate"})
+        # 5. VDOT スコアの算出 (ダニエルズ式)
+        act_vdot = calculate_vdot(dist * 1000.0, duration_sec) if dist >= 1.0 and duration_sec > 0 else 0.0
 
-        # 5. 分析結果を踏まえた多角評価（忖度なしの厳格アスリートコーチング）
-        # 目標: 10km 50分 (平均 5:00/km = 300.0秒/km)
-        TARGET_PACE_SEC = 300.0
+        # サブ50 (5:00/km以内) 連続維持距離の算出
+        laps = distance_series.get("laps", [])
+        sub50_sustained_km = 0.0
+        current_sustained = 0.0
+        for l in laps:
+            if l.get("pace_sec", 999) <= TARGET_PACE_SEC:
+                current_sustained += l.get("distance_km", 0.0)
+                if current_sustained > sub50_sustained_km:
+                    sub50_sustained_km = round(current_sustained, 2)
+            else:
+                current_sustained = 0.0
+
+        # 6. 分析結果を踏まえた多角評価（忖度なしの厳格アスリートコーチング）
+        # 目標: 10km 50分 (TARGET_PACE_SEC)
         gap_sec = pace_sec - TARGET_PACE_SEC
         gap_pace_str = f"{gap_sec:+.0f}秒/km" if pace_sec > 0 else "--"
 
         # サブ50目標ランク判定
         if pace_sec <= 0:
             target_status = {"rank": "-", "label": "計測なし", "badge_color": "bg-slate-800 text-slate-400 border-slate-700"}
-        elif pace_sec <= 300.0:
+        elif pace_sec <= TARGET_PACE_SEC:
             target_status = {"rank": "S", "label": "50分ペース達成 (5:00/km以内)", "badge_color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"}
-        elif pace_sec <= 315.0:
+        elif pace_sec <= TARGET_PACE_SEC + 15.0:
             target_status = {"rank": "A", "label": f"サブ50射程圏内 (+{int(round(gap_sec))}秒/km遅れ)", "badge_color": "bg-teal-500/20 text-teal-300 border-teal-500/40"}
-        elif pace_sec <= 335.0:
+        elif pace_sec <= TARGET_PACE_SEC + 35.0:
             target_status = {"rank": "B", "label": f"ペース改善途上 (+{int(round(gap_sec))}秒/km遅れ)", "badge_color": "bg-amber-500/20 text-amber-300 border-amber-500/40"}
-        elif pace_sec <= 360.0:
+        elif pace_sec <= TARGET_PACE_SEC + 60.0:
             target_status = {"rank": "C", "label": f"基礎スタミナ不足 (+{int(round(gap_sec))}秒/km遅れ)", "badge_color": "bg-orange-500/20 text-orange-300 border-orange-500/40"}
         else:
             target_status = {"rank": "D", "label": f"有酸素土台作り段階 (+{int(round(gap_sec))}秒超/km遅れ)", "badge_color": "bg-rose-500/20 text-rose-300 border-rose-500/40"}
@@ -434,12 +444,16 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
             badges.append({"name": "最速ペース更新", "icon": "⚡", "type": "gold"})
         if dist >= longest_dist - 0.1:
             badges.append({"name": "最長走破", "icon": "🏃", "type": "indigo"})
+        if act_vdot >= 42.0:
+            badges.append({"name": f"高VDOT ({act_vdot:.1f})", "icon": "🎖️", "type": "emerald"})
         if cadence >= 174:
             badges.append({"name": f"理想ピッチ ({cadence}spm)", "icon": "🎯", "type": "teal"})
         if avg_hr >= 174 or max_hr >= 185:
             badges.append({"name": "高負荷LT・VO2max刺激", "icon": "🔥", "type": "orange"})
         if aei >= 6.4:
             badges.append({"name": "有酸素効率優秀", "icon": "💎", "type": "cyan"})
+        if series_analysis.get("decoupling_pct", 99) <= 3.0 and dist >= 5.0:
+            badges.append({"name": "スタミナ維持(Pw:Hr S)", "icon": "🛡️", "type": "sky"})
         badges.append({"name": workout_structure["badge"], "icon": "📊", "type": "amber" if workout_structure.get("is_interval") else "slate"})
 
         # 前回比較
@@ -463,6 +477,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
         critical_bottlenecks = []
         is_decay = series_analysis.get("split_type") == "ポジティブスプリット"
         hr_drift_val = series_analysis.get("hr_diff", 0.0)
+        decoupling_pct = series_analysis.get("decoupling_pct", 0.0)
 
         # 1. 失速・タレ
         if is_decay:
@@ -472,11 +487,21 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
                 "序盤の突っ込みすぎ、または後半を押し切る脚筋力・乳酸耐性がまだ不足しています。"
             )
 
-        # 2. 心拍ドリフト（スタミナ切れ）
-        if hr_drift_val >= 8:
+        # 2. 有酸素デカップリング（スタミナ枯渇）
+        if decoupling_pct > 8.0:
+            critical_bottlenecks.append(
+                f"**重度の有酸素デカップリング（後半 {decoupling_pct:+.1f}% 効率低下）**: 後半にかけて心肺とペースのバランスが崩壊。"
+                "前半の巡航速度に対して有酸素スタミナが持たず、心肺負担がオーバーフローした証拠です（基準値5%以内）。"
+            )
+        elif decoupling_pct > 5.0 and dist >= 4.0:
+            critical_bottlenecks.append(
+                f"**有酸素デカップリング発生（後半 {decoupling_pct:+.1f}% 効率低下）**: 許容範囲（5%以内）を超えて後半に心拍が上昇。"
+                "同じペースを維持するために心拍数を余計に消費しており、Zone 2 での有酸素土台の走り込みが不可欠です。"
+            )
+        elif hr_drift_val >= 8:
             critical_bottlenecks.append(
                 f"**顕著な心拍ドリフト（後半 +{int(round(hr_drift_val))} bpm 急上昇）**: 後半にかけて心肺負荷が跳ね上がっています。"
-                "同じペースを保てず心肺が悲鳴を上げており、有酸素の器（毛細血管網・心拍出量）が不足している証拠です。"
+                "同じ出力を保てず心肺が悲鳴を上げており、有酸素の器（毛細血管網・心拍出量）が不足している証拠です。"
             )
 
         # 3. 低ピッチ・腰落ち
@@ -489,7 +514,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
         # 4. 変化走でのスピード不足
         if workout_structure.get("is_interval"):
             best_fast = workout_structure.get("best_fast_pace_sec", 999)
-            if best_fast > 300.0:
+            if best_fast > TARGET_PACE_SEC:
                 best_f_pace = seconds_to_pace_str(best_fast)
                 critical_bottlenecks.append(
                     f"**疾走スピードの不足（最速 {best_f_pace}/km）**: 変化走の疾走ラップを行ったものの、目標の10km本番ペース（5:00/km）に届いていません。"
@@ -524,14 +549,29 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
 
         # --- ◎ 客観的な収穫・強み (Strong Points) の抽出 ---
         strong_points = []
-        if workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) < 300.0:
+        if workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) < TARGET_PACE_SEC:
             best_f_pace = seconds_to_pace_str(workout_structure.get("best_fast_pace_sec"))
             strong_points.append(
                 f"**キロ5分を切るスピード出力（最速 {best_f_pace}/km）**: 疾走ラップで目標を上回るトップスピードを叩き出し、50分切りに必要なスピード自体のポテンシャルを実証。"
             )
-        elif not workout_structure.get("is_interval") and pace_sec <= 300.0:
+        elif not workout_structure.get("is_interval") and pace_sec <= TARGET_PACE_SEC:
             strong_points.append(
                 f"**目標ペース（5:00/km以内）での巡航完遂**: 平均ペース **{pace_str}/km** で走り切り、10km 50分切りに向けた実戦力を発揮。"
+            )
+
+        if sub50_sustained_km >= 3.0:
+            strong_points.append(
+                f"**サブ50ペース連続維持（{sub50_sustained_km:.1f}km）**: キロ5:00以内を連続 **{sub50_sustained_km:.1f}km** キープし、50分切りに必要な持続力を前進。"
+            )
+
+        if decoupling_pct <= 3.0 and dist >= 4.5:
+            strong_points.append(
+                f"**優れた有酸素エコノミー（デカップリング率 {decoupling_pct:+.1f}%）**: 後半も心拍と速度の比率が崩れず、目標ペースを押し切る十分なスタミナベースを発揮。"
+            )
+
+        if act_vdot >= 41.0:
+            strong_points.append(
+                f"**高水準の走力指数（VDOT {act_vdot:.1f}）**: ダニエルズ式走力指数でサブ50射程圏の有酸素エンジンを確認。"
             )
 
         if cadence >= 174:
@@ -549,7 +589,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
                 f"**10km距離走破の筋持久力**: **{dist:.2f} km** を歩かずに完走し、レース本番に必要な脚筋力と腱の衝撃耐性を強化。"
             )
 
-        if hr_drift_val < 5.0 and dist >= 5.0:
+        if hr_drift_val < 5.0 and dist >= 5.0 and not any("有酸素" in s for s in strong_points):
             strong_points.append(
                 "**心肺リズムの安定**: 後半の心拍ドリフトを抑え、一定の有酸素出力を維持。"
             )
@@ -564,7 +604,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
             fast_c = workout_structure.get("fast_count", 2)
             best_f_str = seconds_to_pace_str(workout_structure.get("best_fast_pace_sec", pace_sec))
             best_fast_val = workout_structure.get("best_fast_pace_sec", 999)
-            if best_fast_val < 300.0:
+            if best_fast_val < TARGET_PACE_SEC:
                 overall_verdict = (
                     f"**【スピード出力は合格、課題は持続力】** 1km疾走で **{best_f_str}/km** を叩き出し、"
                     "キロ5分を切る脚力があることを実証。ただし最大心拍 **{max_hr} bpm** まで追い込まれており、"
@@ -579,7 +619,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
             if is_decay:
                 overall_verdict = (
                     f"**【ビルドアップ失敗・後半失速】** 後半加速を狙ったものの、終盤に脚が止まり減速（平均 {pace_str}/km）。"
-                    "目標（5:00/km）から **{int(round(gap_sec))}秒/km** 遅れており、余力配分と筋持久力の見直しが急務です。"
+                    f"目標（5:00/km）から **{int(round(gap_sec))}秒/km** 遅れており、余力配分と筋持久力の見直しが急務です。"
                 )
             else:
                 overall_verdict = (
@@ -588,10 +628,10 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
                     "ペース配分の技術は身についているため、巡航全体のギアを一段引き上げる練習が必要です。"
                 )
         elif dist >= 8.0:
-            if hr_drift_val >= 8 or is_decay:
+            if hr_drift_val >= 8 or is_decay or decoupling_pct > 6.0:
                 overall_verdict = (
                     f"**【スタミナ不足露呈】10km走破も後半に心拍急上昇・失速。** 距離は走破したものの、"
-                    f"後半に心拍が **+{int(round(hr_drift_val))} bpm** ドリフトし、平均ペースは **{pace_str}/km**。"
+                    f"デカップリング率 **{decoupling_pct:+.1f}%**、後半心拍が **+{int(round(hr_drift_val))} bpm** ドリフト。"
                     "50分切り（5:00/km）で10kmを押し切るための有酸素の器（毛細血管網）が明らかに不足しています。"
                 )
             else:
@@ -606,16 +646,16 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
             )
 
         # --- 【🔥 次回への是正アクション (Actionable Focus)】 ---
-        if hr_drift_val >= 8 or (pace_sec >= 360 and avg_hr >= 162):
-            actionable_focus = "次回は【心拍上限 145 bpm を死守】。ペースを 6:30〜7:00/km に落としてでも毛細血管を育てる超スロージョグに徹すること。"
-        elif workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) > 300:
+        if decoupling_pct > 8.0 or hr_drift_val >= 8 or (pace_sec >= 360 and avg_hr >= 162):
+            actionable_focus = "次回は【有酸素土台の再構築：心拍上限 145 bpm を死守】。ペースを 6:20〜6:50/km に落としてでも毛細血管を育てる超スロージョグに徹すること。"
+        elif workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) > TARGET_PACE_SEC:
             actionable_focus = "次回は【4:45〜4:55/km の1km疾走×3本】に挑戦し、5:00/km を楽に感じるスピード余裕度を身体に叩き込むこと。"
         elif is_decay:
             actionable_focus = "次回は【最初の2kmを設定より15秒遅く入る】。オーバーペースを抑え、ラスト2kmで必ず最速ラップを刻むネガティブスプリットを完遂すること。"
         elif cadence < 168 and cadence > 0:
             actionable_focus = "次回は【ピッチ 176 spm を維持】。骨盤の真下に着地し、上下動を抑えた軽快な足回転を徹底すること。"
         else:
-            actionable_focus = "次回は【5:15〜5:25/km のLTテンポ走 (5km)】に挑戦し、10km 50分（5:00/km）への巡航耐性を直接引き上げること。"
+            actionable_focus = "次回は【5:10〜5:20/km のLTテンポ走 (5km)】に挑戦し、10km 50分（5:00/km）への巡航耐性を直接引き上げること。"
 
         # 分析テキスト
         analysis_body = {
@@ -625,6 +665,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
             "phase_mid": series_analysis["phase_mid"],
             "phase_late": series_analysis["phase_late"],
             "drift_text": series_analysis["drift_text"],
+            "decoupling_desc": series_analysis["decoupling_desc"],
             "cadence_eval": f"平均ピッチは **{cadence} spm**（最高 {row['max_cadence']} spm）。接地時間が短く、着地衝撃を分散できています。" if cadence >= 172 else f"平均ピッチ **{cadence} spm**。骨盤の真下に着地する意識でピッチを172〜176前後に高めるとさらに省エネになります。",
         }
 
@@ -698,6 +739,13 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
                 "target_status": target_status,
                 "target_gap_sec": round(gap_sec, 1),
                 "target_gap_str": gap_pace_str,
+                "vdot": round(act_vdot, 1) if act_vdot > 0 else None,
+                "sub50_sustained_km": sub50_sustained_km,
+                "decoupling_pct": series_analysis.get("decoupling_pct", 0.0),
+                "decoupling_grade": series_analysis.get("decoupling_grade", "-"),
+                "decoupling_status": series_analysis.get("decoupling_status", ""),
+                "decoupling_badge": series_analysis.get("decoupling_badge", ""),
+                "decoupling_desc": series_analysis.get("decoupling_desc", ""),
                 "critical_bottlenecks": critical_bottlenecks,
                 "strong_points": strong_points,
                 "actionable_focus": actionable_focus,

@@ -10,3 +10,12 @@ dependencies = [
     "jinja2>=3.1.6",
     "pandas>=3.0.5",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+

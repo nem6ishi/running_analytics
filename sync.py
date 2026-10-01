@@ -49,6 +49,21 @@ def get_garmin_client(token_dir: Path, relogin: bool = False) -> Garmin:
     token_dir.mkdir(parents=True, exist_ok=True)
     token_path_str = str(token_dir.resolve())
 
+    # CI環境などで環境変数 GARMIN_TOKENS_BASE64 が設定されている場合、自動展開
+    tokens_base64 = os.environ.get("GARMIN_TOKENS_BASE64")
+    if tokens_base64 and not list(token_dir.glob("*")):
+        import base64
+        import json
+        try:
+            print("📦 環境変数 GARMIN_TOKENS_BASE64 からトークンを復元中...")
+            decoded = base64.b64decode(tokens_base64.encode("utf-8")).decode("utf-8")
+            token_data = json.loads(decoded)
+            for fname, val in token_data.items():
+                (token_dir / fname).write_text(json.dumps(val) if isinstance(val, (dict, list)) else str(val), encoding="utf-8")
+            print("✅ トークンの復元に成功しました。")
+        except Exception as e:
+            print(f"⚠️ トークンの復元に失敗しました: {e}")
+
     # トークンが存在し、再ログイン要求がなければトークンでログイン
     if not relogin and list(token_dir.glob("*")):
         try:
@@ -64,12 +79,20 @@ def get_garmin_client(token_dir: Path, relogin: bool = False) -> Garmin:
     email = os.environ.get("GARMIN_EMAIL")
     password = os.environ.get("GARMIN_PASSWORD")
 
+    # 非対話環境（CIなど）で認証情報がない場合
+    if not sys.stdin.isatty() and (not email or not password):
+        print("❌ エラー: 非対話環境で Garmin 認証情報（またはキャッシュトークン）が見つかりません。")
+        print("GitHub Secrets に GARMIN_TOKENS_BASE64 または GARMIN_EMAIL / GARMIN_PASSWORD を設定してください。")
+        sys.exit(1)
+
     if not email:
         email = input("Garmin Connect メールアドレス: ").strip()
     if not password:
         password = getpass.getpass("Garmin Connect パスワード: ").strip()
 
     def mfa_callback():
+        if not sys.stdin.isatty():
+            raise RuntimeError("2段階認証コードの入力が必要ですが、非対話環境のため入力できません。")
         return input("📱 2段階認証 (MFA) コードを入力してください: ").strip()
 
     print("🔐 Garmin Connect にログイン中...")
@@ -320,7 +343,7 @@ def sync_activities(
             new_df.to_csv(csv_path, index=False, encoding="utf-8")
             print(f"✅ Activities.csv を新規作成しました。")
 
-    return downloaded_count
+    return downloaded_count, new_csv_rows
 
 
 def main():
@@ -344,7 +367,20 @@ def main():
     client = get_garmin_client(token_dir, relogin=args.relogin)
 
     # 2. 同期実行
-    synced_count = sync_activities(client, data_dir, limit=args.limit, fetch_all=args.all)
+    synced_count, new_rows = sync_activities(client, data_dir, limit=args.limit, fetch_all=args.all)
+
+    # 新規データのサマリー表示
+    if new_rows:
+        print("\n" + "=" * 60)
+        print(f"📊 新規取得アクティビティ速報 ({len(new_rows)} 件):")
+        print("=" * 60)
+        for r in new_rows:
+            dist_km = r.get("距離", "0")
+            pace = r.get("平均ペース", "--:--")
+            hr = r.get("平均心拍数", "--")
+            t = r.get("タイム", "--")
+            print(f"  🏃 {r.get('日付')} : {dist_km} km ({t}) | ペース {pace}/km | 平均心拍 {hr} bpm")
+        print("=" * 60)
 
     # 3. ビルド実行
     if not args.no_build:
@@ -364,7 +400,7 @@ def main():
         print("📤 GitHub へ変更を push します...")
         print("=" * 60)
         try:
-            subprocess.run(["git", "add", "docs/"], cwd=root_dir, check=True)
+            subprocess.run(["git", "add", "data/", "docs/"], cwd=root_dir, check=True)
             commit_res = subprocess.run(
                 ["git", "commit", "-m", f"Sync Garmin activities ({synced_count} new)"],
                 cwd=root_dir,
@@ -378,6 +414,7 @@ def main():
                 print("🚀 GitHub への push が完了しました！GitHub Pages が自動更新されます。")
         except subprocess.CalledProcessError as e:
             print(f"❌ Git 操作エラー: {e}")
+
 
     print("\n" + "=" * 60)
     print("🏁 全ての処理が完了しました！お疲れ様でした。")
