@@ -128,7 +128,7 @@ def build_csv_row_from_activity(act: Dict[str, Any]) -> Dict[str, str]:
     max_elev = int(round(act.get("maxElevation", 0.0)))
 
     # 歩幅 (cm または m)
-    stride_val = act.get("strideLength", 0.0)
+    stride_val = act.get("avgStrideLength") or act.get("strideLength", 0.0)
     stride_m = (stride_val / 100.0) if stride_val > 10 else stride_val
 
     steps = int(round(act.get("steps", 0.0)))
@@ -138,28 +138,28 @@ def build_csv_row_from_activity(act: Dict[str, Any]) -> Dict[str, str]:
         "アクティビティタイプ": "ラン",
         "日付": start_time,
         "お気に入り": "false",
-        "タイトル": f'"{title}"',
-        "距離": f'"{dist_km:.2f}"',
-        "カロリー": f'"{calories}"',
-        "タイム": f'"{format_seconds_to_time(duration_sec)}"',
-        "平均心拍数": f'"{avg_hr}"' if avg_hr > 0 else '""',
-        "最大心拍数": f'"{max_hr}"' if max_hr > 0 else '""',
-        "平均ピッチ": f'"{int(round(avg_cad))}"' if avg_cad > 0 else '""',
-        "最高ピッチ": f'"{int(round(max_cad))}"' if max_cad > 0 else '""',
-        "平均ペース": f'"{avg_pace_str}"',
-        "最高ペース": f'"{max_pace_str}"',
-        "総上昇量": f'"{elev_gain}"',
-        "総下降量": f'"{elev_loss}"',
-        "平均歩幅": f'"{stride_m:.2f}"',
-        "Training Stress Score®": '"0.0"',
-        "ステップ": f'"{steps:,}"',
-        "減圧": '"いいえ"',
-        "ベストラップタイム": '"00:00:00.0"',
-        "ラップ数": f'"{lap_count}"',
-        "移動時間": f'"{format_seconds_to_time(moving_sec)}"',
-        "経過時間": f'"{format_seconds_to_time(elapsed_sec)}"',
-        "最低高度": f'"{min_elev}"',
-        "最高高度": f'"{max_elev}"',
+        "タイトル": title,
+        "距離": f"{dist_km:.2f}",
+        "カロリー": str(calories),
+        "タイム": format_seconds_to_time(duration_sec),
+        "平均心拍数": str(avg_hr) if avg_hr > 0 else "",
+        "最大心拍数": str(max_hr) if max_hr > 0 else "",
+        "平均ピッチ": str(int(round(avg_cad))) if avg_cad > 0 else "",
+        "最高ピッチ": str(int(round(max_cad))) if max_cad > 0 else "",
+        "平均ペース": avg_pace_str,
+        "最高ペース": max_pace_str,
+        "総上昇量": str(elev_gain),
+        "総下降量": str(elev_loss),
+        "平均歩幅": f"{stride_m:.2f}",
+        "Training Stress Score®": "0.0",
+        "ステップ": f"{steps:,}",
+        "減圧": "いいえ",
+        "ベストラップタイム": "00:00:00.0",
+        "ラップ数": str(lap_count),
+        "移動時間": format_seconds_to_time(moving_sec),
+        "経過時間": format_seconds_to_time(elapsed_sec),
+        "最低高度": str(min_elev),
+        "最高高度": str(max_elev),
     }
 
 

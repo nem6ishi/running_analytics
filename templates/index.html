@@ -763,7 +763,7 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- ② 🏆 評価 (Evaluation: 分析結果に基づく多角判定) -->
+        <!-- ② 🏆 評価 (Evaluation: 忖度なしの厳格アスリート判定) -->
         <!-- ========================================== -->
         <div class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-5 shadow-sm">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
@@ -771,84 +771,86 @@
               <span class="text-lg">🏆</span>
               <h3 class="text-base font-bold text-white tracking-tight">② 評価 (Evaluation)</h3>
             </div>
-            <span class="text-xs text-slate-400">トレーニング狙いの達成度・得られた効果・走りの質</span>
+            <div class="flex items-center space-x-2">
+              ${ev.target_status ? `
+                <span class="px-3 py-1 rounded-full text-xs font-bold border ${ev.target_status.badge_color}">
+                  🎯 ${ev.target_status.label}
+                </span>
+              ` : ''}
+            </div>
           </div>
 
-          <!-- セッション総合総括カード -->
-          ${ev.overall_summary ? `
-            <div class="bg-gradient-to-r from-slate-900 via-indigo-950/30 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 sm:p-5 flex items-start space-x-3.5 shadow-sm">
+          <!-- セッション総合総括カード (Overall Verdict) -->
+          ${ev.overall_verdict ? `
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/40 rounded-2xl p-4 sm:p-5 flex items-start space-x-3.5 shadow-sm">
               <span class="text-2xl flex-shrink-0 mt-0.5">🎯</span>
               <div class="space-y-1.5">
-                <span class="text-[11px] font-black text-indigo-300 uppercase tracking-wider block">セッション総合総括</span>
-                <p class="text-xs sm:text-sm text-slate-100 leading-relaxed font-medium">${ev.overall_summary.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')}</p>
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-black text-indigo-300 uppercase tracking-wider block">セッション総合総括 (Verdict)</span>
+                  ${ev.target_gap_str ? `<span class="text-[11px] text-slate-400 font-mono">10km 50分目標に対し: <strong class="${ev.target_gap_sec <= 0 ? 'text-emerald-400' : 'text-amber-400'}">${ev.target_gap_str}</strong></span>` : ''}
+                </div>
+                <p class="text-xs sm:text-sm text-slate-100 leading-relaxed font-medium">${ev.overall_verdict.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')}</p>
               </div>
             </div>
           ` : ''}
 
-          <!-- 3つの多角評価カード (3 Evaluation Pillars) -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- 2大評価カード: ▲ 容赦ない反省点・ボトルネック VS ◎ 客観的な収穫・強み -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <!-- 柱A: トレーニング狙いの達成度 -->
-            ${ev.execution ? `
-              <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
-                <div class="space-y-2.5">
-                  <div class="flex items-center space-x-2 border-b border-slate-800/80 pb-2">
-                    <span class="text-base">🎯</span>
-                    <h4 class="text-xs sm:text-sm font-bold text-emerald-400 tracking-tight">${ev.execution.title}</h4>
+            <!-- ▲ 容赦ない反省点・ボトルネック (Critical Bottlenecks) -->
+            <div class="bg-rose-950/15 border border-rose-500/30 rounded-2xl p-4 sm:p-5 space-y-3 flex flex-col justify-between shadow-sm">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between border-b border-rose-500/20 pb-2.5">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-base">⚠️</span>
+                    <h4 class="text-xs sm:text-sm font-bold text-rose-400 tracking-tight">▲ シビアな反省点・ボトルネック (Critical Bottlenecks)</h4>
                   </div>
-                  <ul class="space-y-2 text-xs text-slate-300">
-                    ${(ev.execution.points || []).map(p => `
-                      <li class="flex items-start">
-                        <span class="text-emerald-400 mr-2 flex-shrink-0 mt-0.5">✓</span>
-                        <span class="leading-relaxed">${p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')}</span>
-                      </li>
-                    `).join('')}
-                  </ul>
+                  <span class="text-[10px] text-rose-400/80 font-medium px-2 py-0.5 rounded bg-rose-500/10">改善必須</span>
                 </div>
+                <ul class="space-y-2.5 text-xs text-slate-300">
+                  ${(ev.critical_bottlenecks || []).map(p => `
+                    <li class="flex items-start bg-slate-900/40 p-2.5 rounded-xl border border-rose-500/10">
+                      <span class="text-rose-400 mr-2 flex-shrink-0 mt-0.5 font-bold">▲</span>
+                      <span class="leading-relaxed">${p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-rose-200 font-semibold">$1</strong>')}</span>
+                    </li>
+                  `).join('')}
+                </ul>
               </div>
-            ` : ''}
+            </div>
 
-            <!-- 柱B: 生理的刺激と得られた効果 -->
-            ${ev.physiological ? `
-              <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
-                <div class="space-y-2.5">
-                  <div class="flex items-center space-x-2 border-b border-slate-800/80 pb-2">
-                    <span class="text-base">🫀</span>
-                    <h4 class="text-xs sm:text-sm font-bold text-rose-400 tracking-tight">${ev.physiological.title}</h4>
+            <!-- ◎ 客観的な収穫・強み (Strong Points) -->
+            <div class="bg-emerald-950/15 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 space-y-3 flex flex-col justify-between shadow-sm">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between border-b border-emerald-500/20 pb-2.5">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-base">💎</span>
+                    <h4 class="text-xs sm:text-sm font-bold text-emerald-400 tracking-tight">◎ 客観的な収穫・強み (Strong Points)</h4>
                   </div>
-                  <ul class="space-y-2 text-xs text-slate-300">
-                    ${(ev.physiological.points || []).map(p => `
-                      <li class="flex items-start">
-                        <span class="text-rose-400 mr-2 flex-shrink-0 mt-0.5">⚡</span>
-                        <span class="leading-relaxed">${p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')}</span>
-                      </li>
-                    `).join('')}
-                  </ul>
+                  <span class="text-[10px] text-emerald-400/80 font-medium px-2 py-0.5 rounded bg-emerald-500/10">実証済み</span>
                 </div>
+                <ul class="space-y-2.5 text-xs text-slate-300">
+                  ${(ev.strong_points || []).map(p => `
+                    <li class="flex items-start bg-slate-900/40 p-2.5 rounded-xl border border-emerald-500/10">
+                      <span class="text-emerald-400 mr-2 flex-shrink-0 mt-0.5 font-bold">✓</span>
+                      <span class="leading-relaxed">${p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-emerald-200 font-semibold">$1</strong>')}</span>
+                    </li>
+                  `).join('')}
+                </ul>
               </div>
-            ` : ''}
-
-            <!-- 柱C: フォーム再現性とコントロール -->
-            ${ev.mechanics ? `
-              <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
-                <div class="space-y-2.5">
-                  <div class="flex items-center space-x-2 border-b border-slate-800/80 pb-2">
-                    <span class="text-base">🏃</span>
-                    <h4 class="text-xs sm:text-sm font-bold text-teal-400 tracking-tight">${ev.mechanics.title}</h4>
-                  </div>
-                  <ul class="space-y-2 text-xs text-slate-300">
-                    ${(ev.mechanics.points || []).map(p => `
-                      <li class="flex items-start">
-                        <span class="text-teal-400 mr-2 flex-shrink-0 mt-0.5">◆</span>
-                        <span class="leading-relaxed">${p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')}</span>
-                      </li>
-                    `).join('')}
-                  </ul>
-                </div>
-              </div>
-            ` : ''}
+            </div>
 
           </div>
+
+          <!-- 🔥 次回への是正アクション (Actionable Focus) -->
+          ${ev.actionable_focus ? `
+            <div class="bg-gradient-to-r from-amber-950/30 via-slate-900 to-amber-950/20 border border-amber-500/40 rounded-2xl p-4 flex items-start space-x-3 shadow-inner">
+              <span class="text-xl flex-shrink-0 mt-0.5">🔥</span>
+              <div class="space-y-1">
+                <span class="text-[11px] font-black text-amber-300 uppercase tracking-wider block">次回セッションでの是正アクション (Actionable Focus)</span>
+                <p class="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">${ev.actionable_focus.replace(/【(.*?)】/g, '<strong class="text-amber-300 font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">【$1】</strong>')}</p>
+              </div>
+            </div>
+          ` : ''}
 
           <!-- 前回比較 & ハイライトバッジ -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-800/60 text-xs">
