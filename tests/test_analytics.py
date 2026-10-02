@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 from pathlib import Path
 from src.parser import load_activities
-from src.analytics import compute_vdot_analytics, compute_sub50_progress, compute_calendar_heatmap
+from src.analytics import compute_vdot_analytics, compute_sub50_progress, compute_calendar_heatmap, compute_rolling_volume
 from src.coach import analyze_time_series
 
 
@@ -55,3 +55,11 @@ def test_analytics_with_real_csv():
     sample = heatmap[0]
     for key in ["date", "date_jp", "year", "month", "day", "weekday", "weekday_jp", "distance_km", "is_future", "is_first_day"]:
         assert key in sample
+
+    rolling = compute_rolling_volume(df, window_days=30)
+    assert len(rolling["dates"]) >= 100
+    assert len(rolling["volumes"]) == len(rolling["dates"])
+    assert len(rolling["runs"]) == len(rolling["dates"])
+    assert rolling["current_volume"] > 0
+    assert rolling["peak_volume"] >= rolling["current_volume"]
+    assert rolling["window_days"] == 30

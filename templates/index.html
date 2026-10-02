@@ -638,11 +638,50 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- 月別走行距離 & 回数 -->
-          <div class="glass-card rounded-3xl p-5 shadow-xl">
-            <h3 class="text-sm font-bold text-slate-200 mb-1">月別走行距離 & 出走回数</h3>
-            <p class="text-xs text-slate-400 mb-4">月ごとのボリューム推移</p>
-            <div class="relative h-64">
+          <!-- トレーニングボリューム推移 (過去30日ローリング移動累計 / カレンダー月別切り替え) -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl flex flex-col justify-between">
+            <div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-3 mb-3">
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <h3 class="text-sm font-bold text-slate-200" id="volume-chart-title">過去30日間の合計走行距離 (移動累計)</h3>
+                    <span id="volume-chart-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+                      Rolling 30 Days
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-0.5" id="volume-chart-desc">その日から過去30日間のスライディングウィンドウ合計走行距離推移</p>
+                </div>
+
+                <!-- 切り替えトグルスイッチ -->
+                <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-xl text-xs font-mono shrink-0">
+                  <button type="button" id="btn-vol-rolling" onclick="toggleVolumeChartMode('rolling')" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm">
+                    過去30日移動
+                  </button>
+                  <button type="button" id="btn-vol-monthly" onclick="toggleVolumeChartMode('monthly')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all">
+                    カレンダー月別
+                  </button>
+                </div>
+              </div>
+
+              <!-- ローリングサマリーメトリクス (現在値 / ピーク / 平均) -->
+              <div id="rolling-volume-stats" class="grid grid-cols-3 gap-2 mb-3">
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2 text-center">
+                  <span class="text-[10px] text-slate-400 block font-sans">直近30日合計</span>
+                  <span class="text-sm sm:text-base font-black text-emerald-400 font-mono">{{ rolling_volume.current_volume }} <span class="text-[10px] font-normal text-slate-400">km</span></span>
+                </div>
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2 text-center">
+                  <span class="text-[10px] text-slate-400 block font-sans">過去30日ピーク</span>
+                  <span class="text-sm sm:text-base font-black text-white font-mono">{{ rolling_volume.peak_volume }} <span class="text-[10px] font-normal text-slate-400">km</span></span>
+                </div>
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2 text-center">
+                  <span class="text-[10px] text-slate-400 block font-sans">30日平均ボリューム</span>
+                  <span class="text-sm sm:text-base font-black text-slate-300 font-mono">{{ rolling_volume.mean_volume }} <span class="text-[10px] font-normal text-slate-400">km</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- チャートキャンバス -->
+            <div class="relative h-60">
               <canvas id="monthlyChart"></canvas>
             </div>
           </div>
@@ -866,6 +905,7 @@
     const weeklyWorkload = {{ weekly_workload_json | safe }};
     const formEvolution = {{ form_evolution_json | safe }};
     const calendarHeatmap = {{ calendar_heatmap_json | safe }};
+    const rollingVolume = {{ rolling_volume_json | safe }};
     const monthlyStats = {{ monthly_json | safe }};
     const vdotData = {{ vdot_data_json | safe }};
     const sub50Progress = {{ sub50_progress_json | safe }};
@@ -2109,53 +2149,184 @@
     // トレンドチャート描画 (Chart.js)
     // ==========================================
 
-    // 1. 月別走行距離 & 回数
-    new Chart(document.getElementById('monthlyChart'), {
-      type: 'bar',
-      data: {
-        labels: chartData.monthly_labels,
-        datasets: [
-          {
-            type: 'bar',
-            label: '走行距離 (km)',
-            data: chartData.monthly_distances,
-            backgroundColor: '#10b981',
-            borderRadius: 6,
-            yAxisID: 'y'
-          },
-          {
-            type: 'line',
-            label: '出走回数',
-            data: chartData.monthly_runs,
-            borderColor: '#38bdf8',
-            backgroundColor: '#38bdf8',
-            tension: 0.3,
-            yAxisID: 'y1'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-          y: {
-            title: { display: true, text: 'km', color: '#94a3b8' },
-            grid: { color: 'rgba(255, 255, 255, 0.06)' },
-            ticks: { color: '#94a3b8' }
-          },
-          y1: {
-            position: 'right',
-            title: { display: true, text: '回', color: '#94a3b8' },
-            grid: { display: false },
-            ticks: { color: '#94a3b8', stepSize: 1 }
-          }
-        },
-        plugins: {
-          legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
-        }
+    // 1. トレーニングボリューム推移 (過去30日ローリング移動合計 / 月別切り替え)
+    let volumeChartInstance = null;
+    let currentVolumeMode = 'rolling';
+
+    function initVolumeChart(mode = 'rolling') {
+      const ctx = document.getElementById('monthlyChart');
+      if (!ctx) return;
+
+      if (volumeChartInstance) {
+        volumeChartInstance.destroy();
       }
-    });
+
+      currentVolumeMode = mode;
+
+      if (mode === 'rolling' && typeof rollingVolume !== 'undefined' && rollingVolume.dates) {
+        // 過去30日ローリング移動合計モード
+        volumeChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: rollingVolume.dates,
+            datasets: [
+              {
+                label: '過去30日合計 (km)',
+                data: rollingVolume.volumes,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.25,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: '#10b981',
+                yAxisID: 'y'
+              },
+              {
+                label: '過去30日出走 (回)',
+                data: rollingVolume.runs,
+                borderColor: '#38bdf8',
+                backgroundColor: 'transparent',
+                borderWidth: 1.5,
+                borderDash: [3, 3],
+                tension: 0.25,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                pointHoverBackgroundColor: '#38bdf8',
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: {
+                  color: '#94a3b8',
+                  maxTicksLimit: 8
+                }
+              },
+              y: {
+                title: { display: true, text: '過去30日合計 km', color: '#94a3b8', font: { size: 10 } },
+                grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                ticks: { color: '#94a3b8' }
+              },
+              y1: {
+                position: 'right',
+                title: { display: true, text: '出走回', color: '#94a3b8', font: { size: 10 } },
+                grid: { display: false },
+                ticks: { color: '#94a3b8', stepSize: 1 }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: { color: '#cbd5e1', font: { size: 11 }, boxWidth: 12 }
+              },
+              tooltip: {
+                callbacks: {
+                  afterBody: function(tooltipItems) {
+                    const idx = tooltipItems[0].dataIndex;
+                    const daily = rollingVolume.daily_distances ? rollingVolume.daily_distances[idx] : 0;
+                    return daily > 0 ? `当日走行: ${daily} km` : `当日走行: 休息 (0 km)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      } else {
+        // カレンダー月別モード
+        volumeChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: chartData.monthly_labels,
+            datasets: [
+              {
+                type: 'bar',
+                label: '月間走行距離 (km)',
+                data: chartData.monthly_distances,
+                backgroundColor: '#10b981',
+                borderRadius: 6,
+                yAxisID: 'y'
+              },
+              {
+                type: 'line',
+                label: '月間出走回数',
+                data: chartData.monthly_runs,
+                borderColor: '#38bdf8',
+                backgroundColor: '#38bdf8',
+                tension: 0.3,
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+              y: {
+                title: { display: true, text: 'km', color: '#94a3b8' },
+                grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                ticks: { color: '#94a3b8' }
+              },
+              y1: {
+                position: 'right',
+                title: { display: true, text: '回', color: '#94a3b8' },
+                grid: { display: false },
+                ticks: { color: '#94a3b8', stepSize: 1 }
+              }
+            },
+            plugins: {
+              legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+            }
+          }
+        });
+      }
+    }
+
+    function toggleVolumeChartMode(mode) {
+      const btnRolling = document.getElementById('btn-vol-rolling');
+      const btnMonthly = document.getElementById('btn-vol-monthly');
+      const title = document.getElementById('volume-chart-title');
+      const desc = document.getElementById('volume-chart-desc');
+      const badge = document.getElementById('volume-chart-badge');
+      const statsBox = document.getElementById('rolling-volume-stats');
+
+      if (mode === 'rolling') {
+        if (btnRolling) btnRolling.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm';
+        if (btnMonthly) btnMonthly.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        if (title) title.textContent = '過去30日間の合計走行距離 (移動累計)';
+        if (desc) desc.textContent = 'その日から過去30日間のスライディングウィンドウ合計走行距離推移';
+        if (badge) {
+          badge.textContent = 'Rolling 30 Days';
+          badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono';
+        }
+        if (statsBox) statsBox.style.display = '';
+        initVolumeChart('rolling');
+      } else {
+        if (btnMonthly) btnMonthly.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm';
+        if (btnRolling) btnRolling.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        if (title) title.textContent = '月別走行距離 & 出走回数';
+        if (desc) desc.textContent = 'カレンダー月ごとの走行ボリュームと出走回数の推移';
+        if (badge) {
+          badge.textContent = 'Monthly Calendar';
+          badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30 font-mono';
+        }
+        if (statsBox) statsBox.style.display = 'none';
+        initVolumeChart('monthly');
+      }
+    }
+
+    // 初期化実行 (デフォルト: 過去30日ローリング合計)
+    initVolumeChart('rolling');
 
     // 2. ペース & 心拍数推移
     new Chart(document.getElementById('paceHrChart'), {

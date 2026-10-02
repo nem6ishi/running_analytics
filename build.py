@@ -55,6 +55,8 @@ def build():
         sub50_progress_json=json.dumps(analytics_data["sub50_progress"], ensure_ascii=False, default=json_default),
         calendar_heatmap=analytics_data["calendar_heatmap"],
         calendar_heatmap_json=json.dumps(analytics_data["calendar_heatmap"], ensure_ascii=False, default=json_default),
+        rolling_volume=analytics_data["rolling_volume"],
+        rolling_volume_json=json.dumps(analytics_data["rolling_volume"], ensure_ascii=False, default=json_default),
         weekly_workload=analytics_data["weekly_workload"],
         weekly_workload_json=json.dumps(analytics_data["weekly_workload"], ensure_ascii=False, default=json_default),
         form_evolution=analytics_data["form_evolution"],

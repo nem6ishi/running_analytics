@@ -451,6 +451,67 @@ def compute_form_evolution(df: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
+def compute_rolling_volume(df: pd.DataFrame, window_days: int = 30) -> Dict[str, Any]:
+    """各日における過去N日間（デフォルト30日間＝過去1ヶ月）のスライディングウィンドウ合計走行距離と回数を集計"""
+    if df.empty:
+        return {
+            "dates": [],
+            "volumes": [],
+            "runs": [],
+            "daily_distances": [],
+            "current_volume": 0.0,
+            "peak_volume": 0.0,
+            "mean_volume": 0.0,
+            "window_days": window_days,
+        }
+
+    daily = (
+        df.groupby("date_str")
+        .agg(
+            distance_km=("distance_km", "sum"),
+            runs=("distance_km", "count")
+        )
+    )
+
+    min_date = df["datetime"].min().date()
+    max_date = df["datetime"].max().date()
+
+    all_dates = pd.date_range(min_date, max_date, freq="D")
+    df_daily = pd.DataFrame(index=all_dates)
+    df_daily["distance_km"] = 0.0
+    df_daily["runs"] = 0
+
+    for d_str, row in daily.iterrows():
+        dt = pd.to_datetime(d_str)
+        if dt in df_daily.index:
+            df_daily.loc[dt, "distance_km"] = float(row["distance_km"])
+            df_daily.loc[dt, "runs"] = int(row["runs"])
+
+    # ローリング集計 (window=window_days, min_periods=1)
+    df_daily["rolling_dist"] = df_daily["distance_km"].rolling(window=window_days, min_periods=1).sum()
+    df_daily["rolling_runs"] = df_daily["runs"].rolling(window=window_days, min_periods=1).sum()
+
+    dates = [d.strftime("%Y-%m-%d") for d in df_daily.index]
+    volumes = [round(float(v), 2) for v in df_daily["rolling_dist"]]
+    rolling_runs = [int(r) for r in df_daily["rolling_runs"]]
+    daily_distances = [round(float(d), 2) for d in df_daily["distance_km"]]
+
+    current_volume = volumes[-1] if volumes else 0.0
+    peak_volume = round(float(df_daily["rolling_dist"].max()), 2) if not df_daily.empty else 0.0
+    mean_volume = round(float(df_daily["rolling_dist"].mean()), 2) if not df_daily.empty else 0.0
+
+    return {
+        "dates": dates,
+        "volumes": volumes,
+        "runs": rolling_runs,
+        "daily_distances": daily_distances,
+        "current_volume": current_volume,
+        "peak_volume": peak_volume,
+        "mean_volume": mean_volume,
+        "window_days": window_days,
+    }
+
+
 def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """サイト描画に必要な全分析データをまとめる"""
     overview = compute_overview_stats(df)
@@ -465,6 +526,7 @@ def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] 
     weekly_workload = compute_weekly_workload(df)
     form_evolution = compute_form_evolution(df)
     calendar_heatmap = compute_calendar_heatmap(df)
+    rolling_volume = compute_rolling_volume(df, window_days=30)
 
     # グラフ用データ系列の抽出
     chart_dates = [row["date_str"] for _, row in df.iterrows()]
@@ -501,6 +563,7 @@ def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] 
         "weekly_workload": weekly_workload,
         "form_evolution": form_evolution,
         "calendar_heatmap": calendar_heatmap,
+        "rolling_volume": rolling_volume,
         "chart_data": {
             "dates": chart_dates,
             "distances": chart_distances,
