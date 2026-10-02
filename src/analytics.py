@@ -276,7 +276,7 @@ def compute_sub50_progress(df: pd.DataFrame, insights: List[Dict[str, Any]], cur
 
 
 def compute_calendar_heatmap(df: pd.DataFrame) -> List[Dict[str, Any]]:
-    """カレンダーヒートマップ用デイリー集計データ (全期間)"""
+    """カレンダーヒートマップ用デイリー集計データ (直近1年間・週境界アライン)"""
     if df.empty:
         return []
 
@@ -304,18 +304,45 @@ def compute_calendar_heatmap(df: pd.DataFrame) -> List[Dict[str, Any]]:
 
     start_dt = df["datetime"].min().date()
     end_dt = df["datetime"].max().date()
+
+    # 直近約1年 (370日) を上限とする
+    max_history_days = 370
+    earliest_allowed = end_dt - timedelta(days=max_history_days)
+    if start_dt < earliest_allowed:
+        start_dt = earliest_allowed
+
     min_start = end_dt - timedelta(days=150)
     if start_dt > min_start:
         start_dt = min_start
 
+    # 週の開始曜日（月曜日: weekday=0）にアライン
+    aligned_start = start_dt - timedelta(days=start_dt.weekday())
+    # 週の終了曜日（日曜日: weekday=6）にアライン
+    aligned_end = end_dt + timedelta(days=(6 - end_dt.weekday()))
+
+    weekday_jp_map = ["月", "火", "水", "木", "金", "土", "日"]
+
     heatmap_list = []
-    curr = start_dt
-    while curr <= end_dt:
+    curr = aligned_start
+    while curr <= aligned_end:
         date_str = curr.strftime("%Y-%m-%d")
-        if date_str in daily_map:
+        is_future = curr > end_dt
+        weekday_idx = curr.weekday()
+        weekday_jp = weekday_jp_map[weekday_idx]
+        date_jp = f"{curr.year}年{curr.month}月{curr.day}日 ({weekday_jp})"
+
+        if date_str in daily_map and not is_future:
             info = daily_map[date_str]
             heatmap_list.append({
                 "date": date_str,
+                "date_jp": date_jp,
+                "year": curr.year,
+                "month": curr.month,
+                "day": curr.day,
+                "weekday": weekday_idx,
+                "weekday_jp": weekday_jp,
+                "is_future": False,
+                "is_first_day": curr.day == 1,
                 "distance_km": info["distance_km"],
                 "runs": info["runs"],
                 "pace_str": info["pace_str"],
@@ -324,6 +351,14 @@ def compute_calendar_heatmap(df: pd.DataFrame) -> List[Dict[str, Any]]:
         else:
             heatmap_list.append({
                 "date": date_str,
+                "date_jp": date_jp,
+                "year": curr.year,
+                "month": curr.month,
+                "day": curr.day,
+                "weekday": weekday_idx,
+                "weekday_jp": weekday_jp,
+                "is_future": is_future,
+                "is_first_day": curr.day == 1,
                 "distance_km": 0.0,
                 "runs": 0,
                 "pace_str": "--:--",

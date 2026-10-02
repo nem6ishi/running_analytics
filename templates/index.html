@@ -543,28 +543,80 @@
                   <p class="text-[11px] text-slate-400">日々の練習継続性（濃い緑ほど長距離走）</p>
                 </div>
               </div>
-              <div class="flex items-center space-x-1.5 text-xs text-slate-400 font-mono">
-                <span class="text-[10px]">少</span>
-                <span class="w-2.5 h-2.5 rounded-sm bg-slate-800/80 inline-block"></span>
-                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-950 inline-block"></span>
-                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-700 inline-block"></span>
-                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
-                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-300 inline-block"></span>
-                <span class="text-[10px]">多 (10k+)</span>
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-400 font-mono">
+                <!-- 凡例: 走行距離 -->
+                <div class="flex items-center space-x-1">
+                  <span class="text-[10px]">少</span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-slate-900 border border-slate-800 inline-block"></span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-950 inline-block"></span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-700 inline-block"></span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-300 inline-block"></span>
+                  <span class="text-[10px]">多 (12k+)</span>
+                </div>
+                <!-- 凡例: 月初マーク -->
+                <div class="flex items-center space-x-1 pl-2 border-l border-slate-800">
+                  <span class="w-2.5 h-2.5 rounded-sm bg-slate-900 ring-1 ring-white/70 inline-block"></span>
+                  <span class="text-[10px] text-slate-400">月初(1日)</span>
+                </div>
               </div>
             </div>
 
-            <!-- ヒートマップコンテナ -->
-            <div class="overflow-x-auto pb-2 pt-3">
-              <div id="heatmap-grid" class="flex gap-1.5 min-w-[700px] py-1">
-                <!-- JSで動的にカレンダーセルを生成 -->
+            <!-- ヒートマップコンテナ (横スクロール対応) -->
+            <div class="overflow-x-auto pb-2 pt-3 select-none scrollbar-thin">
+              <div class="min-w-[780px] inline-flex flex-col">
+                <!-- 1. 月ラベル行 (各週に対応して月名を表示) -->
+                <div class="flex items-center mb-1">
+                  <!-- 曜日ラベル幅分のインデント -->
+                  <div class="w-5 sm:w-6 mr-1.5 sm:mr-2 shrink-0"></div>
+                  <!-- 各週のスロット -->
+                  <div id="heatmap-month-labels" class="flex gap-1 sm:gap-1.5 flex-1 relative h-4">
+                    <!-- JSで動的に月ラベルを生成 -->
+                  </div>
+                </div>
+
+                <!-- 2. カレンダー本体 (曜日ラベル + グリッド) -->
+                <div class="flex items-start">
+                  <!-- 曜日ラベル (月・水・金・日) -->
+                  <div class="flex flex-col gap-1 text-[9px] sm:text-[10px] font-mono text-slate-400 w-5 sm:w-6 mr-1.5 sm:mr-2 text-right shrink-0">
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">月</div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">水</div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">金</div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none text-slate-500">日</div>
+                  </div>
+
+                  <!-- 週ごとのセル列 -->
+                  <div id="heatmap-grid" class="flex gap-1 sm:gap-1.5 py-0.5">
+                    <!-- JSで各週のセル列を動的生成 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. 月別サマリーバッジ (ホバーで該当月をハイライト) -->
+            <div class="pt-2.5 mt-1 border-t border-slate-800/60">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1.5">
+                  <span>🗓️</span> 月別走行サマリー <span class="text-[10px] font-normal text-slate-500 hidden sm:inline">(クリックで月固定 / ホバーでハイライト)</span>
+                </span>
+                <button type="button" id="heatmap-reset-filter" onclick="resetHeatmapMonthFilter()" class="text-[10px] text-slate-400 hover:text-emerald-400 transition hidden">
+                  フィルター解除 ✕
+                </button>
+              </div>
+              <div id="heatmap-month-pills" class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px] font-mono">
+                <!-- JSで月別バッジを動的生成 -->
               </div>
             </div>
           </div>
 
-          <div id="heatmap-tooltip" class="text-xs text-slate-400 flex items-center justify-between pt-2 border-t border-slate-800/50">
-            <span id="heatmap-info">マス目にカーソルを合わせるとその日の走行データが表示されます</span>
-            <span class="text-[11px] text-slate-500 font-mono">全{{ overview.total_runs }}ランの足跡</span>
+          <div id="heatmap-tooltip" class="text-xs text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-2 border-t border-slate-800/50">
+            <div id="heatmap-info" class="flex items-center space-x-1.5 min-h-[20px]">
+              <span>マス目にカーソルを合わせるとその日の走行データが表示されます</span>
+            </div>
+            <span class="text-[11px] text-slate-500 font-mono">全{{ overview.total_runs }}ラン (月曜始まり)</span>
           </div>
         </div>
 
@@ -809,6 +861,7 @@
     const weeklyWorkload = {{ weekly_workload_json | safe }};
     const formEvolution = {{ form_evolution_json | safe }};
     const calendarHeatmap = {{ calendar_heatmap_json | safe }};
+    const monthlyStats = {{ monthly_json | safe }};
     const vdotData = {{ vdot_data_json | safe }};
     const sub50Progress = {{ sub50_progress_json | safe }};
 
@@ -1705,55 +1758,265 @@
     // ==========================================
     // 📅 カレンダーヒートマップ描画 (Consistency Heatmap)
     // ==========================================
+    let activeMonthFilter = null;
+
     function initCalendarHeatmap() {
-      const container = document.getElementById('heatmap-grid');
-      if (!container || !calendarHeatmap || calendarHeatmap.length === 0) return;
+      const gridContainer = document.getElementById('heatmap-grid');
+      const monthLabelsContainer = document.getElementById('heatmap-month-labels');
+      if (!gridContainer || !calendarHeatmap || calendarHeatmap.length === 0) return;
 
+      // 1. 週ごとに分割 (7日単位: 月曜〜日曜)
       const weeks = [];
-      let currentWeek = [];
+      for (let i = 0; i < calendarHeatmap.length; i += 7) {
+        weeks.push(calendarHeatmap.slice(i, i + 7));
+      }
 
-      calendarHeatmap.forEach((item, index) => {
-        currentWeek.push(item);
-        if (currentWeek.length === 7 || index === calendarHeatmap.length - 1) {
-          weeks.push(currentWeek);
-          currentWeek = [];
-        }
-      });
+      // 2. 上部月ラベルの配置
+      if (monthLabelsContainer) {
+        let lastMonth = null;
+        let lastYear = null;
+        let lastLabelWeekIdx = -99;
 
-      container.innerHTML = weeks.map(week => {
-        const cellsHtml = week.map(day => {
+        const monthSlotsHtml = weeks.map((week, weekIdx) => {
+          // 週の代表日（木曜日 week[3] または 1日が含まれる場合はその月）
+          const firstDay = week.find(d => d.day === 1);
+          const repDay = firstDay || week[3] || week[0];
+          const curMonth = repDay.month;
+          const curYear = repDay.year;
+
+          let labelText = '';
+
+          if (weekIdx === 0) {
+            labelText = `${curYear}年 ${curMonth}月`;
+            lastMonth = curMonth;
+            lastYear = curYear;
+            lastLabelWeekIdx = weekIdx;
+          } else if (curMonth !== lastMonth && (weekIdx - lastLabelWeekIdx >= 2)) {
+            if (curYear !== lastYear) {
+              labelText = `${curYear}年 ${curMonth}月`;
+              lastYear = curYear;
+            } else {
+              labelText = `${curMonth}月`;
+            }
+            lastMonth = curMonth;
+            lastLabelWeekIdx = weekIdx;
+          }
+
+          // 各週スロット（セル列と同じ幅 w-3 sm:w-3.5 shrink-0 relative）
+          return `
+            <div class="w-3 h-4 sm:w-3.5 shrink-0 relative">
+              ${labelText ? `<span class="absolute left-0 top-0 whitespace-nowrap text-[10px] sm:text-[11px] font-bold text-slate-300 font-mono tracking-tight pointer-events-none">${labelText}</span>` : ''}
+            </div>
+          `;
+        }).join('');
+
+        monthLabelsContainer.innerHTML = monthSlotsHtml;
+      }
+
+      // 3. 週列・セルの生成
+      gridContainer.innerHTML = weeks.map((week) => {
+        const cellsHtml = week.map((day) => {
+          if (day.is_future) {
+            return `
+              <div class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm border border-dashed border-slate-800/40 opacity-20 cursor-default"
+                   title="${day.date_jp}: 今後の予定">
+              </div>
+            `;
+          }
+
           const d = day.distance_km;
           let bgClass = 'bg-slate-900 border border-slate-800/80';
           if (d > 0 && d < 4.5) {
             bgClass = 'bg-emerald-950/80 border border-emerald-800/60 hover:border-emerald-400';
           } else if (d >= 4.5 && d < 8.0) {
-            bgClass = 'bg-emerald-700 hover:bg-emerald-600 shadow-sm';
+            bgClass = 'bg-emerald-700 hover:bg-emerald-500 shadow-sm';
           } else if (d >= 8.0 && d < 12.0) {
             bgClass = 'bg-emerald-500 hover:bg-emerald-400 shadow-sm shadow-emerald-500/30';
           } else if (d >= 12.0) {
-            bgClass = 'bg-emerald-300 hover:bg-emerald-200 shadow-md shadow-emerald-400/50';
+            bgClass = 'bg-emerald-300 hover:bg-emerald-100 shadow-md shadow-emerald-400/50';
           }
 
-          const infoStr = d > 0 ? `${day.date}: ${d} km (${day.pace_str}/km, 心拍 ${day.avg_hr} bpm)` : `${day.date}: 休息日 (0 km)`;
+          // 毎月1日には白系リングを付与して月の境界を明確にする
+          const firstDayRing = day.is_first_day ? 'ring-1 ring-white/80 shadow-sm' : '';
+          const monthKey = `${day.year}-${String(day.month).padStart(2, '0')}`;
+
+          const infoStr = d > 0 
+            ? `${day.date_jp}: ${d} km (${day.pace_str}/km, 心拍 ${day.avg_hr} bpm)` 
+            : `${day.date_jp}: 休息日 (0 km)`;
+
           return `
-            <div class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm ${bgClass} cursor-pointer transition-all duration-150"
+            <div class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm ${bgClass} ${firstDayRing} cursor-pointer transition-all duration-150 hover:scale-125 hover:z-20 heatmap-cell"
                  data-info="${infoStr}"
+                 data-date-jp="${day.date_jp}"
+                 data-dist="${d}"
+                 data-pace="${day.pace_str}"
+                 data-hr="${day.avg_hr}"
+                 data-month-key="${monthKey}"
                  onmouseenter="showHeatmapInfo(this)"
                  title="${infoStr}">
             </div>
           `;
         }).join('');
 
-        return `<div class="flex flex-col gap-1">${cellsHtml}</div>`;
+        return `<div class="flex flex-col gap-1 week-col">${cellsHtml}</div>`;
+      }).join('');
+
+      // 4. 月別サマリーバッジの描画
+      initHeatmapMonthSummary();
+    }
+
+    // 月別サマリーバッジ（クリックで月固定、ホバーで月セル強調）
+    function initHeatmapMonthSummary() {
+      const pillsContainer = document.getElementById('heatmap-month-pills');
+      if (!pillsContainer) return;
+
+      // calendarHeatmapから月別合計距離とラン数を集計
+      const monthAgg = {};
+      calendarHeatmap.forEach(day => {
+        if (day.is_future) return;
+        const key = `${day.year}-${String(day.month).padStart(2, '0')}`;
+        if (!monthAgg[key]) {
+          monthAgg[key] = {
+            year: day.year,
+            month: day.month,
+            label: `${day.year}年${day.month}月`,
+            shortLabel: `${day.month}月`,
+            distance_km: 0.0,
+            runs: 0
+          };
+        }
+        if (day.distance_km > 0) {
+          monthAgg[key].distance_km += day.distance_km;
+          monthAgg[key].runs += (day.runs || 1);
+        }
+      });
+
+      const monthKeys = Object.keys(monthAgg).sort();
+      if (monthKeys.length === 0) return;
+
+      // 月別バッジHTMLを生成
+      pillsContainer.innerHTML = monthKeys.map(key => {
+        const item = monthAgg[key];
+        const distRounded = Math.round(item.distance_km * 10) / 10;
+        return `
+          <button type="button"
+                  class="heatmap-month-pill px-2.5 py-1 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700/70 hover:border-emerald-500/50 transition-all shrink-0 flex items-center space-x-1.5 cursor-pointer"
+                  data-month-key="${key}"
+                  onmouseenter="highlightHeatmapMonth('${key}')"
+                  onmouseleave="unhighlightHeatmapMonth()"
+                  onclick="toggleHeatmapMonthFilter('${key}')"
+                  title="${item.label}: 合計${distRounded}km (${item.runs}回)">
+            <span class="font-bold text-white text-[11px]">${item.shortLabel}</span>
+            <span class="text-emerald-400 font-semibold text-[10px]">${distRounded}km</span>
+            <span class="text-slate-500 text-[9px]">(${item.runs}回)</span>
+          </button>
+        `;
       }).join('');
     }
 
     function showHeatmapInfo(el) {
-      const info = el.getAttribute('data-info');
       const infoSpan = document.getElementById('heatmap-info');
-      if (infoSpan && info) {
-        infoSpan.innerHTML = `<strong>${info}</strong>`;
+      if (!infoSpan) return;
+
+      const dateJp = el.getAttribute('data-date-jp');
+      const dist = parseFloat(el.getAttribute('data-dist') || '0');
+      const pace = el.getAttribute('data-pace') || '--:--';
+      const hr = el.getAttribute('data-hr') || '0';
+
+      if (dateJp) {
+        if (dist > 0) {
+          infoSpan.innerHTML = `
+            <span class="text-white font-bold">${dateJp}</span>
+            <span class="text-slate-500">:</span>
+            <span class="text-emerald-400 font-extrabold text-sm ml-1">${dist} km</span>
+            <span class="text-slate-400 ml-1">(${pace}/km, 心拍 ${hr} bpm)</span>
+          `;
+        } else {
+          infoSpan.innerHTML = `
+            <span class="text-white font-bold">${dateJp}</span>
+            <span class="text-slate-500">:</span>
+            <span class="text-slate-400 ml-1">休息日 (0 km)</span>
+          `;
+        }
+      } else {
+        const info = el.getAttribute('data-info');
+        if (info) infoSpan.innerHTML = `<strong>${info}</strong>`;
       }
+    }
+
+    function highlightHeatmapMonth(monthKey) {
+      if (activeMonthFilter) return; // フィルター固定中はホバー無効
+      const cells = document.querySelectorAll('.heatmap-cell');
+      cells.forEach(c => {
+        const cellMonth = c.getAttribute('data-month-key');
+        if (cellMonth === monthKey) {
+          c.classList.add('scale-125', 'ring-2', 'ring-emerald-400', 'z-10');
+          c.classList.remove('opacity-20');
+        } else {
+          c.classList.add('opacity-20');
+          c.classList.remove('scale-125', 'ring-2', 'ring-emerald-400', 'z-10');
+        }
+      });
+    }
+
+    function unhighlightHeatmapMonth() {
+      if (activeMonthFilter) return;
+      const cells = document.querySelectorAll('.heatmap-cell');
+      cells.forEach(c => {
+        c.classList.remove('opacity-20', 'scale-125', 'ring-2', 'ring-emerald-400', 'z-10');
+      });
+    }
+
+    function toggleHeatmapMonthFilter(monthKey) {
+      const resetBtn = document.getElementById('heatmap-reset-filter');
+      const pills = document.querySelectorAll('.heatmap-month-pill');
+
+      if (activeMonthFilter === monthKey) {
+        // 解除
+        resetHeatmapMonthFilter();
+        return;
+      }
+
+      activeMonthFilter = monthKey;
+      if (resetBtn) resetBtn.classList.remove('hidden');
+
+      // バッジのアクティブ表示
+      pills.forEach(p => {
+        if (p.getAttribute('data-month-key') === monthKey) {
+          p.classList.add('border-emerald-400', 'bg-emerald-500/20', 'text-white');
+        } else {
+          p.classList.remove('border-emerald-400', 'bg-emerald-500/20', 'text-white');
+        }
+      });
+
+      // セル強調
+      const cells = document.querySelectorAll('.heatmap-cell');
+      cells.forEach(c => {
+        const cellMonth = c.getAttribute('data-month-key');
+        if (cellMonth === monthKey) {
+          c.classList.add('scale-110', 'ring-2', 'ring-emerald-400', 'z-10');
+          c.classList.remove('opacity-20');
+        } else {
+          c.classList.add('opacity-20');
+          c.classList.remove('scale-110', 'ring-2', 'ring-emerald-400', 'z-10');
+        }
+      });
+    }
+
+    function resetHeatmapMonthFilter() {
+      activeMonthFilter = null;
+      const resetBtn = document.getElementById('heatmap-reset-filter');
+      if (resetBtn) resetBtn.classList.add('hidden');
+
+      const pills = document.querySelectorAll('.heatmap-month-pill');
+      pills.forEach(p => {
+        p.classList.remove('border-emerald-400', 'bg-emerald-500/20', 'text-white');
+      });
+
+      const cells = document.querySelectorAll('.heatmap-cell');
+      cells.forEach(c => {
+        c.classList.remove('opacity-20', 'scale-110', 'scale-125', 'ring-2', 'ring-emerald-400', 'z-10');
+      });
     }
 
     // ==========================================

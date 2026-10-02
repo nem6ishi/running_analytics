@@ -43,6 +43,7 @@ def build():
         overview=analytics_data["overview"],
         overview_json=json.dumps(analytics_data["overview"], ensure_ascii=False, default=json_default),
         monthly=analytics_data["monthly"],
+        monthly_json=json.dumps(analytics_data["monthly"], ensure_ascii=False, default=json_default),
         reversed_insights=analytics_data["reversed_insights"],
         insights_json=json.dumps(analytics_data["insights"], ensure_ascii=False, default=json_default),
         chart_data_json=json.dumps(analytics_data["chart_data"], ensure_ascii=False, default=json_default),
