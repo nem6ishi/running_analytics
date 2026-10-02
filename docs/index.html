@@ -162,8 +162,8 @@
           <span>Activity & Coach (個別分析)</span>
         </button>
         <button onclick="switchView('trends')" id="tab-trends" class="tab-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center space-x-1.5">
-          <span>📈</span>
-          <span>Trends & History (相関・全履歴)</span>
+          <span>📋</span>
+          <span>History (全履歴一覧)</span>
         </button>
         <button onclick="switchView('all')" id="tab-all" class="tab-btn px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all duration-200 hidden md:inline-flex items-center space-x-1">
           <span>👁️</span>
@@ -649,6 +649,60 @@
 
       </section>
 
+      <!-- ========================================== -->
+      <!-- 📊 レイヤー4: パフォーマンス推移 & 相関トレンド -->
+      <!-- ========================================== -->
+      <section class="space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm font-bold border border-sky-500/30">📈</span>
+            <div>
+              <h2 class="text-base sm:text-lg font-black text-white tracking-tight">パフォーマンス推移 & 相関トレンド</h2>
+              <p class="text-[11px] sm:text-xs text-slate-400">長期的なトレーニング進化と心肺効率の可視化</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono text-slate-500">4 CORE CORRELATIONS</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- 月別走行距離 & 回数 -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-slate-200 mb-1">月別走行距離 & 出走回数</h3>
+            <p class="text-xs text-slate-400 mb-4">月ごとのボリューム推移</p>
+            <div class="relative h-64">
+              <canvas id="monthlyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- ペース & 心拍数推移 -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-slate-200 mb-1">ペース & 平均心拍数の推移</h3>
+            <p class="text-xs text-slate-400 mb-4">ペース（分/km）は上にいくほど高速</p>
+            <div class="relative h-64">
+              <canvas id="paceHrChart"></canvas>
+            </div>
+          </div>
+
+          <!-- 心拍数 vs ペース (散布図) -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-slate-200 mb-1">有酸素効率 (心拍数 vs ペース)</h3>
+            <p class="text-xs text-slate-400 mb-4">左下（低心拍かつ速いペース）にあるほど有酸素能力が高い状態</p>
+            <div class="relative h-64">
+              <canvas id="scatterChart"></canvas>
+            </div>
+          </div>
+
+          <!-- ピッチ vs ストライド推移 -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-slate-200 mb-1">ピッチ (spm) と 歩幅 (m) の推移</h3>
+            <p class="text-xs text-slate-400 mb-4">ランニングフォームとケイデンスの安定性</p>
+            <div class="relative h-64">
+              <canvas id="formChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
     <!-- END VIEW 1: COCKPIT -->
 
@@ -901,58 +955,9 @@
     <!-- END VIEW 2: ACTIVITY & COACH -->
 
     <!-- ======================================================= -->
-    <!-- 📈 VIEW 3: TRENDS & HISTORY (長期相関 ＆ 全履歴一覧) -->
+    <!-- 📋 VIEW 3: HISTORY (アクティビティ全履歴一覧) -->
     <!-- ======================================================= -->
     <div id="view-trends" class="view-panel space-y-8 hidden">
-
-      <!-- Charts Section -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-          <div>
-            <h2 class="text-lg sm:text-xl font-black text-white tracking-tight">パフォーマンス推移 & 相関トレンド</h2>
-            <p class="text-xs sm:text-sm text-slate-400">長期的なトレーニング進化と心肺効率の可視化</p>
-          </div>
-          <span class="text-xs font-mono text-slate-500">4 CORE CORRELATIONS</span>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- 月別走行距離 & 回数 -->
-          <div class="glass-card rounded-3xl p-5 shadow-xl">
-            <h3 class="text-sm font-bold text-slate-200 mb-1">月別走行距離 & 出走回数</h3>
-            <p class="text-xs text-slate-400 mb-4">月ごとのボリューム推移</p>
-            <div class="relative h-64">
-              <canvas id="monthlyChart"></canvas>
-            </div>
-          </div>
-
-          <!-- ペース & 心拍数推移 -->
-          <div class="glass-card rounded-3xl p-5 shadow-xl">
-            <h3 class="text-sm font-bold text-slate-200 mb-1">ペース & 平均心拍数の推移</h3>
-            <p class="text-xs text-slate-400 mb-4">ペース（分/km）は上にいくほど高速</p>
-            <div class="relative h-64">
-              <canvas id="paceHrChart"></canvas>
-            </div>
-          </div>
-
-          <!-- 心拍数 vs ペース (散布図) -->
-          <div class="glass-card rounded-3xl p-5 shadow-xl">
-            <h3 class="text-sm font-bold text-slate-200 mb-1">有酸素効率 (心拍数 vs ペース)</h3>
-            <p class="text-xs text-slate-400 mb-4">左下（低心拍かつ速いペース）にあるほど有酸素能力が高い状態</p>
-            <div class="relative h-64">
-              <canvas id="scatterChart"></canvas>
-            </div>
-          </div>
-
-          <!-- ピッチ vs ストライド推移 -->
-          <div class="glass-card rounded-3xl p-5 shadow-xl">
-            <h3 class="text-sm font-bold text-slate-200 mb-1">ピッチ (spm) と 歩幅 (m) の推移</h3>
-            <p class="text-xs text-slate-400 mb-4">ランニングフォームとケイデンスの安定性</p>
-            <div class="relative h-64">
-              <canvas id="formChart"></canvas>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <!-- Activity Log Table -->
       <section class="space-y-4">
