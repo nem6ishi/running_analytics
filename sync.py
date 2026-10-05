@@ -414,20 +414,27 @@ def main():
         print("📤 GitHub へ変更を push します...")
         print("=" * 60)
         try:
-            subprocess.run(["git", "add", "data/", "docs/"], cwd=root_dir, check=True)
-            commit_res = subprocess.run(
-                ["git", "commit", "-m", f"Sync Garmin activities ({synced_count} new)"],
+            subprocess.run(["git", "add", "docs/"], cwd=root_dir, check=True)
+            status_res = subprocess.run(
+                ["git", "status", "--porcelain", "docs/"],
                 cwd=root_dir,
                 capture_output=True,
                 text=True,
+                check=True,
             )
-            if "nothing to commit" in commit_res.stdout or "nothing to commit" in commit_res.stderr:
-                print("コミットする変更はありませんでした。")
+            if not status_res.stdout.strip():
+                print("コミットする変更（docs/）はありませんでした。")
             else:
+                subprocess.run(
+                    ["git", "commit", "-m", f"Sync Garmin activities & update dashboard ({synced_count} new)"],
+                    cwd=root_dir,
+                    check=True,
+                )
                 subprocess.run(["git", "push", "origin", "main"], cwd=root_dir, check=True)
                 print("🚀 GitHub への push が完了しました！GitHub Pages が自動更新されます。")
         except subprocess.CalledProcessError as e:
             print(f"❌ Git 操作エラー: {e}")
+            sys.exit(1)
 
 
     print("\n" + "=" * 60)
