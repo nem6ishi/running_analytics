@@ -34,10 +34,15 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Sync Garmin Data & Push
+      - name: Check Garmin Secrets & Sync Data
         env:
           GARMIN_TOKENS_BASE64: ${{ secrets.GARMIN_TOKENS_BASE64 }}
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
         run: |
+          if [ -z "$GARMIN_TOKENS_BASE64" ] && { [ -z "$GARMIN_EMAIL" ] || [ -z "$GARMIN_PASSWORD" ]; }; then
+            echo "::warning ::Garmin 認証用 Secrets (GARMIN_TOKENS_BASE64 または GARMIN_EMAIL / GARMIN_PASSWORD) が設定されていないため、自動同期をスキップします。"
+            echo "GitHub Secrets を設定すると毎日 21:00 の自動同期が有効になります。"
+            exit 0
+          fi
           uv run python sync.py --push

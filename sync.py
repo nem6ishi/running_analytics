@@ -56,11 +56,25 @@ def get_garmin_client(token_dir: Path, relogin: bool = False) -> Garmin:
         import json
         try:
             print("📦 環境変数 GARMIN_TOKENS_BASE64 からトークンを復元中...")
-            decoded = base64.b64decode(tokens_base64.encode("utf-8")).decode("utf-8")
-            token_data = json.loads(decoded)
-            for fname, val in token_data.items():
-                (token_dir / fname).write_text(json.dumps(val) if isinstance(val, (dict, list)) else str(val), encoding="utf-8")
-            print("✅ トークンの復元に成功しました。")
+            raw_bytes = base64.b64decode(tokens_base64.encode("utf-8"))
+            # 1. tar.gz 形式の展開を試行
+            try:
+                import io
+                import tarfile
+                with tarfile.open(fileobj=io.BytesIO(raw_bytes), mode="r:*") as tar:
+                    tar.extractall(path=token_dir.parent)
+                    print("✅ トークン (tarアーカイブ) の復元に成功しました。")
+            except Exception:
+                # 2. JSON 形式の展開を試行
+                decoded = raw_bytes.decode("utf-8")
+                token_data = json.loads(decoded)
+                if isinstance(token_data, dict):
+                    if any(k.endswith(".json") for k in token_data.keys()):
+                        for fname, val in token_data.items():
+                            (token_dir / fname).write_text(json.dumps(val) if isinstance(val, (dict, list)) else str(val), encoding="utf-8")
+                    else:
+                        (token_dir / "garmin_tokens.json").write_text(json.dumps(token_data), encoding="utf-8")
+                print("✅ トークン (JSON) の復元に成功しました。")
         except Exception as e:
             print(f"⚠️ トークンの復元に失敗しました: {e}")
 
