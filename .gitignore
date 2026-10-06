@@ -28,6 +28,7 @@ venv/
 
 # Data / Uploads / Logs
 data/
+logs/
 *.log
 
 # OS & IDE

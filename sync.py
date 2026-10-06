@@ -6,7 +6,7 @@ import argparse
 import subprocess
 import getpass
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 import pandas as pd
 from garminconnect import (
     Garmin,
@@ -205,7 +205,7 @@ def sync_activities(
     data_dir: Path,
     limit: Optional[int] = None,
     fetch_all: bool = False,
-) -> int:
+) -> Tuple[int, List[Dict[str, Any]]]:
     """Garmin Connect から過去・最新のランニングアクティビティとFITファイルを自動同期"""
     import time
     data_dir.mkdir(parents=True, exist_ok=True)
@@ -284,7 +284,7 @@ def sync_activities(
 
     if not new_activities:
         print("🎉 すべてのランニングデータ（FITファイル＆サマリー）は最新・完全同期済みです！")
-        return 0
+        return 0, []
 
     print(f"📥 {len(new_activities)} 件のアクティビティについて、FITファイルまたはCSVサマリーを取得します...")
     downloaded_count = 0
@@ -367,6 +367,7 @@ def main():
     parser.add_argument("--relogin", action="store_true", help="トークンを破棄して再ログインする")
     parser.add_argument("--no-build", action="store_true", help="データ同期後に build.py を実行しない")
     parser.add_argument("--push", action="store_true", help="同期＆ビルド後に GitHub に自動 push する")
+    parser.add_argument("--open", action="store_true", help="ビルド後にブラウザでダッシュボードを開く")
     args = parser.parse_args()
 
     root_dir = Path(__file__).resolve().parent
@@ -381,7 +382,11 @@ def main():
     client = get_garmin_client(token_dir, relogin=args.relogin)
 
     # 2. 同期実行
-    synced_count, new_rows = sync_activities(client, data_dir, limit=args.limit, fetch_all=args.all)
+    try:
+        synced_count, new_rows = sync_activities(client, data_dir, limit=args.limit, fetch_all=args.all)
+    except Exception as e:
+        print(f"❌ 同期エラー: {e}")
+        sys.exit(1)
 
     # 新規データのサマリー表示
     if new_rows:
@@ -402,18 +407,38 @@ def main():
             print("\n" + "=" * 60)
             print("🚀 新規データが検出されたため、ダッシュボードを自動ビルドします...")
             print("=" * 60)
-            from build import build
-            build()
-            print("\n✨ ダッシュボード (docs/index.html) の更新が完了しました！")
+            try:
+                from build import build
+                build()
+                print("\n✨ ダッシュボード (docs/index.html) の更新が完了しました！")
+            except Exception as e:
+                print(f"❌ ビルドエラー: {e}")
+                sys.exit(1)
         else:
             print("\n💡 新規データはなかったため、ビルドはスキップしました。")
 
-    # 4. GitHub Push
+    # 4. ブラウザで開く
+    if args.open:
+        html_path = (root_dir / "docs" / "index.html").resolve()
+        if html_path.exists():
+            import webbrowser
+            webbrowser.open(html_path.as_uri())
+            print(f"🌐 ブラウザでダッシュボードを開きました: {html_path.as_uri()}")
+        else:
+            print("⚠️ docs/index.html が見つからないため、ブラウザを開けませんでした。")
+
+    # 5. GitHub Push
     if args.push:
         print("\n" + "=" * 60)
         print("📤 GitHub へ変更を push します...")
         print("=" * 60)
         try:
+            # push 前にリモートの最新状態を取り込む
+            subprocess.run(
+                ["git", "pull", "--rebase", "--autostash", "origin", "main"],
+                cwd=root_dir,
+                check=True,
+            )
             subprocess.run(["git", "add", "docs/"], cwd=root_dir, check=True)
             status_res = subprocess.run(
                 ["git", "status", "--porcelain", "docs/"],

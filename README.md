@@ -56,39 +56,34 @@ uv run python sync.py
 ```bash
 uv run python sync.py --push
 ```
-新規データを取得後、自動で `build.py`（HTML生成）を実行し、そのまま `git push` まで全自動で行います。
+新規データを取得後、自動で `build.py`（HTML生成）を実行し、リモートの最新状態を取り込んだ上で `docs/` を GitHub に push します。push されると GitHub Pages が自動更新されます。
 
 ### 主なオプション
 - `--all`: **過去の全ランニングデータを対象に同期**（未ダウンロードの過去FITファイルも一括取得）
 - `--limit <件数>`: チェックする直近アクティビティの件数（デフォルト: 15）
 - `--relogin`: キャッシュされたトークンを破棄して再ログイン
 - `--no-build`: データのダウンロードのみ行い、ビルドをスキップ
-- `--push`: 同期＆ビルド完了後に GitHub へ自動 push
+- `--push`: 同期＆ビルド完了後に GitHub へ自動 push（GitHub Pages に反映）
+- `--open`: ビルド完了後にブラウザでダッシュボード (`docs/index.html`) を開く
 
 ---
 
-## 🤖 GitHub Actions による定期自動同期
+## ⏰ 定期自動同期のセットアップ (macOS launchd)
 
-毎日定時（日本時間 21:00）に GitHub Actions が自動起動し、Garmin Connect から最新データを取得してダッシュボードを自動更新します。
+macOS の `launchd` を使用して、毎日定時（21:00）にローカル環境で `sync.py --push` を自動実行できます。同期・ビルドされたダッシュボードは自動的に GitHub へ push され、GitHub Pages に最新データが公開されます。
 
-### セットアップ手順（初回のみ）
+### セットアップ手順
+```bash
+./scripts/install_launchd.sh
+```
+- `uv` の絶対パスおよびプロジェクトディレクトリを自動解決し、`~/Library/LaunchAgents/com.nem6ishi.running-sync.plist` にジョブを登録します。
+- 実行ログは `logs/sync.log` に出力されます。
 
-1. **Garmin 認証トークンの Base64 文字列を生成**
-   ```bash
-   tar -czf - .garmin_tokens | base64
-   ```
-   出力された長い文字列をコピーします。
-
-2. **GitHub リポジトリの Secrets に登録**
-   - GitHub リポジトリの **Settings** > **Secrets and variables** > **Actions** を開く。
-   - **New repository secret** をクリックし、以下を登録します：
-     - Name: `GARMIN_TOKENS_BASE64`
-     - Secret: 上記でコピーした Base64 文字列
-   - （代替手段）トークンではなくメール/パスワードで同期したい場合は、`GARMIN_EMAIL` と `GARMIN_PASSWORD` を登録してください。
-
-3. **手動実行で動作確認**
-   - リポジトリの **Actions** タブ > **Garmin Connect Sync** を選択。
-   - **Run workflow** をクリックして動作を確認できます。
+### アンインストール手順
+```bash
+./scripts/install_launchd.sh --uninstall
+```
+- ジョブの登録を解除し、plist 設定ファイルを削除します。
 
 ---
 

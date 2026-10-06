@@ -25,22 +25,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          version: "latest"
-
-      - name: Set up Python
-        run: uv python install
-
-      - name: Install dependencies
-        run: uv sync
-
-      - name: Build Dashboard
-        run: uv run python build.py
-        # もしリポジトリに data/ がない場合でも、事前に生成された docs/index.html があればそれを利用
-        continue-on-error: true
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
