@@ -130,7 +130,35 @@ def get_garmin_client(token_dir: Path, relogin: bool = False) -> Garmin:
         sys.exit(1)
 
 
-def build_csv_row_from_activity(act: Dict[str, Any]) -> Dict[str, str]:
+def extract_shoe_name_from_gear(gear_data: Any) -> str:
+    """Garmin API の gear レスポンスからシューズ名を抽出"""
+    if not gear_data:
+        return ""
+    gear_items = (
+        gear_data
+        if isinstance(gear_data, list)
+        else gear_data.get("gear", gear_data.get("activityGear", []))
+        if isinstance(gear_data, dict)
+        else []
+    )
+    if isinstance(gear_data, dict) and not gear_items:
+        gear_items = [gear_data]
+
+    for item in gear_items:
+        if isinstance(item, dict):
+            name = (
+                item.get("displayName")
+                or item.get("customMakeModel")
+                or item.get("gearName")
+                or item.get("modelName")
+                or ""
+            )
+            if name:
+                return str(name).strip()
+    return ""
+
+
+def build_csv_row_from_activity(act: Dict[str, Any], shoe_name: str = "") -> Dict[str, str]:
     """Garmin APIのアクティビティ辞書から Activities.csv の1行を作成"""
     start_time = act.get("startTimeLocal", "")
     title = act.get("activityName", "那覇市 ラン")
@@ -197,6 +225,7 @@ def build_csv_row_from_activity(act: Dict[str, Any]) -> Dict[str, str]:
         "経過時間": format_seconds_to_time(elapsed_sec),
         "最低高度": str(min_elev),
         "最高高度": str(max_elev),
+        "シューズ": shoe_name,
     }
 
 
@@ -391,7 +420,16 @@ def sync_activities(
 
         # CSV 行構築
         if date_str not in existing_dates:
-            row_dict = build_csv_row_from_activity(act)
+            shoe_name = ""
+            try:
+                gear_res = client.get_activity_gear(act_id)
+                shoe_name = extract_shoe_name_from_gear(gear_res)
+                if shoe_name:
+                    print(f"  👟 ギア検出: {shoe_name}")
+                time.sleep(0.5)
+            except Exception as e:
+                pass
+            row_dict = build_csv_row_from_activity(act, shoe_name=shoe_name)
             new_csv_rows.append(row_dict)
             existing_dates.add(date_str)
 
@@ -425,12 +463,86 @@ def sync_activities(
     return downloaded_count, new_csv_rows
 
 
+def backfill_activity_gear(client: Garmin, data_dir: Path) -> int:
+    """既存の Activities.csv 内のアクティビティについてシューズ情報を Garmin から補完取得"""
+    import time
+    csv_path = data_dir / "Activities.csv"
+    if not csv_path.exists():
+        print("⚠️ Activities.csv が存在しません。")
+        return 0
+
+    df = pd.read_csv(csv_path)
+    if "日付" not in df.columns:
+        print("⚠️ Activities.csv に「日付」列がありません。")
+        return 0
+
+    if "シューズ" not in df.columns:
+        df["シューズ"] = ""
+
+    # 日時 -> activityId のマッピングを Garmin から取得
+    print("📡 Garmin Connect からアクティビティ一覧を取得してIDを照合中...")
+    date_to_id: Dict[str, int] = {}
+    start = 0
+    while True:
+        try:
+            batch = client.get_activities(start, 50)
+            if not batch:
+                break
+            for a in batch:
+                st = str(a.get("startTimeLocal", "")).strip()
+                aid = a.get("activityId")
+                if st and aid:
+                    date_to_id[st] = aid
+            start += len(batch)
+            if len(batch) < 50 or start >= len(df) + 30:
+                break
+            time.sleep(0.3)
+        except Exception as e:
+            print(f"⚠️ アクティビティ一覧の取得中断 ({e})")
+            break
+
+    updated_count = 0
+    total_rows = len(df)
+    print(f"🔄 全 {total_rows} 件のアクティビティについてシューズ情報のバックフィルを開始します...")
+
+    for idx, row in df.iterrows():
+        cur_shoe = str(row.get("シューズ", "")).strip()
+        if cur_shoe and cur_shoe.lower() not in ["nan", "none", ""]:
+            continue  # 既に設定済み
+
+        date_val = str(row["日付"]).strip()
+        act_id = date_to_id.get(date_val)
+        if not act_id:
+            continue
+
+        try:
+            gear_data = client.get_activity_gear(act_id)
+            shoe_name = extract_shoe_name_from_gear(gear_data)
+            if shoe_name:
+                df.at[idx, "シューズ"] = shoe_name
+                print(f"  [{idx+1}/{total_rows}] {date_val} (ID: {act_id}) -> 👟 {shoe_name}")
+                updated_count += 1
+            time.sleep(0.5)  # レート制限対策
+        except Exception as e:
+            print(f"  [{idx+1}/{total_rows}] {date_val} (ID: {act_id}) -> 取得エラー: {e}")
+            time.sleep(0.5)
+
+    if updated_count > 0:
+        df.to_csv(csv_path, index=False, encoding="utf-8")
+        print(f"✅ {updated_count} 件のシューズ情報を Activities.csv に更新保存しました！")
+    else:
+        print("ℹ️ 更新対象のシューズ情報はありませんでした（既に最新、またはギア未登録）。")
+
+    return updated_count
+
+
 
 def main():
     parser = argparse.ArgumentParser(description="Garmin Connect からランニングデータを自動同期")
     parser.add_argument("--all", action="store_true", help="過去の全アクティビティを対象に同期する")
     parser.add_argument("--limit", type=int, default=15, help="チェックする最新アクティビティ件数 (デフォルト: 15)")
     parser.add_argument("--relogin", action="store_true", help="トークンを破棄して再ログインする")
+    parser.add_argument("--backfill-gear", action="store_true", help="既存のアクティビティについてGarminからギア（シューズ）情報を補完取得する")
     parser.add_argument("--no-build", action="store_true", help="データ同期後に build.py を実行しない")
     parser.add_argument("--push", action="store_true", help="同期＆ビルド後に GitHub に自動 push する")
     parser.add_argument("--open", action="store_true", help="ビルド後にブラウザでダッシュボードを開く")
@@ -447,7 +559,18 @@ def main():
     # 1. ログイン
     client = get_garmin_client(token_dir, relogin=args.relogin)
 
-    # 2. 同期実行
+    # 2. ギアのバックフィル（指定時）
+    backfilled_count = 0
+    if args.backfill_gear:
+        print("\n" + "=" * 60)
+        print("👟 ギア（シューズ）情報のバックフィルを実行します...")
+        print("=" * 60)
+        try:
+            backfilled_count = backfill_activity_gear(client, data_dir)
+        except Exception as e:
+            print(f"⚠️ バックフィル中にエラーが発生しました: {e}")
+
+    # 3. 同期実行
     try:
         synced_count, new_rows = sync_activities(client, data_dir, limit=args.limit, fetch_all=args.all)
     except Exception as e:
@@ -464,14 +587,16 @@ def main():
             pace = r.get("平均ペース", "--:--")
             hr = r.get("平均心拍数", "--")
             t = r.get("タイム", "--")
-            print(f"  🏃 {r.get('日付')} : {dist_km} km ({t}) | ペース {pace}/km | 平均心拍 {hr} bpm")
+            shoe = r.get("シューズ", "")
+            shoe_str = f" | 👟 {shoe}" if shoe else ""
+            print(f"  🏃 {r.get('日付')} : {dist_km} km ({t}) | ペース {pace}/km | 平均心拍 {hr} bpm{shoe_str}")
         print("=" * 60)
 
     # 3. ビルド実行
     if not args.no_build:
-        if synced_count > 0 or not (root_dir / "docs" / "index.html").exists():
+        if synced_count > 0 or backfilled_count > 0 or not (root_dir / "docs" / "index.html").exists():
             print("\n" + "=" * 60)
-            print("🚀 新規データが検出されたため、ダッシュボードを自動ビルドします...")
+            print("🚀 新規データまたはギア更新が検出されたため、ダッシュボードを自動ビルドします...")
             print("=" * 60)
             try:
                 from build import build

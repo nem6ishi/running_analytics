@@ -101,6 +101,13 @@ def load_activities(csv_path: Path) -> pd.DataFrame:
     df["pace_str"] = df["avg_pace_sec"].apply(seconds_to_pace_str)
     df["duration_str"] = df["duration_sec"].apply(seconds_to_time_str)
 
+    # ギア（シューズ）情報
+    if "シューズ" in df.columns:
+        df["gear_name"] = df["シューズ"].fillna("").astype(str).str.strip()
+    else:
+        df["gear_name"] = ""
+    df["シューズ"] = df["gear_name"]
+
     # 時系列（古い順）にソートしてインデックスを振り直す
     df = df.sort_values("datetime").reset_index(drop=True)
 

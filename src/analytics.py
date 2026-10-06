@@ -1,4 +1,5 @@
 from typing import Dict, Any, List, Optional
+import math
 from datetime import datetime, timedelta
 from pathlib import Path
 import pandas as pd
@@ -7,6 +8,7 @@ from .parser import seconds_to_pace_str, seconds_to_time_str
 from .coach import calculate_activity_insights
 from .vdot import calculate_vdot, get_training_paces, predict_race_times_vdot
 from .profile import get_hr_params
+from .load import compute_training_load, compute_zone_distribution
 
 
 def compute_overview_stats(df: pd.DataFrame) -> Dict[str, Any]:
@@ -277,6 +279,225 @@ def compute_sub50_progress(df: pd.DataFrame, insights: List[Dict[str, Any]], cur
     }
 
 
+def compute_sub50_forecast(
+    df: pd.DataFrame,
+    current_vdot: float,
+    target_vdot: float = 40.8,
+    window_days: int = 90,
+) -> Dict[str, Any]:
+    """10km 50分（VDOT 40.8）到達予測推計
+
+    直近のアクティビティ（直近90日、不足時は直近全データ）のVDOT推移から線形回帰を行い、
+    1日あたりの成長率（傾き）から目標到達見込み日数・日付を算出します。
+    """
+    if df.empty or current_vdot <= 0:
+        return {
+            "target_vdot": target_vdot,
+            "current_vdot": current_vdot,
+            "slope_per_day": 0.0,
+            "monthly_growth": 0.0,
+            "days_to_target": None,
+            "predicted_date_str": "--",
+            "status": "insufficient_data",
+            "status_label": "データ不足",
+            "status_badge": "bg-slate-800 text-slate-400 border-slate-700",
+            "desc": "予測推計に必要な走行データが不足しています。",
+            "sample_runs": 0,
+        }
+
+    # 3.0km 以上のラン（なければ 1.0km 以上）
+    valid_runs = df[df["distance_km"] >= 3.0].copy()
+    if valid_runs.empty:
+        valid_runs = df[df["distance_km"] >= 1.0].copy()
+
+    if valid_runs.empty:
+        return {
+            "target_vdot": target_vdot,
+            "current_vdot": current_vdot,
+            "slope_per_day": 0.0,
+            "monthly_growth": 0.0,
+            "days_to_target": None,
+            "predicted_date_str": "--",
+            "status": "insufficient_data",
+            "status_label": "データ不足",
+            "status_badge": "bg-slate-800 text-slate-400 border-slate-700",
+            "desc": "距離3km以上の有効な走行データが不足しています。",
+            "sample_runs": 0,
+        }
+
+    latest_dt = valid_runs["datetime"].max()
+    latest_date = latest_dt.date()
+    start_dt = latest_dt - timedelta(days=window_days)
+
+    recent_runs = valid_runs[valid_runs["datetime"] >= start_dt].copy()
+    # 直近90日のデータが5件未満なら直近180日または全有効データを使用
+    if len(recent_runs) < 5:
+        wider_start = latest_dt - timedelta(days=180)
+        recent_runs = valid_runs[valid_runs["datetime"] >= wider_start].copy()
+        if len(recent_runs) < 5:
+            recent_runs = valid_runs.tail(15).copy()
+
+    points = []
+    base_dt = recent_runs["datetime"].min()
+    for _, row in recent_runs.iterrows():
+        d_m = float(row["distance_km"]) * 1000.0
+        t_s = float(row["duration_sec"])
+        v = calculate_vdot(d_m, t_s)
+        if v > 0:
+            days = (row["datetime"] - base_dt).total_seconds() / 86400.0
+            points.append((days, v))
+
+    if len(points) < 2:
+        return {
+            "target_vdot": target_vdot,
+            "current_vdot": current_vdot,
+            "slope_per_day": 0.0,
+            "monthly_growth": 0.0,
+            "days_to_target": None,
+            "predicted_date_str": "--",
+            "status": "insufficient_data",
+            "status_label": "データ不足",
+            "status_badge": "bg-slate-800 text-slate-400 border-slate-700",
+            "desc": "回帰分析に必要なデータポイントが不足しています。",
+            "sample_runs": len(points),
+        }
+
+    # 最小二乗法
+    n = len(points)
+    sum_x = sum(p[0] for p in points)
+    sum_y = sum(p[1] for p in points)
+    mean_x = sum_x / n
+    mean_y = sum_y / n
+    denom = sum((p[0] - mean_x) ** 2 for p in points)
+
+    slope = (sum((p[0] - mean_x) * (p[1] - mean_y) for p in points) / denom) if denom > 1e-9 else 0.0
+    monthly_growth = round(slope * 30.0, 2)
+
+    # 既に目標到達済みか？
+    if current_vdot >= target_vdot:
+        return {
+            "target_vdot": target_vdot,
+            "current_vdot": current_vdot,
+            "slope_per_day": round(slope, 4),
+            "monthly_growth": monthly_growth,
+            "days_to_target": 0,
+            "predicted_date_str": "達成済み",
+            "status": "achieved",
+            "status_label": "目標走力 到達済み",
+            "status_badge": "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+            "desc": f"現在の走力 (VDOT {current_vdot}) は既にサブ50基準 (VDOT {target_vdot}) をクリアしています！",
+            "sample_runs": n,
+        }
+
+    # 傾き判定
+    if slope > 0.0001:
+        rem_vdot = target_vdot - current_vdot
+        days_to_target = max(1, int(math.ceil(rem_vdot / slope)))
+        predicted_date = latest_date + timedelta(days=days_to_target)
+        pred_str = predicted_date.strftime("%Y年%m月%d日")
+        growth_sign = f"+{monthly_growth}" if monthly_growth > 0 else f"{monthly_growth}"
+
+        return {
+            "target_vdot": target_vdot,
+            "current_vdot": current_vdot,
+            "slope_per_day": round(slope, 4),
+            "monthly_growth": monthly_growth,
+            "days_to_target": days_to_target,
+            "predicted_date_str": pred_str,
+            "status": "on_track",
+            "status_label": f"約 {days_to_target} 日後 ({pred_str}頃) 到達予測",
+            "status_badge": "bg-sky-500/20 text-sky-300 border-sky-500/40",
+            "desc": f"直近の成長傾向（月間 {growth_sign} VDOT）を維持した場合、約 {days_to_target} 日後（{pred_str}頃）にサブ50相当走力（VDOT {target_vdot}）へ到達する見込みです。",
+            "sample_runs": n,
+        }
+    else:
+        return {
+            "target_vdot": target_vdot,
+            "current_vdot": current_vdot,
+            "slope_per_day": round(slope, 4),
+            "monthly_growth": monthly_growth,
+            "days_to_target": None,
+            "predicted_date_str": "--",
+            "status": "stagnant",
+            "status_label": "現状維持・停滞トレンド",
+            "status_badge": "bg-amber-500/20 text-amber-300 border-amber-500/40",
+            "desc": "直近のVDOTトレンドは横ばい〜微減傾向です。現状ペースの維持では到達予測の算出が難しいため、Tペース（閾値走）などのポイント練習で刺激を入れましょう。",
+            "sample_runs": n,
+        }
+
+
+def compute_gear_stats(df: pd.DataFrame, lifespan_km: float = 600.0) -> List[Dict[str, Any]]:
+    """シューズ（ギア）別の累計走行距離、寿命進捗率、交換推奨ステータスを集計"""
+    if df.empty:
+        return []
+
+    # 「シューズ」または「gear_name」列をチェック
+    shoe_col = None
+    if "シューズ" in df.columns:
+        shoe_col = "シューズ"
+    elif "gear_name" in df.columns:
+        shoe_col = "gear_name"
+
+    if not shoe_col:
+        return []
+
+    # シューズ名ごとにグルーピング
+    gear_groups: Dict[str, List[Any]] = {}
+    for _, row in df.iterrows():
+        raw_name = str(row.get(shoe_col, "")).strip()
+        if not raw_name or raw_name.lower() in ["nan", "none", ""]:
+            continue
+
+        if raw_name not in gear_groups:
+            gear_groups[raw_name] = []
+        gear_groups[raw_name].append(row)
+
+    if not gear_groups:
+        return []
+
+    results = []
+    for shoe_name, rows in gear_groups.items():
+        sub_df = pd.DataFrame(rows)
+        total_dist = round(float(sub_df["distance_km"].sum()), 1)
+        runs_count = len(sub_df)
+        last_used = str(sub_df["date_str"].max())
+
+        lifespan_pct = min(100.0, round((total_dist / lifespan_km) * 100.0, 1))
+        remaining_km = max(0.0, round(lifespan_km - total_dist, 1))
+        needs_replacement = total_dist >= lifespan_km
+
+        if needs_replacement:
+            status_label = "交換推奨 (寿命到達)"
+            status_color = "text-rose-400"
+            status_badge = "bg-rose-500/20 text-rose-300 border-rose-500/40"
+        elif total_dist >= lifespan_km * 0.8:
+            status_label = "交換準備推奨"
+            status_color = "text-amber-400"
+            status_badge = "bg-amber-500/20 text-amber-300 border-amber-500/40"
+        else:
+            status_label = "良好"
+            status_color = "text-emerald-400"
+            status_badge = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+
+        results.append({
+            "name": shoe_name,
+            "total_distance_km": total_dist,
+            "runs": runs_count,
+            "last_used": last_used,
+            "lifespan_km": lifespan_km,
+            "lifespan_pct": lifespan_pct,
+            "remaining_km": remaining_km,
+            "needs_replacement": needs_replacement,
+            "status_label": status_label,
+            "status_color": status_color,
+            "status_badge": status_badge,
+        })
+
+    # 累計距離降順でソート
+    results.sort(key=lambda x: x["total_distance_km"], reverse=True)
+    return results
+
+
 def compute_calendar_heatmap(df: pd.DataFrame) -> List[Dict[str, Any]]:
     """カレンダーヒートマップ用デイリー集計データ (直近1年間・週境界アライン)"""
     if df.empty:
@@ -530,6 +751,16 @@ def prepare_full_analytics(
     vdot_data = compute_vdot_analytics(df)
     race_predictions = compute_race_predictions(df, vdot_data["current_vdot"])
     sub50_progress = compute_sub50_progress(df, insights, vdot_data["current_vdot"])
+    sub50_forecast = compute_sub50_forecast(df, vdot_data["current_vdot"])
+    sub50_progress["forecast"] = sub50_forecast
+
+    # トレーニング負荷 (CTL / ATL / TSB) ＆ 80/20 心拍強度配分
+    training_load = compute_training_load(df, hr_params=hr_params)
+    zone_distribution = compute_zone_distribution(df, fit_dict=fit_dict, hr_params=hr_params)
+
+    # ギア（シューズ）走行距離
+    gear_stats = compute_gear_stats(df)
+
     weekly_workload = compute_weekly_workload(df)
     form_evolution = compute_form_evolution(df)
     calendar_heatmap = compute_calendar_heatmap(df)
@@ -567,6 +798,10 @@ def prepare_full_analytics(
         "vdot_data": vdot_data,
         "race_predictions": race_predictions,
         "sub50_progress": sub50_progress,
+        "sub50_forecast": sub50_forecast,
+        "training_load": training_load,
+        "zone_distribution": zone_distribution,
+        "gear_stats": gear_stats,
         "weekly_workload": weekly_workload,
         "form_evolution": form_evolution,
         "calendar_heatmap": calendar_heatmap,

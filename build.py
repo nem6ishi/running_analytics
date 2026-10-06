@@ -91,6 +91,14 @@ def build():
         form_evolution_json=json.dumps(analytics_data["form_evolution"], ensure_ascii=False, default=json_default),
         hr_params=analytics_data["hr_params"],
         hr_params_json=json.dumps(analytics_data["hr_params"], ensure_ascii=False, default=json_default),
+        training_load=analytics_data["training_load"],
+        training_load_json=json.dumps(analytics_data["training_load"], ensure_ascii=False, default=json_default),
+        zone_distribution=analytics_data["zone_distribution"],
+        zone_distribution_json=json.dumps(analytics_data["zone_distribution"], ensure_ascii=False, default=json_default),
+        sub50_forecast=analytics_data["sub50_forecast"],
+        sub50_forecast_json=json.dumps(analytics_data["sub50_forecast"], ensure_ascii=False, default=json_default),
+        gear_stats=analytics_data["gear_stats"],
+        gear_stats_json=json.dumps(analytics_data["gear_stats"], ensure_ascii=False, default=json_default),
     )
 
     output_html_path = docs_dir / "index.html"

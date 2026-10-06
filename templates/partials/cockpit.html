@@ -69,6 +69,26 @@
                 <span class="text-[10px] text-slate-500 block font-mono">総タイム {{ sub50_progress.gap_time_str }}</span>
               </div>
             </div>
+
+            <!-- サブ50到達予測推計 (VDOT線形回帰トレンド) -->
+            <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-slate-300 flex items-center space-x-1.5">
+                  <span>📈</span>
+                  <span>到達予測推計 (VDOT {{ sub50_forecast.target_vdot }} 目標)</span>
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full border {{ sub50_forecast.status_badge }} font-bold">
+                  {{ sub50_forecast.status_label }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span>月間成長トレンド: <strong class="text-white">{% if sub50_forecast.monthly_growth > 0 %}+{% endif %}{{ sub50_forecast.monthly_growth }} VDOT/月</strong></span>
+                <span>直近走力: <strong class="text-white">VDOT {{ sub50_forecast.current_vdot }}</strong></span>
+              </div>
+              <p class="text-[10px] text-slate-400 leading-relaxed font-sans">
+                {{ sub50_forecast.desc }}
+              </p>
+            </div>
           </div>
 
           <div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/80 text-[11px] text-slate-300 leading-relaxed mt-2 flex items-center space-x-2">
@@ -359,6 +379,264 @@
             </div>
           </div>
         </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- 🫀 レイヤー: トレーニング負荷・疲労・コンディション (CTL / ATL / TSB) -->
+      <!-- ========================================== -->
+      <section class="space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm font-bold border border-purple-500/30">⚡</span>
+            <div>
+              <h2 class="text-base sm:text-lg font-black text-white tracking-tight">トレーニング負荷・疲労・コンディション (CTL / ATL / TSB)</h2>
+              <p class="text-[11px] sm:text-xs text-slate-400">Banister TRIMPモデルによる長期体力（CTL）、短期疲労（ATL）、調子（TSB）の科学的モニタリング</p>
+            </div>
+          </div>
+          <span class="text-xs px-2.5 py-0.5 rounded-full border {{ training_load.status_badge }} font-bold">
+            {{ training_load.status_label }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- 左カラム: 最新負荷メトリクス & 診断 -->
+          <div class="lg:col-span-4 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                <span class="text-xs font-bold text-slate-300">最新ステータス指標</span>
+                <span class="text-[10px] text-slate-400 font-mono">最新ラン反映後</span>
+              </div>
+
+              <!-- 3大メトリクス (CTL, ATL, TSB) -->
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
+                  <span class="text-[10px] text-slate-400 font-medium block">CTL (体力)</span>
+                  <div class="text-xl sm:text-2xl font-black text-emerald-400 font-mono mt-0.5">{{ training_load.latest_ctl }}</div>
+                  <span class="text-[9px] text-slate-400 block font-sans">42日適応</span>
+                </div>
+                <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
+                  <span class="text-[10px] text-slate-400 font-medium block">ATL (疲労)</span>
+                  <div class="text-xl sm:text-2xl font-black text-amber-400 font-mono mt-0.5">{{ training_load.latest_atl }}</div>
+                  <span class="text-[9px] text-slate-400 block font-sans">7日疲労</span>
+                </div>
+                <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3">
+                  <span class="text-[10px] text-slate-400 font-medium block">TSB (調子)</span>
+                  <div class="text-xl sm:text-2xl font-black {{ training_load.status_color }} font-mono mt-0.5">{% if training_load.latest_tsb > 0 %}+{% endif %}{{ training_load.latest_tsb }}</div>
+                  <span class="text-[9px] text-slate-400 block font-sans">Form指標</span>
+                </div>
+              </div>
+
+              <!-- コンディション診断 -->
+              <div class="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-3.5 space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-400 font-medium">現在の調子 (Form)</span>
+                  <span class="font-bold {{ training_load.status_color }}">{{ training_load.status_label }}</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  {{ training_load.status_desc }}
+                </p>
+              </div>
+
+              <!-- 基準ゾーン目安 -->
+              <div class="text-[10px] text-slate-400 space-y-1 bg-slate-950/30 p-2.5 rounded-xl border border-slate-800/60 font-mono">
+                <div class="flex justify-between"><span>+5 超:</span><span class="text-emerald-400">絶好調 / レース本番期</span></div>
+                <div class="flex justify-between"><span>-10 〜 +5:</span><span class="text-sky-400">最適トレーニング領域</span></div>
+                <div class="flex justify-between"><span>-30 〜 -10:</span><span class="text-amber-400">高負荷・疲労蓄積期</span></div>
+                <div class="flex justify-between"><span>-30 未満:</span><span class="text-rose-400">過負荷注意・休養推奨</span></div>
+              </div>
+            </div>
+
+            <div class="text-[11px] text-slate-400 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/60 flex items-center space-x-2">
+              <span>💡</span>
+              <span>レース当日に TSB が <strong class="text-white">+5 〜 +15</strong> のプラス圏になるよう調整（テーパリング）するのが定石です。</span>
+            </div>
+          </div>
+
+          <!-- 右カラム: CTL / ATL / TSB チャート -->
+          <div class="lg:col-span-8 glass-card rounded-3xl p-5 sm:p-6 space-y-3 shadow-xl flex flex-col justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-200">トレーニング負荷 ＆ コンディション推移</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">CTL (長期適応) と ATL (短期疲労) の差分から調子 (TSB) の波を可視化</p>
+              </div>
+              <!-- 凡例 -->
+              <div class="flex items-center space-x-3 text-xs font-mono">
+                <span class="flex items-center space-x-1">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
+                  <span class="text-slate-300">CTL (体力)</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
+                  <span class="text-slate-300">ATL (疲労)</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span>
+                  <span class="text-slate-300">TSB (調子)</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- チャートキャンバス -->
+            <div class="relative h-72">
+              <canvas id="trainingLoadChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- ⚖️ レイヤー: 80/20 強度配分 ＆ シューズ管理 -->
+      <!-- ========================================== -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- 80/20 ルール強度配分 -->
+        <div class="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-6 space-y-5 shadow-xl flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-sm font-bold border border-teal-500/30">⚖️</span>
+                <div>
+                  <h3 class="text-sm font-black text-white tracking-tight">80/20 ルール 心拍強度配分 (Polarized Training)</h3>
+                  <p class="text-[11px] text-slate-400">低強度（Z1+Z2）80% : 中・高強度（Z3〜5）20% の黄金比率</p>
+                </div>
+              </div>
+              <span class="text-xs px-2.5 py-0.5 rounded-full border {{ zone_distribution.recent_4w.status_badge }} font-bold">
+                {{ zone_distribution.recent_4w.status_label }}
+              </span>
+            </div>
+
+            <!-- 直近4週間 達成状況 -->
+            <div class="bg-slate-950/70 p-4 rounded-2xl border border-slate-800/80 space-y-3">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-300">直近4週間の強度比率 (直近28日)</span>
+                <span class="text-slate-400 font-mono">総走行時間: {{ zone_distribution.recent_4w.total_time_str }}</span>
+              </div>
+
+              <!-- プログレスバー (80/20) -->
+              <div class="space-y-1.5">
+                <div class="w-full bg-slate-900 rounded-full h-4 p-0.5 border border-slate-800 overflow-hidden flex">
+                  <!-- 低強度 (Z1+Z2: ターコイズ/エメラルド) -->
+                  <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-l-full transition-all duration-700" style="width: {{ zone_distribution.recent_4w.low_intensity_pct }}%;"></div>
+                  <!-- 中高強度 (Z3+Z4+Z5: アンバー/ローズ) -->
+                  <div class="h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-r-full transition-all duration-700" style="width: {{ zone_distribution.recent_4w.high_intensity_pct }}%;"></div>
+                </div>
+                <div class="flex justify-between text-[11px] font-mono">
+                  <span class="text-emerald-400 font-bold">低強度 (Z1+Z2): {{ zone_distribution.recent_4w.low_intensity_pct }}% (目安 80%+)</span>
+                  <span class="text-rose-400 font-bold">中・高強度 (Z3〜5): {{ zone_distribution.recent_4w.high_intensity_pct }}% (目安 ~20%)</span>
+                </div>
+              </div>
+
+              <!-- アドバイス -->
+              <p class="text-xs text-slate-300 leading-relaxed bg-slate-900/40 p-2.5 rounded-xl border border-slate-800/60">
+                💡 {{ zone_distribution.recent_4w.advice }}
+              </p>
+            </div>
+
+            <!-- ゾーン別滞在時間グリッド (直近4週) -->
+            <div class="grid grid-cols-5 gap-2 pt-1 font-mono text-center">
+              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
+                <span class="text-[10px] text-emerald-400 block font-bold">Zone 1</span>
+                <span class="text-sm font-black text-white">{{ zone_distribution.recent_4w.zones.zone1.pct }}%</span>
+                <span class="text-[9px] text-slate-400 block">{{ zone_distribution.recent_4w.zones.zone1.time_str }}</span>
+              </div>
+              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
+                <span class="text-[10px] text-blue-400 block font-bold">Zone 2</span>
+                <span class="text-sm font-black text-white">{{ zone_distribution.recent_4w.zones.zone2.pct }}%</span>
+                <span class="text-[9px] text-slate-400 block">{{ zone_distribution.recent_4w.zones.zone2.time_str }}</span>
+              </div>
+              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
+                <span class="text-[10px] text-amber-400 block font-bold">Zone 3</span>
+                <span class="text-sm font-black text-white">{{ zone_distribution.recent_4w.zones.zone3.pct }}%</span>
+                <span class="text-[9px] text-slate-400 block">{{ zone_distribution.recent_4w.zones.zone3.time_str }}</span>
+              </div>
+              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
+                <span class="text-[10px] text-orange-400 block font-bold">Zone 4</span>
+                <span class="text-sm font-black text-white">{{ zone_distribution.recent_4w.zones.zone4.pct }}%</span>
+                <span class="text-[9px] text-slate-400 block">{{ zone_distribution.recent_4w.zones.zone4.time_str }}</span>
+              </div>
+              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
+                <span class="text-[10px] text-rose-400 block font-bold">Zone 5</span>
+                <span class="text-sm font-black text-white">{{ zone_distribution.recent_4w.zones.zone5.pct }}%</span>
+                <span class="text-[9px] text-slate-400 block">{{ zone_distribution.recent_4w.zones.zone5.time_str }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-[11px] text-slate-400 border-t border-slate-800/60 pt-2 flex items-center justify-between font-mono">
+            <span>通算全期間の低強度比率: <strong class="text-white">{{ zone_distribution.all_time.low_intensity_pct }}%</strong> (総{{ zone_distribution.all_time.total_time_str }})</span>
+            <span class="text-slate-500">FIT時系列サンプル集計</span>
+          </div>
+        </div>
+
+        <!-- シューズ別走行距離（ギア管理） -->
+        <div class="lg:col-span-5 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center text-sm font-bold border border-orange-500/30">👟</span>
+                <div>
+                  <h3 class="text-sm font-black text-white tracking-tight">シューズ別走行距離 (ギア管理)</h3>
+                  <p class="text-[11px] text-slate-400">クッション寿命（目安600km）と摩耗進捗のトラッキング</p>
+                </div>
+              </div>
+              <span class="text-xs px-2.5 py-0.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 font-mono">
+                寿命目安 600km
+              </span>
+            </div>
+
+            <!-- シューズリスト -->
+            {% if gear_stats %}
+            <div class="space-y-3">
+              {% for gear in gear_stats %}
+              <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="text-xs font-black text-white tracking-tight">{{ gear.name }}</h4>
+                    <span class="text-[10px] text-slate-400 font-mono">{{ gear.runs }}回走破 • 最終使用 {{ gear.last_used }}</span>
+                  </div>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full border {{ gear.status_badge }} font-bold">
+                    {{ gear.status_label }}
+                  </span>
+                </div>
+
+                <!-- プログレスバー -->
+                <div class="space-y-1">
+                  <div class="w-full bg-slate-900 rounded-full h-2.5 p-0.5 border border-slate-800 overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-700 {% if gear.needs_replacement %}bg-rose-500{% elif gear.lifespan_pct >= 80 %}bg-amber-400{% else %}bg-emerald-400{% endif %}" style="width: {{ gear.lifespan_pct }}%;"></div>
+                  </div>
+                  <div class="flex justify-between text-[10px] font-mono">
+                    <span class="text-white font-bold">{{ gear.total_distance_km }} km / {{ gear.lifespan_km }} km ({{ gear.lifespan_pct }}%)</span>
+                    <span class="{% if gear.needs_replacement %}text-rose-400 font-bold{% else %}text-slate-400{% endif %}">
+                      {% if gear.needs_replacement %}
+                      要交換
+                      {% else %}
+                      残り {{ gear.remaining_km }} km
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <!-- ギア未登録時のプレースホルダー -->
+            <div class="bg-slate-950/50 border border-dashed border-slate-800 rounded-2xl p-6 text-center space-y-2">
+              <span class="text-2xl">👟</span>
+              <div class="text-xs font-bold text-slate-300">シューズ情報が未設定です</div>
+              <p class="text-[11px] text-slate-400 leading-relaxed max-w-sm mx-auto">
+                Garmin Connect の各アクティビティまたは装備設定でシューズを登録後、<code class="text-slate-300 font-mono bg-slate-900 px-1.5 py-0.5 rounded text-[10px]">uv run python sync.py --backfill-gear</code> を実行すると自動同期されます。
+              </p>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="text-[11px] text-slate-400 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/60 flex items-center space-x-2">
+            <span>💡</span>
+            <span>600kmを超えたシューズはミッドソールの反発力と衝撃吸収性が低下し、脚部への負担が増加します。</span>
+          </div>
+        </div>
+
       </section>
 
 

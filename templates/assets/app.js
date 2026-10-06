@@ -10,6 +10,10 @@ const {
   monthlyStats,
   vdotData,
   sub50Progress,
+  sub50Forecast,
+  trainingLoad,
+  zoneDistribution,
+  gearStats,
 } = window.RUNNING_DATA || {};
 
     // アクティビティ選択描画
@@ -1583,6 +1587,118 @@ const {
         }
       }
     });
+
+    // ==========================================
+    // 🫀 トレーニング負荷 (CTL / ATL / TSB) チャート初期化
+    // ==========================================
+    const trainingLoadCtx = document.getElementById('trainingLoadChart');
+    if (trainingLoadCtx && trainingLoad && trainingLoad.dates && trainingLoad.dates.length > 0) {
+      new Chart(trainingLoadCtx, {
+        data: {
+          labels: trainingLoad.dates,
+          datasets: [
+            {
+              type: 'line',
+              label: 'CTL (体力・42日適応)',
+              data: trainingLoad.ctl,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.05)',
+              borderWidth: 2.5,
+              fill: false,
+              tension: 0.3,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              yAxisID: 'y'
+            },
+            {
+              type: 'line',
+              label: 'ATL (疲労・7日負荷)',
+              data: trainingLoad.atl,
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245, 158, 11, 0.05)',
+              borderWidth: 2,
+              fill: false,
+              tension: 0.3,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              yAxisID: 'y'
+            },
+            {
+              type: 'line',
+              label: 'TSB (調子・Form)',
+              data: trainingLoad.tsb,
+              borderColor: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.1)',
+              borderWidth: 1.5,
+              borderDash: [3, 3],
+              fill: true,
+              tension: 0.3,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              yAxisID: 'yTsb'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', maxTicksLimit: 8 }
+            },
+            y: {
+              title: { display: true, text: 'CTL / ATL (負荷スコア)', color: '#94a3b8' },
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: { color: '#94a3b8' }
+            },
+            yTsb: {
+              position: 'right',
+              title: { display: true, text: 'TSB (調子)', color: '#38bdf8' },
+              grid: { display: false },
+              ticks: {
+                color: '#38bdf8',
+                callback: function(val) {
+                  return (val > 0 ? '+' : '') + val;
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { size: 11 } }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              titleColor: '#f8fafc',
+              bodyColor: '#cbd5e1',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderWidth: 1,
+              padding: 10,
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
+                  if (context.parsed.y !== null) {
+                    const val = context.parsed.y;
+                    if (context.dataset.yAxisID === 'yTsb') {
+                      label += (val > 0 ? '+' : '') + val + ' (調子)';
+                    } else {
+                      label += val;
+                    }
+                  }
+                  return label;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
 
     // ==========================================
     // 🔀 3-View 切り替えナビゲーションロジック
