@@ -1,0 +1,115 @@
+    <!-- ======================================================= -->
+    <!-- 📋 VIEW 3: HISTORY (アクティビティ全履歴一覧) -->
+    <!-- ======================================================= -->
+    <div id="view-trends" class="view-panel space-y-8 hidden">
+
+      <!-- Activity Log Table -->
+      <section class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg sm:text-xl font-black text-white tracking-tight">アクティビティ全履歴一覧</h2>
+            <p class="text-xs sm:text-sm text-slate-400">行をクリックすると「個別分析」に切り替わり詳細を確認できます</p>
+          </div>
+
+          <!-- 検索ボックス & 距離別フィルター -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- 検索入力 -->
+            <div class="relative">
+              <input type="text" id="activity-search" oninput="handleTableSearch()" placeholder="🔍 検索 (日付・種別)..." class="bg-slate-900 border border-slate-700 text-white text-xs rounded-xl px-3 py-1.5 w-44 sm:w-56 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+            </div>
+            <!-- 距離別フィルターボタン -->
+            <div class="flex items-center space-x-1 bg-slate-900 border border-slate-800 p-1 rounded-xl text-xs">
+              <button onclick="filterActivities('all')" id="filter-all" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-medium transition">すべて</button>
+              <button onclick="filterActivities('short')" id="filter-short" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">&lt;5k</button>
+              <button onclick="filterActivities('mid')" id="filter-mid" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">5-10k</button>
+              <button onclick="filterActivities('long')" id="filter-long" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">10k+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl overflow-hidden shadow-xl border border-slate-800/80">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs sm:text-sm" id="activity-table">
+              <thead class="bg-slate-800/70 text-slate-400 uppercase font-bold text-[11px] border-b border-slate-800 select-none">
+                <tr>
+                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(0, 'date')">日付 <span class="sort-icon text-[10px]">▼</span></th>
+                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(1, 'num')">距離 <span class="sort-icon text-[10px]"></span></th>
+                  <th class="py-3.5 px-4">タイム</th>
+                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(3, 'pace')">平均ペース <span class="sort-icon text-[10px]"></span></th>
+                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(4, 'num')">平均心拍 <span class="sort-icon text-[10px]"></span></th>
+                  <th class="py-3.5 px-4">VDOT / 安定性</th>
+                  <th class="py-3.5 px-4">強度 / トレーニング種別</th>
+                  <th class="py-3.5 px-4 text-right">アクション</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/50 text-slate-300" id="activity-tbody">
+                {% for item in reversed_insights %}
+                <tr class="activity-row hover:bg-slate-800/50 transition cursor-pointer group" 
+                    data-id="{{ item.id }}"
+                    data-date="{{ item.date }}"
+                    data-dist="{{ item.distance_km }}"
+                    data-pace-sec="{{ item.pace_sec }}"
+                    data-hr="{{ item.avg_hr }}"
+                    data-vdot="{{ item.evaluation.vdot or 0 }}"
+                    data-search="{{ item.date }} {{ item.title }} {{ item.hr_zone.name }} {{ item.analysis.workout_structure.badge if item.analysis else '' }}"
+                    onclick="selectActivityAndSwitch({{ item.id }})">
+                  <td class="py-3 px-4 font-bold text-white whitespace-nowrap font-mono">
+                    {{ item.date }}
+                    <span class="text-xs text-slate-500 block sm:inline sm:ml-1 font-sans">{{ item.time_of_day }}</span>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap font-black text-emerald-400 font-mono">
+                    {{ item.distance_km }} <span class="text-xs text-slate-400 font-normal">km</span>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap text-slate-300 font-mono font-medium">
+                    {{ item.duration_str }}
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap font-bold text-slate-200 font-mono">
+                    {{ item.pace_str }} <span class="text-[10px] text-slate-500 font-normal">/km</span>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap font-mono">
+                    <span class="inline-flex items-center text-rose-400 font-bold">
+                      {{ item.avg_hr }} <span class="text-[10px] text-slate-500 ml-0.5 font-normal">bpm</span>
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap">
+                    <div class="flex items-center space-x-1.5 font-mono">
+                      {% if item.evaluation.vdot %}
+                      <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                        V: {{ item.evaluation.vdot }}
+                      </span>
+                      {% endif %}
+                      {% if item.evaluation.decoupling_pct is defined %}
+                      <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border {{ item.evaluation.decoupling_badge }}">
+                        Pw: {{ item.evaluation.decoupling_pct }}%
+                      </span>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap">
+                    <div class="flex flex-col gap-1">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium {{ item.hr_zone.bg_color }}">
+                        {{ item.hr_zone.name }}
+                      </span>
+                      {% if item.analysis and item.analysis.workout_structure %}
+                      <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border {{ item.analysis.workout_structure.badge_color }}">
+                        {{ item.analysis.workout_structure.badge }}
+                      </span>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap text-right">
+                    <button class="px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 group-hover:bg-emerald-500 group-hover:text-white transition font-medium">
+                      分析を見る →
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+    <!-- END VIEW 3: TRENDS & HISTORY -->
+

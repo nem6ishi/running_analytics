@@ -1,0 +1,80 @@
+:root {
+  --theme-primary: #a3e635; /* Volt Lime: デフォルト (Nike/Garmin風ライム) */
+  --theme-primary-rgb: 163, 230, 53;
+  --theme-glow: rgba(163, 230, 53, 0.25);
+  --theme-surface: rgba(15, 20, 31, 0.72);
+  --theme-border: rgba(255, 255, 255, 0.08);
+  --theme-border-hover: rgba(163, 230, 53, 0.35);
+}
+[data-theme="cyan"] {
+  --theme-primary: #06b6d4; /* Cyber Cyan (COROS風ハイテクアクア) */
+  --theme-primary-rgb: 6, 182, 212;
+  --theme-glow: rgba(6, 182, 212, 0.25);
+  --theme-border-hover: rgba(6, 182, 212, 0.35);
+}
+[data-theme="emerald"] {
+  --theme-primary: #10b981; /* Pro Emerald (正統派アスリートグリーン) */
+  --theme-primary-rgb: 16, 185, 129;
+  --theme-glow: rgba(16, 185, 129, 0.25);
+  --theme-border-hover: rgba(16, 185, 129, 0.35);
+}
+[data-theme="orange"] {
+  --theme-primary: #f97316; /* Solar Orange (Apple Ultra / Strava風) */
+  --theme-primary-rgb: 249, 115, 22;
+  --theme-glow: rgba(249, 115, 22, 0.25);
+  --theme-border-hover: rgba(249, 115, 22, 0.35);
+}
+
+body {
+  font-family: 'Outfit', 'Noto Sans JP', sans-serif;
+  background-color: #080c14;
+}
+.font-mono-metric {
+  font-family: 'JetBrains Mono', monospace;
+}
+/* 統一された高級すりガラスカード */
+.glass-card {
+  background: var(--theme-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--theme-border);
+  transition: all 0.25s ease-out;
+}
+.glass-card:hover {
+  border-color: var(--theme-border-hover);
+}
+/* テーマ連動カラー */
+.text-theme-primary {
+  color: var(--theme-primary);
+}
+.bg-theme-primary {
+  background-color: var(--theme-primary);
+}
+.border-theme-primary {
+  border-color: var(--theme-primary);
+}
+.tab-btn.active {
+  background: var(--theme-primary);
+  color: #080c14;
+  font-weight: 800;
+  box-shadow: 0 4px 16px 0 var(--theme-glow);
+}
+.tab-btn:not(.active) {
+  color: #94a3b8;
+}
+.tab-btn:not(.active):hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.05);
+}
+/* テーマ切り替えピルボタン */
+.theme-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.theme-dot:hover, .theme-dot.active {
+  transform: scale(1.25);
+  box-shadow: 0 0 8px currentColor;
+}

@@ -1,0 +1,56 @@
+    <!-- ======================================================= -->
+    <!-- 🏃 VIEW 2: ACTIVITY & COACH (個別ラン分析 ＆ 比較) -->
+    <!-- ======================================================= -->
+    <div id="view-activity" class="view-panel space-y-8 hidden">
+      <section id="coach-section" class="scroll-mt-28">
+        <div class="glass-card rounded-3xl p-5 sm:p-7 shadow-2xl relative">
+          
+          <!-- Section Header with Selector -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+            <div>
+              <div class="inline-flex items-center space-x-2 text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-2">
+                <span>🤖</span>
+                <span>AI Coaching & Activity Insights</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">各ランニングの精密分析・評価・次走提案</h2>
+              <p class="text-xs sm:text-sm text-slate-400 mt-0.5">心拍負荷・勾配標高・ピッチ・デカップリングから走行内容を総合診断</p>
+            </div>
+
+            <!-- Selector & Compare Toggle -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+              <button id="toggle-compare-btn" onclick="toggleCompareMode()" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center space-x-1.5 shadow-sm">
+                <span>⚖️</span>
+                <span id="compare-btn-text">ラン比較モード</span>
+              </button>
+
+              <div class="flex items-center space-x-2">
+                <label for="activity-select" class="text-xs text-slate-400 whitespace-nowrap" id="select-a-label">ラン:</label>
+                <select id="activity-select" class="bg-slate-900 border border-slate-700 text-white text-xs sm:text-sm rounded-xl px-3 py-2 w-48 sm:w-60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition cursor-pointer font-mono">
+                  {% for item in reversed_insights %}
+                  <option value="{{ item.id }}">{{ item.date }} - {{ item.distance_km }}km ({{ item.pace_str }})</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Compare Run B Selector (初期非表示) -->
+              <div id="compare-select-wrapper" class="hidden items-center space-x-2">
+                <label for="activity-compare-select" class="text-xs text-indigo-300 font-bold whitespace-nowrap">VS 比較ラン:</label>
+                <select id="activity-compare-select" class="bg-slate-900 border border-indigo-500/50 text-indigo-200 text-xs sm:text-sm rounded-xl px-3 py-2 w-48 sm:w-60 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition cursor-pointer font-mono">
+                  {% for item in reversed_insights %}
+                  <option value="{{ item.id }}">{{ item.date }} - {{ item.distance_km }}km ({{ item.pace_str }})</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Container for Selected Activity (左右2カラムレイアウトでJS描画) -->
+          <div id="insight-container" class="mt-6 space-y-6">
+            <!-- JSで動的にコンテンツが挿入されます -->
+          </div>
+
+        </div>
+      </section>
+    </div>
+    <!-- END VIEW 2: ACTIVITY & COACH -->
+

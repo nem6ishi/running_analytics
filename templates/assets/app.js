@@ -1,0 +1,1688 @@
+// Running Analytics & AI Coach - Client Application Logic
+const {
+  activities,
+  chartData,
+  overview,
+  weeklyWorkload,
+  formEvolution,
+  calendarHeatmap,
+  rollingVolume,
+  monthlyStats,
+  vdotData,
+  sub50Progress,
+} = window.RUNNING_DATA || {};
+
+    // アクティビティ選択描画
+    function renderActivity(activityId) {
+      const act = activities.find(a => a.id === activityId) || activities[activities.length - 1];
+      const container = document.getElementById('insight-container');
+
+      const ev = act.evaluation || {};
+      const an = act.analysis || {};
+      const rec = act.recommendation || {};
+
+      // バッジHTML
+      const badgesHtml = (ev.badges || []).map(b => `
+        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 border border-slate-700 text-slate-200">
+          <span class="mr-1.5">${b.icon}</span> ${b.name}
+        </span>
+      `).join('');
+
+      // 前回比HTML
+      let prevDiffHtml = '';
+      if (ev.prev_diff) {
+        const p = ev.prev_diff;
+        prevDiffHtml = `
+          <div class="mt-2 text-xs flex flex-wrap items-center gap-2 text-slate-400">
+            <span class="text-slate-500">前回 (${p.date}) 比:</span>
+            <span class="font-medium ${p.pace_improved ? 'text-emerald-400' : 'text-rose-400'}">
+              ペース: ${p.pace_diff_str}
+            </span>
+            <span class="text-slate-600">•</span>
+            <span class="font-medium ${p.hr_diff <= 0 ? 'text-emerald-400' : 'text-amber-400'}">
+              心拍: ${p.hr_diff_str}
+            </span>
+          </div>
+        `;
+      }
+
+      // 評価ハイライトHTML
+      const evalHighlightsHtml = (ev.highlights || []).map(h => `
+        <li class="flex items-start text-xs sm:text-sm text-slate-300">
+          <span class="text-emerald-400 mr-2 flex-shrink-0">✓</span>
+          <span>${h}</span>
+        </li>
+      `).join('');
+
+      // ワークアウト構造・走りの意図HTML
+      const ws = an.workout_structure || {
+        type: '通常走',
+        badge: '🏃 通常走',
+        badge_color: 'bg-slate-800 text-slate-300 border-slate-700',
+        summary_title: '【通常走】全体巡航',
+        summary_desc: '全体を通して一定のペースを維持して走行しました。',
+        phases: [],
+        is_interval: false
+      };
+
+      let phasesTimelineHtml = '';
+      if (ws.phases && ws.phases.length > 0) {
+        phasesTimelineHtml = `
+          <div class="space-y-2 pt-1">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>⏱️</span>
+              <span>セッション構成・フェーズ別実績</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${Math.min(ws.phases.length, 5)} gap-2.5">
+              ${ws.phases.map((p, idx) => `
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-xl p-3 space-y-1.5 shadow-inner">
+                  <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black border ${p.badge_color}">
+                      ${p.tag || 'フェーズ'}
+                    </span>
+                    <span class="text-[11px] text-slate-400 font-mono font-medium">${p.distance_km} km</span>
+                  </div>
+                  <div class="text-xs font-bold text-white tracking-tight">
+                    ${p.name}
+                  </div>
+                  <div class="flex items-baseline justify-between pt-0.5">
+                    <div>
+                      <span class="text-base font-black text-white font-mono tracking-tight">${p.pace_str}</span>
+                      <span class="text-[10px] text-slate-400">/km</span>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xs font-bold text-rose-400 font-mono">${p.avg_hr}</span>
+                      <span class="text-[9px] text-slate-500">bpm</span>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-slate-300 leading-snug pt-0.5">${p.desc.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      const workoutBreakdownHtml = `
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900/95 to-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-md">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+            <div class="space-y-1">
+              <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border ${ws.badge_color}">${ws.badge}</span>
+                <span class="text-[11px] text-slate-400 font-medium">🎯 トレーニング意図の自動解析</span>
+              </div>
+              <h4 class="text-base sm:text-lg font-black text-white tracking-tight">${ws.summary_title}</h4>
+            </div>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${ws.summary_desc.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')}</p>
+          ${phasesTimelineHtml}
+        </div>
+      `;
+
+      // ラップスプリットHTML
+      const laps = (act.distance_series && act.distance_series.laps) ? act.distance_series.laps : [];
+      let lapsHtml = '';
+      if (laps.length > 0) {
+        const paceSecs = laps.map(l => l.pace_sec).filter(p => p > 0);
+        const minPace = Math.min(...paceSecs);
+        const maxPace = Math.max(...paceSecs);
+
+        lapsHtml = `
+          <div class="bg-slate-900/40 border border-slate-800/70 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-slate-300 flex items-center space-x-1.5">
+                <span>⏱️</span>
+                <span>1km ごとのラップスプリット詳細（走りの役割別）</span>
+              </span>
+              <span class="text-slate-400 text-[11px]">全 ${laps.length} ラップ</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="text-slate-400 border-b border-slate-800/80 text-[11px]">
+                    <th class="py-2.5 px-3">ラップ</th>
+                    <th class="py-2.5 px-3">区間の役割</th>
+                    <th class="py-2.5 px-3">距離</th>
+                    <th class="py-2.5 px-3">ペース</th>
+                    <th class="py-2.5 px-3">タイム</th>
+                    <th class="py-2.5 px-3">平均心拍</th>
+                    <th class="py-2.5 px-3">高低差</th>
+                    <th class="py-2.5 px-3 min-w-[100px]">相対ペース</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/40 text-slate-300">
+                  ${laps.map(l => {
+                    const isFastest = (l.pace_sec === minPace);
+                    const barWidth = maxPace > minPace ? Math.max(20, 100 - ((l.pace_sec - minPace) / (maxPace - minPace)) * 60) : 80;
+                    const barColor = isFastest ? 'bg-emerald-400' : 'bg-indigo-400';
+                    const roleBadge = l.role_badge || 'bg-slate-800 text-slate-400 border-slate-700';
+                    const roleTag = l.role_tag || '巡航';
+                    return `
+                      <tr class="hover:bg-slate-800/30 transition">
+                        <td class="py-2.5 px-3 font-semibold text-white whitespace-nowrap">Lap ${l.lap_index}</td>
+                        <td class="py-2.5 px-3 whitespace-nowrap">
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${roleBadge}">
+                            ${roleTag}
+                          </span>
+                        </td>
+                        <td class="py-2.5 px-3 text-slate-400 whitespace-nowrap">${l.distance_km} km</td>
+                        <td class="py-2.5 px-3 font-mono font-bold whitespace-nowrap ${isFastest ? 'text-emerald-400' : 'text-slate-200'}">
+                          ${l.pace_str} /km ${isFastest ? '<span class="text-[9px] px-1 rounded bg-emerald-500/20 text-emerald-300 ml-1">最速</span>' : ''}
+                        </td>
+                        <td class="py-2.5 px-3 font-mono text-slate-300 whitespace-nowrap">${l.time_str}</td>
+                        <td class="py-2.5 px-3 text-rose-400 font-medium whitespace-nowrap">${l.avg_hr ? l.avg_hr + ' bpm' : '--'}</td>
+                        <td class="py-2.5 px-3 text-slate-400 text-[11px] whitespace-nowrap">+${l.ascent}m / -${l.descent}m</td>
+                        <td class="py-2.5 px-3">
+                          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div class="${barColor} h-full rounded-full transition-all duration-300" style="width: ${barWidth}%;"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      // 心拍ゾーンメーターの位置計算 (120bpm〜195bpmの範囲を0%〜100%にマッピング)
+      const hrMin = 120;
+      const hrMax = 195;
+      const avgHrPct = Math.max(0, Math.min(100, ((act.avg_hr - hrMin) / (hrMax - hrMin)) * 100));
+      const maxHrPct = Math.max(0, Math.min(100, ((act.max_hr - hrMin) / (hrMax - hrMin)) * 100));
+
+      container.innerHTML = `
+        <!-- 基本指標クイックバー -->
+        <div class="glass-card p-4 sm:p-5 rounded-3xl space-y-3.5 shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 font-mono font-bold">${act.date} ${act.time_of_day}</span>
+              <span class="text-xs px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 font-medium">${act.title}</span>
+              <span class="text-xs px-3 py-1 rounded-xl ${act.hr_zone.bg_color} font-bold">${act.hr_zone.name} (${act.hr_zone.intensity})</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs px-3 py-1 rounded-full border font-bold ${ws.badge_color}">${ws.badge}</span>
+              <span class="text-xs px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 font-bold">${ev.split_badge}</span>
+              ${ev.target_status ? `<span class="text-xs px-3 py-1 rounded-full border ${ev.target_status.badge_color} font-bold">🎯 ${ev.target_status.label}</span>` : ''}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/70 p-3.5 rounded-2xl border border-slate-800/80">
+            <div>
+              <span class="text-[11px] text-slate-400 font-medium block">走破距離</span>
+              <span class="text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tight">${act.distance_km}</span>
+              <span class="text-xs text-slate-400 font-mono">km (${act.duration_str})</span>
+            </div>
+            <div>
+              <span class="text-[11px] text-slate-400 font-medium block">平均 / 最高ペース</span>
+              <span class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">${act.pace_str}</span>
+              <span class="text-xs text-slate-400 font-mono">/ ${act.max_pace_str}</span>
+            </div>
+            <div>
+              <span class="text-[11px] text-slate-400 font-medium block">平均 / 最大心拍</span>
+              <span class="text-2xl sm:text-3xl font-black text-rose-400 font-mono tracking-tight">${act.avg_hr}</span>
+              <span class="text-xs text-slate-400 font-mono">/ ${act.max_hr} bpm</span>
+            </div>
+            <div>
+              <span class="text-[11px] text-slate-400 font-medium block">ピッチ / 歩幅</span>
+              <span class="text-2xl sm:text-3xl font-black text-teal-400 font-mono tracking-tight">${act.cadence}</span>
+              <span class="text-xs text-slate-400 font-mono">spm (${act.stride}m)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- メイン: 左右2カラム分析 (左: グラフ・ラップ / 右: AIコーチ診断) -->
+        <!-- ======================================================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+          <!-- 左カラム (lg:col-span-7): グラフ・心拍メーター・構成・ラップ -->
+          <div class="lg:col-span-7 space-y-6">
+
+            <!-- 1. 走行距離に対する折れ線グラフ (標高オーバーレイ付き) -->
+            <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3 shadow-xl">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-800/80 pb-2.5">
+                <div class="flex items-center space-x-2">
+                  <span class="text-base">📈</span>
+                  <h4 class="text-xs sm:text-sm font-black text-white tracking-tight">走行距離（0km 〜 ${act.distance_km}km）時系列ログ</h4>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 text-[10px] font-mono">
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1"></span>心拍 (bpm)</span>
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-teal-400 mr-1"></span>ケイデンス (spm)</span>
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>速度 (km/h)</span>
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-purple-400 mr-1"></span>標高 (m)</span>
+                </div>
+              </div>
+              <div class="w-full h-72 sm:h-80 relative bg-slate-950/60 rounded-2xl p-2 border border-slate-800/60 shadow-inner">
+                <canvas id="unifiedMetricChart"></canvas>
+              </div>
+              <div class="text-[10px] text-slate-500 flex justify-between font-mono px-1">
+                <span>※薄紫色の背景面はコースの標高（勾配）プロファイルです</span>
+                <span>${act.distance_series && act.distance_series.has_fit ? '🟢 Garmin FIT 実測ログ' : '推定値'}</span>
+              </div>
+            </div>
+
+            <!-- 2. 心拍ゾーン負荷メーター (推定運動強度分布) -->
+            <div class="glass-card rounded-3xl p-4 space-y-2.5 shadow-xl">
+              <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+                <span class="font-bold text-slate-200 flex items-center space-x-1.5">
+                  <span>🫀</span>
+                  <span>心拍ゾーン負荷メーター (運動強度分布)</span>
+                </span>
+                <div class="space-x-3 text-[11px] font-mono">
+                  <span class="text-emerald-400 font-bold">● 平均: ${act.avg_hr} bpm</span>
+                  <span class="text-rose-400 font-bold">▲ 最大: ${act.max_hr} bpm</span>
+                </div>
+              </div>
+
+              <!-- Color Gauge Bar -->
+              <div class="relative pt-4 pb-2">
+                <div class="relative w-full h-3 rounded-full overflow-hidden flex bg-slate-800 shadow-inner">
+                  <div class="h-full bg-emerald-500 w-[20%]" title="Zone 1: 回復 (<126bpm)"></div>
+                  <div class="h-full bg-blue-500 w-[25%]" title="Zone 2: 基礎有酸素 (127-146bpm)"></div>
+                  <div class="h-full bg-amber-500 w-[25%]" title="Zone 3: テンポ (147-165bpm)"></div>
+                  <div class="h-full bg-orange-500 w-[18%]" title="Zone 4: 乳酸閾値 (166-179bpm)"></div>
+                  <div class="h-full bg-rose-600 w-[12%]" title="Zone 5: VO2max (180bpm+)"></div>
+                </div>
+
+                <!-- Average HR Pin -->
+                <div class="absolute top-0 transform -translate-x-1/2 flex flex-col items-center pointer-events-none transition-all duration-300" style="left: ${avgHrPct}%;">
+                  <span class="text-[9px] font-mono font-bold text-white bg-emerald-600 px-1 rounded shadow">平均 ${act.avg_hr}</span>
+                  <div class="w-0.5 h-3 bg-white shadow"></div>
+                </div>
+
+                <!-- Max HR Pin -->
+                <div class="absolute bottom-0 transform -translate-x-1/2 flex flex-col items-center pointer-events-none transition-all duration-300" style="left: ${maxHrPct}%;">
+                  <div class="w-0.5 h-3 bg-rose-400 shadow"></div>
+                  <span class="text-[9px] font-mono font-bold text-white bg-rose-600 px-1 rounded shadow">最大 ${act.max_hr}</span>
+                </div>
+              </div>
+
+              <div class="flex justify-between text-[10px] text-slate-500 font-mono pt-1">
+                <span>Z1: 回復 (&lt;126)</span>
+                <span>Z2: 基礎 (127-146)</span>
+                <span>Z3: テンポ (147-165)</span>
+                <span>Z4: 閾値 (166-179)</span>
+                <span>Z5: 無酸素 (180+)</span>
+              </div>
+            </div>
+
+            <!-- 3. トレーニング構成 & 走りの意図 -->
+            ${workoutBreakdownHtml}
+
+            <!-- 4. 1kmごとのラップスプリット詳細表 -->
+            ${lapsHtml}
+
+          </div>
+
+          <!-- 右カラム (lg:col-span-5): AIコーチ診断 & 是正アクション (Sticky) -->
+          <div class="lg:col-span-5 space-y-5 lg:sticky lg:top-32">
+
+            <!-- 1. 総合総括カード (Overall Verdict) -->
+            ${ev.overall_verdict ? `
+              <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3 shadow-xl relative overflow-hidden">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-base">🤖</span>
+                    <span class="text-xs font-black uppercase tracking-wider" style="color: var(--theme-primary);">AIコーチ 総合総括 (Verdict)</span>
+                  </div>
+                  ${ev.target_gap_str ? `<span class="text-[11px] font-mono text-slate-300 font-bold">10k差: ${ev.target_gap_str}</span>` : ''}
+                </div>
+                <p class="text-xs sm:text-sm text-slate-100 leading-relaxed font-medium">${ev.overall_verdict.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')}</p>
+              </div>
+            ` : ''}
+
+            <!-- 2. 有酸素デカップリング & 心拍ドリフト診断 -->
+            <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3 shadow-xl">
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                <span class="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
+                  <span>🫀</span>
+                  <span>有酸素デカップリング (Pw:Hr)</span>
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-black font-mono border ${ev.decoupling_badge || 'bg-slate-800 text-slate-400 border-slate-700'}">
+                  ${ev.decoupling_pct !== undefined ? (ev.decoupling_pct >= 0 ? '+' : '') + ev.decoupling_pct + '%' : '--'}
+                </span>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">${ev.decoupling_desc || an.drift_text}</p>
+              <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/60 text-[11px] text-slate-400 leading-snug">
+                ${an.drift_text}
+              </div>
+            </div>
+
+            <!-- 3. ▲ 反省点・ボトルネック VS ◎ 収穫・強み -->
+            <div class="space-y-3">
+              <!-- ▲ 容赦ない反省点・ボトルネック -->
+              <div class="bg-slate-950/60 border border-rose-500/25 rounded-2xl p-4 space-y-2.5 shadow-sm">
+                <div class="flex items-center justify-between border-b border-rose-500/20 pb-2">
+                  <div class="flex items-center space-x-1.5">
+                    <span class="text-sm">⚠️</span>
+                    <h5 class="text-xs font-bold text-rose-400 tracking-tight">▲ シビアな反省点・ボトルネック</h5>
+                  </div>
+                  <span class="text-[9px] text-rose-400 font-bold px-2 py-0.5 rounded bg-rose-500/10">改善必須</span>
+                </div>
+                <ul class="space-y-2 text-xs text-slate-300">
+                  ${(ev.critical_bottlenecks || []).map(p => `
+                    <li class="flex items-start bg-slate-900/60 p-2.5 rounded-xl border border-rose-500/10 leading-relaxed">
+                      <span class="text-rose-400 mr-2 flex-shrink-0 mt-0.5 font-bold">▲</span>
+                      <span>${p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-rose-200 font-semibold">$1</strong>')}</span>
+                    </li>
+                  `).join('')}
+                </ul>
+              </div>
+
+              <!-- ◎ 客観的な収穫・強み -->
+              <div class="bg-slate-950/60 border border-slate-800/90 rounded-2xl p-4 space-y-2.5 shadow-sm">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                  <div class="flex items-center space-x-1.5">
+                    <span class="text-sm" style="color: var(--theme-primary);">✓</span>
+                    <h5 class="text-xs font-bold text-slate-200 tracking-tight">◎ 客観的な収穫・強み</h5>
+                  </div>
+                  <span class="text-[9px] text-slate-400 font-bold px-2 py-0.5 rounded bg-slate-800">実証済み</span>
+                </div>
+                <ul class="space-y-2 text-xs text-slate-300">
+                  ${(ev.strong_points || []).map(p => `
+                    <li class="flex items-start bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+                      <span class="mr-2 flex-shrink-0 mt-0.5 font-bold" style="color: var(--theme-primary);">✓</span>
+                      <span>${p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')}</span>
+                    </li>
+                  `).join('')}
+                </ul>
+              </div>
+            </div>
+
+            <!-- 4. 🔥 次回への是正アクション -->
+            ${ev.actionable_focus ? `
+              <div class="bg-slate-950/70 border border-amber-500/30 rounded-2xl p-4 space-y-1.5 shadow-md">
+                <div class="flex items-center space-x-2">
+                  <span class="text-base">🔥</span>
+                  <span class="text-[11px] font-black text-amber-300 uppercase tracking-wider">次回セッションでの是正アクション</span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">${ev.actionable_focus.replace(/【(.*?)】/g, '<strong class="text-amber-300 font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">【$1】</strong>')}</p>
+              </div>
+            ` : ''}
+
+            <!-- 5. 🎯 次回おすすめメニュー & リカバリー提案 -->
+            <div class="glass-card rounded-2xl p-4 space-y-3 shadow-sm">
+              <div class="flex items-center space-x-1.5 border-b border-slate-800/80 pb-2">
+                <span class="text-sm">🎯</span>
+                <span class="text-xs font-bold text-slate-200">次回おすすめメニュー & リカバリー</span>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">おすすめメニュー</span>
+                  <h6 class="text-xs font-bold text-white mt-0.5">${rec.menu_title}</h6>
+                  <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">${rec.menu_desc}</p>
+                </div>
+                <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
+                  <div class="flex justify-between items-center text-[10px] text-slate-400">
+                    <span class="font-bold text-slate-400 uppercase tracking-wider">推奨回復時間</span>
+                    <span class="font-bold text-white font-mono">${rec.recovery_hours}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">${rec.recovery_tips}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 前回比較 & バッジ -->
+            <div class="pt-1 text-xs border-t border-slate-800/60 space-y-2">
+              ${prevDiffHtml}
+              ${badgesHtml ? `<div class="flex flex-wrap gap-1.5 pt-1">${badgesHtml}</div>` : ''}
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+      // グラフを描画・更新
+      updateUnifiedChart(act);
+    }
+
+    let unifiedMetricChart = null;
+
+    // ★走行距離に対する速度・心拍数・ピッチの折れ線グラフ更新
+    function updateUnifiedChart(act) {
+      const ctx = document.getElementById('unifiedMetricChart');
+      if (!ctx) return;
+      if (unifiedMetricChart) {
+        unifiedMetricChart.destroy();
+      }
+
+      const series = act.distance_series || {
+        distances: [0, act.distance_km],
+        speeds_kmh: [act.speed_kmh, act.speed_kmh],
+        heart_rates: [act.avg_hr, act.avg_hr],
+        cadences: [act.cadence, act.cadence],
+        paces_str: [act.pace_str, act.pace_str],
+        altitudes: [0, 0]
+      };
+
+      const labels = series.distances.map(d => d + ' km');
+
+      const datasets = [
+        {
+          label: '心拍数 (bpm)',
+          data: series.heart_rates,
+          borderColor: '#f43f5e',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          tension: 0.25,
+          pointRadius: series.distances.length > 50 ? 0 : 2,
+          pointHoverRadius: 5,
+          fill: false,
+          yAxisID: 'y'
+        },
+        {
+          label: 'ケイデンス (spm)',
+          data: series.cadences,
+          borderColor: '#2dd4bf',
+          backgroundColor: 'transparent',
+          borderWidth: 1.8,
+          borderDash: [2, 2],
+          tension: 0.25,
+          pointRadius: series.distances.length > 50 ? 0 : 2,
+          pointHoverRadius: 5,
+          yAxisID: 'y'
+        },
+        {
+          label: '速度 (km/h)',
+          data: series.speeds_kmh,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.08)',
+          borderWidth: 2,
+          tension: 0.25,
+          pointRadius: series.distances.length > 50 ? 0 : 2,
+          pointHoverRadius: 5,
+          fill: false,
+          yAxisID: 'y1'
+        }
+      ];
+
+      if (series.altitudes && series.altitudes.length > 0) {
+        datasets.push({
+          label: '標高 (m)',
+          data: series.altitudes,
+          borderColor: 'rgba(168, 85, 247, 0.45)',
+          backgroundColor: 'rgba(168, 85, 247, 0.12)',
+          borderWidth: 1.2,
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          fill: true,
+          yAxisID: 'yAlt'
+        });
+      }
+
+      unifiedMetricChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: {
+                color: '#94a3b8',
+                maxTicksLimit: 8,
+                font: { size: 10 }
+              },
+              title: {
+                display: true,
+                text: '走行距離 (km)',
+                color: '#64748b',
+                font: { size: 10 }
+              }
+            },
+            y: {
+              position: 'left',
+              title: { display: true, text: '心拍数(bpm) / ケイデンス(spm)', color: '#94a3b8', font: { size: 10 } },
+              min: 100,
+              max: 210,
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: { color: '#94a3b8', stepSize: 25 }
+            },
+            y1: {
+              position: 'right',
+              title: { display: true, text: '走行速度 (km/h)', color: '#10b981', font: { size: 10 } },
+              min: 6,
+              max: 18,
+              grid: { display: false },
+              ticks: {
+                color: '#10b981',
+                stepSize: 2,
+                callback: v => v + ' km/h'
+              }
+            },
+            yAlt: {
+              position: 'right',
+              display: true,
+              grid: { display: false },
+              ticks: {
+                color: '#a855f7',
+                font: { size: 9 },
+                maxTicksLimit: 4,
+                callback: v => v + 'm'
+              },
+              title: {
+                display: true,
+                text: '標高(m)',
+                color: '#a855f7',
+                font: { size: 9 }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#cbd5e1', font: { size: 11, weight: '500' }, boxWidth: 14 }
+            },
+            tooltip: {
+              callbacks: {
+                title: ctx => `走行距離: ${series.distances[ctx[0].dataIndex]} km`,
+                label: ctx => {
+                  const label = ctx.dataset.label;
+                  const val = ctx.raw;
+                  const idx = ctx.dataIndex;
+                  if (label.includes('速度')) {
+                    const paceStr = (series.paces_str && series.paces_str[idx]) ? series.paces_str[idx] : '--:--';
+                    return `${label}: ${val} km/h (ペース: ${paceStr}/km)`;
+                  }
+                  if (label.includes('標高')) {
+                    return `${label}: ${val} m`;
+                  }
+                  return `${label}: ${val}`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // 距離別フィルター機能
+    function filterActivities(type) {
+      const rows = document.querySelectorAll('.activity-row');
+      const buttons = ['all', 'short', 'mid', 'long'];
+      buttons.forEach(b => {
+        const btn = document.getElementById('filter-' + b);
+        if (btn) {
+          if (b === type) {
+            btn.className = 'px-3 py-1.5 rounded-lg bg-emerald-500 text-white font-medium transition';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
+          }
+        }
+      });
+
+      rows.forEach(row => {
+        const d = parseFloat(row.getAttribute('data-dist') || '0');
+        let show = true;
+        if (type === 'short') show = (d < 5.0);
+        else if (type === 'mid') show = (d >= 5.0 && d < 10.0);
+        else if (type === 'long') show = (d >= 10.0);
+        row.style.display = show ? '' : 'none';
+      });
+    }
+
+    // 週間走行負荷チャート描画
+    function initWeeklyWorkloadChart(data) {
+      const ctx = document.getElementById('weeklyWorkloadChart');
+      if (!ctx || !data) return;
+
+      const lastIdx = data.distances.length - 1;
+      const bgColors = data.distances.map((_, i) => i === lastIdx ? '#10b981' : 'rgba(52, 211, 153, 0.35)');
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: '週間距離',
+            data: data.distances,
+            backgroundColor: bgColors,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.raw} km (${data.runs[ctx.dataIndex]}回)`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { size: 9 } }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#64748b', font: { size: 9 }, callback: v => v + 'km' }
+            }
+          }
+        }
+      });
+    }
+
+    function selectActivity(id) {
+      document.getElementById('activity-select').value = id;
+      if (isCompareMode) {
+        renderCompareActivities();
+      } else {
+        renderActivity(id);
+      }
+      const coachSection = document.getElementById('coach-section');
+      coachSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // ⚖️ ラン比較モード (Compare Runs)
+    // ==========================================
+    let isCompareMode = false;
+
+    function toggleCompareMode() {
+      isCompareMode = !isCompareMode;
+      const wrapper = document.getElementById('compare-select-wrapper');
+      const btn = document.getElementById('toggle-compare-btn');
+      const btnText = document.getElementById('compare-btn-text');
+      const labelA = document.getElementById('select-a-label');
+
+      if (isCompareMode) {
+        wrapper.classList.remove('hidden');
+        wrapper.classList.add('flex');
+        btn.className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white border border-indigo-500 shadow-md transition flex items-center space-x-1.5';
+        btnText.textContent = '比較モード中 (解除)';
+        labelA.textContent = 'ラン A (基準):';
+
+        const currentA = parseInt(document.getElementById('activity-select').value);
+        const selectB = document.getElementById('activity-compare-select');
+        if (parseInt(selectB.value) === currentA) {
+          const altAct = activities.find(a => a.id !== currentA) || activities[0];
+          if (altAct) selectB.value = altAct.id;
+        }
+        renderCompareActivities();
+      } else {
+        wrapper.classList.add('hidden');
+        wrapper.classList.remove('flex');
+        btn.className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center space-x-1.5';
+        btnText.textContent = 'ラン比較モード';
+        labelA.textContent = 'ラン:';
+        renderActivity(parseInt(document.getElementById('activity-select').value));
+      }
+    }
+
+    function renderCompareActivities() {
+      const idA = parseInt(document.getElementById('activity-select').value);
+      const idB = parseInt(document.getElementById('activity-compare-select').value);
+      const actA = activities.find(a => a.id === idA) || activities[activities.length - 1];
+      const actB = activities.find(a => a.id === idB) || activities[0];
+      const container = document.getElementById('insight-container');
+
+      const evA = actA.evaluation || {};
+      const evB = actB.evaluation || {};
+
+      const paceDiff = actB.pace_sec - actA.pace_sec;
+      const hrDiff = actB.avg_hr - actA.avg_hr;
+      const distDiff = actB.distance_km - actA.distance_km;
+
+      container.innerHTML = `
+        <div class="bg-indigo-950/20 border border-indigo-500/30 rounded-3xl p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-500/20 pb-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-xl">⚖️</span>
+              <h3 class="text-base font-black text-white">2走の直接比較 (Run A vs Run B)</h3>
+            </div>
+            <div class="flex items-center space-x-2 text-xs">
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">● Run A: ${actA.date}</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 font-bold">▲ Run B: ${actB.date}</span>
+            </div>
+          </div>
+
+          <!-- 比較メトリクス表 -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">走行距離</span>
+              <div class="text-base font-black text-white font-mono mt-0.5">${actA.distance_km} vs ${actB.distance_km} <span class="text-xs font-normal">km</span></div>
+              <span class="text-[10px] font-bold ${distDiff >= 0 ? 'text-emerald-400' : 'text-slate-400'}">${distDiff >= 0 ? '+' : ''}${distDiff.toFixed(2)} km</span>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">平均ペース</span>
+              <div class="text-base font-black text-white font-mono mt-0.5">${actA.pace_str} vs ${actB.pace_str}</div>
+              <span class="text-[10px] font-bold ${paceDiff <= 0 ? 'text-emerald-400' : 'text-rose-400'}">${paceDiff <= 0 ? '' : '+'}${Math.round(paceDiff)}秒/km</span>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">平均心拍数</span>
+              <div class="text-base font-black text-white font-mono mt-0.5">${actA.avg_hr} vs ${actB.avg_hr} <span class="text-xs font-normal">bpm</span></div>
+              <span class="text-[10px] font-bold ${hrDiff <= 0 ? 'text-emerald-400' : 'text-amber-400'}">${hrDiff <= 0 ? '' : '+'}${hrDiff} bpm</span>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">有酸素デカップリング</span>
+              <div class="text-base font-black text-white font-mono mt-0.5">${evA.decoupling_pct || 0}% vs ${evB.decoupling_pct || 0}%</div>
+              <span class="text-[10px] text-slate-400">安定度比較</span>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">VDOT スコア</span>
+              <div class="text-base font-black text-white font-mono mt-0.5">${evA.vdot || '--'} vs ${evB.vdot || '--'}</div>
+              <span class="text-[10px] text-emerald-400">走力指数</span>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">キロ5維持距離</span>
+              <div class="text-base font-black text-amber-400 font-mono mt-0.5">${evA.sub50_sustained_km || 0} vs ${evB.sub50_sustained_km || 0} km</div>
+              <span class="text-[10px] text-slate-400">持続力</span>
+            </div>
+          </div>
+
+          <!-- 比較折れ線グラフ -->
+          <div class="space-y-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-1">
+              <span class="font-medium text-slate-300">📈 ペース・心拍数のオーバーレイ比較グラフ (距離軸)</span>
+              <div class="flex items-center space-x-3 text-[11px]">
+                <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>Run A 速度</span>
+                <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-sky-400 mr-1"></span>Run B 速度</span>
+                <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1"></span>Run A 心拍</span>
+                <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-amber-400 mr-1"></span>Run B 心拍</span>
+              </div>
+            </div>
+            <div class="w-full h-72 sm:h-80 relative bg-slate-900/50 rounded-2xl p-2 border border-slate-800/80">
+              <canvas id="unifiedMetricChart"></canvas>
+            </div>
+          </div>
+        </div>
+      `;
+
+      updateCompareChart(actA, actB);
+    }
+
+    function updateCompareChart(actA, actB) {
+      const ctx = document.getElementById('unifiedMetricChart');
+      if (!ctx) return;
+      if (unifiedMetricChart) {
+        unifiedMetricChart.destroy();
+      }
+
+      const serA = actA.distance_series || { distances: [0, actA.distance_km], speeds_kmh: [actA.speed_kmh, actA.speed_kmh], heart_rates: [actA.avg_hr, actA.avg_hr] };
+      const serB = actB.distance_series || { distances: [0, actB.distance_km], speeds_kmh: [actB.speed_kmh, actB.speed_kmh], heart_rates: [actB.avg_hr, actB.avg_hr] };
+
+      const baseSer = (serA.distances.length >= serB.distances.length) ? serA : serB;
+      const labels = baseSer.distances.map(d => d + ' km');
+
+      unifiedMetricChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: `Run A 心拍 (${actA.date})`,
+              data: serA.heart_rates,
+              borderColor: '#f43f5e',
+              borderWidth: 2,
+              tension: 0.25,
+              pointRadius: 0,
+              yAxisID: 'y'
+            },
+            {
+              label: `Run B 心拍 (${actB.date})`,
+              data: serB.heart_rates,
+              borderColor: '#fbbf24',
+              borderDash: [3, 3],
+              borderWidth: 2,
+              tension: 0.25,
+              pointRadius: 0,
+              yAxisID: 'y'
+            },
+            {
+              label: `Run A 速度 (${actA.date})`,
+              data: serA.speeds_kmh,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.05)',
+              borderWidth: 2,
+              tension: 0.25,
+              pointRadius: 0,
+              fill: false,
+              yAxisID: 'y1'
+            },
+            {
+              label: `Run B 速度 (${actB.date})`,
+              data: serB.speeds_kmh,
+              borderColor: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.05)',
+              borderWidth: 2,
+              tension: 0.25,
+              pointRadius: 0,
+              fill: false,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: { color: '#94a3b8', maxTicksLimit: 8, font: { size: 10 } },
+              title: { display: true, text: '走行距離 (km)', color: '#64748b', font: { size: 10 } }
+            },
+            y: {
+              position: 'left',
+              title: { display: true, text: '心拍数 (bpm)', color: '#f43f5e', font: { size: 10 } },
+              min: 100,
+              max: 205,
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: { color: '#94a3b8' }
+            },
+            y1: {
+              position: 'right',
+              title: { display: true, text: '速度 (km/h)', color: '#10b981', font: { size: 10 } },
+              min: 6,
+              max: 18,
+              grid: { display: false },
+              ticks: { color: '#10b981', callback: v => v + ' km/h' }
+            }
+          },
+          plugins: {
+            legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 11 }, boxWidth: 12 } }
+          }
+        }
+      });
+    }
+
+    // ==========================================
+    // 📅 カレンダーヒートマップ描画 (Consistency Heatmap)
+    // ==========================================
+    let activeMonthFilter = null;
+
+    function initCalendarHeatmap() {
+      const gridContainer = document.getElementById('heatmap-grid');
+      const monthLabelsContainer = document.getElementById('heatmap-month-labels');
+      if (!gridContainer || !calendarHeatmap || calendarHeatmap.length === 0) return;
+
+      // 1. 週ごとに分割 (7日単位: 月曜〜日曜)
+      const weeks = [];
+      for (let i = 0; i < calendarHeatmap.length; i += 7) {
+        weeks.push(calendarHeatmap.slice(i, i + 7));
+      }
+
+      // 2. 上部月ラベルの配置
+      if (monthLabelsContainer) {
+        let lastMonth = null;
+        let lastYear = null;
+        let lastLabelWeekIdx = -99;
+
+        const monthSlotsHtml = weeks.map((week, weekIdx) => {
+          // 週の代表日（木曜日 week[3] または 1日が含まれる場合はその月）
+          const firstDay = week.find(d => d.day === 1);
+          const repDay = firstDay || week[3] || week[0];
+          const curMonth = repDay.month;
+          const curYear = repDay.year;
+
+          let labelText = '';
+
+          if (weekIdx === 0) {
+            labelText = `${curYear}年 ${curMonth}月`;
+            lastMonth = curMonth;
+            lastYear = curYear;
+            lastLabelWeekIdx = weekIdx;
+          } else if (curMonth !== lastMonth && (weekIdx - lastLabelWeekIdx >= 2)) {
+            if (curYear !== lastYear) {
+              labelText = `${curYear}年 ${curMonth}月`;
+              lastYear = curYear;
+            } else {
+              labelText = `${curMonth}月`;
+            }
+            lastMonth = curMonth;
+            lastLabelWeekIdx = weekIdx;
+          }
+
+          // 各週スロット（セル列と同じ幅 w-3 sm:w-3.5 shrink-0 relative）
+          return `
+            <div class="w-3 h-4 sm:w-3.5 shrink-0 relative">
+              ${labelText ? `<span class="absolute left-0 top-0 whitespace-nowrap text-[10px] sm:text-[11px] font-bold text-slate-300 font-mono tracking-tight pointer-events-none">${labelText}</span>` : ''}
+            </div>
+          `;
+        }).join('');
+
+        monthLabelsContainer.innerHTML = monthSlotsHtml;
+      }
+
+      // 3. 週列・セルの生成
+      gridContainer.innerHTML = weeks.map((week) => {
+        const cellsHtml = week.map((day) => {
+          if (day.is_future) {
+            return `
+              <div class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm border border-dashed border-slate-800/40 opacity-20 cursor-default"
+                   title="${day.date_jp}: 今後の予定">
+              </div>
+            `;
+          }
+
+          const d = day.distance_km;
+          let bgClass = 'bg-slate-900 border border-slate-800/80';
+          if (d > 0 && d < 4.5) {
+            bgClass = 'bg-emerald-950/80 border border-emerald-800/60 hover:border-emerald-400';
+          } else if (d >= 4.5 && d < 8.0) {
+            bgClass = 'bg-emerald-700 hover:bg-emerald-500 shadow-sm';
+          } else if (d >= 8.0 && d < 12.0) {
+            bgClass = 'bg-emerald-500 hover:bg-emerald-400 shadow-sm shadow-emerald-500/30';
+          } else if (d >= 12.0) {
+            bgClass = 'bg-emerald-300 hover:bg-emerald-100 shadow-md shadow-emerald-400/50';
+          }
+
+          // 毎月1日には白系リングを付与して月の境界を明確にする
+          const firstDayRing = day.is_first_day ? 'ring-1 ring-white/80 shadow-sm' : '';
+          const monthKey = `${day.year}-${String(day.month).padStart(2, '0')}`;
+
+          const infoStr = d > 0 
+            ? `${day.date_jp}: ${d} km (${day.pace_str}/km, 心拍 ${day.avg_hr} bpm)` 
+            : `${day.date_jp}: 休息日 (0 km)`;
+
+          return `
+            <div class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm ${bgClass} ${firstDayRing} cursor-pointer transition-all duration-150 hover:scale-125 hover:z-20 heatmap-cell"
+                 data-info="${infoStr}"
+                 data-date-jp="${day.date_jp}"
+                 data-dist="${d}"
+                 data-pace="${day.pace_str}"
+                 data-hr="${day.avg_hr}"
+                 data-month-key="${monthKey}"
+                 onmouseenter="showHeatmapInfo(this)"
+                 title="${infoStr}">
+            </div>
+          `;
+        }).join('');
+
+        return `<div class="flex flex-col gap-1 week-col">${cellsHtml}</div>`;
+      }).join('');
+
+      // 4. 月別サマリーバッジの描画
+      initHeatmapMonthSummary();
+    }
+
+    // 月別サマリーバッジ（クリックで月固定、ホバーで月セル強調）
+    function initHeatmapMonthSummary() {
+      const pillsContainer = document.getElementById('heatmap-month-pills');
+      if (!pillsContainer) return;
+
+      // calendarHeatmapから月別合計距離とラン数を集計
+      const monthAgg = {};
+      calendarHeatmap.forEach(day => {
+        if (day.is_future) return;
+        const key = `${day.year}-${String(day.month).padStart(2, '0')}`;
+        if (!monthAgg[key]) {
+          monthAgg[key] = {
+            year: day.year,
+            month: day.month,
+            label: `${day.year}年${day.month}月`,
+            shortLabel: `${day.month}月`,
+            distance_km: 0.0,
+            runs: 0
+          };
+        }
+        if (day.distance_km > 0) {
+          monthAgg[key].distance_km += day.distance_km;
+          monthAgg[key].runs += (day.runs || 1);
+        }
+      });
+
+      const monthKeys = Object.keys(monthAgg).sort();
+      if (monthKeys.length === 0) return;
+
+      // 月別バッジHTMLを生成
+      pillsContainer.innerHTML = monthKeys.map(key => {
+        const item = monthAgg[key];
+        const distRounded = Math.round(item.distance_km * 10) / 10;
+        return `
+          <button type="button"
+                  class="heatmap-month-pill px-2.5 py-1 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700/70 hover:border-emerald-500/50 transition-all shrink-0 flex items-center space-x-1.5 cursor-pointer"
+                  data-month-key="${key}"
+                  onmouseenter="highlightHeatmapMonth('${key}')"
+                  onmouseleave="unhighlightHeatmapMonth()"
+                  onclick="toggleHeatmapMonthFilter('${key}')"
+                  title="${item.label}: 合計${distRounded}km (${item.runs}回)">
+            <span class="font-bold text-white text-[11px]">${item.shortLabel}</span>
+            <span class="text-emerald-400 font-semibold text-[10px]">${distRounded}km</span>
+            <span class="text-slate-500 text-[9px]">(${item.runs}回)</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function showHeatmapInfo(el) {
+      const infoSpan = document.getElementById('heatmap-info');
+      if (!infoSpan) return;
+
+      const dateJp = el.getAttribute('data-date-jp');
+      const dist = parseFloat(el.getAttribute('data-dist') || '0');
+      const pace = el.getAttribute('data-pace') || '--:--';
+      const hr = el.getAttribute('data-hr') || '0';
+
+      if (dateJp) {
+        if (dist > 0) {
+          infoSpan.innerHTML = `
+            <span class="text-white font-bold">${dateJp}</span>
+            <span class="text-slate-500">:</span>
+            <span class="text-emerald-400 font-extrabold text-sm ml-1">${dist} km</span>
+            <span class="text-slate-400 ml-1">(${pace}/km, 心拍 ${hr} bpm)</span>
+          `;
+        } else {
+          infoSpan.innerHTML = `
+            <span class="text-white font-bold">${dateJp}</span>
+            <span class="text-slate-500">:</span>
+            <span class="text-slate-400 ml-1">休息日 (0 km)</span>
+          `;
+        }
+      } else {
+        const info = el.getAttribute('data-info');
+        if (info) infoSpan.innerHTML = `<strong>${info}</strong>`;
+      }
+    }
+
+    function highlightHeatmapMonth(monthKey) {
+      if (activeMonthFilter) return; // フィルター固定中はホバー無効
+      const cells = document.querySelectorAll('.heatmap-cell');
+      cells.forEach(c => {
+        const cellMonth = c.getAttribute('data-month-key');
+        if (cellMonth === monthKey) {
+          c.classList.add('scale-125', 'ring-2', 'ring-emerald-400', 'z-10');
+          c.classList.remove('opacity-20');
+        } else {
+          c.classList.add('opacity-20');
+          c.classList.remove('scale-125', 'ring-2', 'ring-emerald-400', 'z-10');
+        }
+      });
+    }
+
+    function unhighlightHeatmapMonth() {
+      if (activeMonthFilter) return;
+      const cells = document.querySelectorAll('.heatmap-cell');
+      cells.forEach(c => {
+        c.classList.remove('opacity-20', 'scale-125', 'ring-2', 'ring-emerald-400', 'z-10');
+      });
+    }
+
+    function toggleHeatmapMonthFilter(monthKey) {
+      const resetBtn = document.getElementById('heatmap-reset-filter');
+      const pills = document.querySelectorAll('.heatmap-month-pill');
+
+      if (activeMonthFilter === monthKey) {
+        // 解除
+        resetHeatmapMonthFilter();
+        return;
+      }
+
+      activeMonthFilter = monthKey;
+      if (resetBtn) resetBtn.classList.remove('hidden');
+
+      // バッジのアクティブ表示
+      pills.forEach(p => {
+        if (p.getAttribute('data-month-key') === monthKey) {
+          p.classList.add('border-emerald-400', 'bg-emerald-500/20', 'text-white');
+        } else {
+          p.classList.remove('border-emerald-400', 'bg-emerald-500/20', 'text-white');
+        }
+      });
+
+      // セル強調
+      const cells = document.querySelectorAll('.heatmap-cell');
+      cells.forEach(c => {
+        const cellMonth = c.getAttribute('data-month-key');
+        if (cellMonth === monthKey) {
+          c.classList.add('scale-110', 'ring-2', 'ring-emerald-400', 'z-10');
+          c.classList.remove('opacity-20');
+        } else {
+          c.classList.add('opacity-20');
+          c.classList.remove('scale-110', 'ring-2', 'ring-emerald-400', 'z-10');
+        }
+      });
+    }
+
+    function resetHeatmapMonthFilter() {
+      activeMonthFilter = null;
+      const resetBtn = document.getElementById('heatmap-reset-filter');
+      if (resetBtn) resetBtn.classList.add('hidden');
+
+      const pills = document.querySelectorAll('.heatmap-month-pill');
+      pills.forEach(p => {
+        p.classList.remove('border-emerald-400', 'bg-emerald-500/20', 'text-white');
+      });
+
+      const cells = document.querySelectorAll('.heatmap-cell');
+      cells.forEach(c => {
+        c.classList.remove('opacity-20', 'scale-110', 'scale-125', 'ring-2', 'ring-emerald-400', 'z-10');
+      });
+    }
+
+    // ==========================================
+    // 🔍 テーブル検索 & ソート機能
+    // ==========================================
+    let currentSortCol = 0;
+    let currentSortAsc = false;
+
+    function handleTableSearch() {
+      const query = (document.getElementById('activity-search').value || '').toLowerCase().trim();
+      const rows = document.querySelectorAll('.activity-row');
+      rows.forEach(row => {
+        const searchData = (row.getAttribute('data-search') || '').toLowerCase();
+        if (!query || searchData.includes(query)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    function sortTable(colIndex, type) {
+      const tbody = document.getElementById('activity-tbody');
+      if (!tbody) return;
+      const rows = Array.from(tbody.querySelectorAll('.activity-row'));
+
+      if (currentSortCol === colIndex) {
+        currentSortAsc = !currentSortAsc;
+      } else {
+        currentSortCol = colIndex;
+        currentSortAsc = (type === 'date') ? false : true;
+      }
+
+      document.querySelectorAll('#activity-table .sort-icon').forEach(span => span.textContent = '');
+      const currentTh = document.querySelectorAll('#activity-table thead th')[colIndex];
+      if (currentTh) {
+        const iconSpan = currentTh.querySelector('.sort-icon');
+        if (iconSpan) iconSpan.textContent = currentSortAsc ? '▲' : '▼';
+      }
+
+      rows.sort((a, b) => {
+        let valA, valB;
+        if (type === 'date') {
+          valA = a.getAttribute('data-date') || '';
+          valB = b.getAttribute('data-date') || '';
+          return currentSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else if (type === 'num') {
+          valA = parseFloat(a.getAttribute(colIndex === 1 ? 'data-dist' : 'data-hr') || '0');
+          valB = parseFloat(b.getAttribute(colIndex === 1 ? 'data-dist' : 'data-hr') || '0');
+          return currentSortAsc ? valA - valB : valB - valA;
+        } else if (type === 'pace') {
+          valA = parseFloat(a.getAttribute('data-pace-sec') || '999');
+          valB = parseFloat(b.getAttribute('data-pace-sec') || '999');
+          return currentSortAsc ? valA - valB : valB - valA;
+        }
+        return 0;
+      });
+
+      rows.forEach(r => tbody.appendChild(r));
+    }
+
+    // 初期化：最新のランを表示
+    const latestId = activities[activities.length - 1].id;
+    document.getElementById('activity-select').value = latestId;
+    renderActivity(latestId);
+    initWeeklyWorkloadChart(weeklyWorkload);
+    initCalendarHeatmap();
+
+    // セレクター変更監視
+    document.getElementById('activity-select').addEventListener('change', (e) => {
+      if (isCompareMode) {
+        renderCompareActivities();
+      } else {
+        renderActivity(parseInt(e.target.value));
+      }
+    });
+
+    document.getElementById('activity-compare-select').addEventListener('change', (e) => {
+      if (isCompareMode) {
+        renderCompareActivities();
+      }
+    });
+
+    // ==========================================
+    // トレンドチャート描画 (Chart.js)
+    // ==========================================
+
+    // 1. トレーニングボリューム推移 (過去30日ローリング移動合計 / 月別切り替え)
+    let volumeChartInstance = null;
+    let currentVolumeMode = 'rolling';
+
+    function initVolumeChart(mode = 'rolling') {
+      const ctx = document.getElementById('monthlyChart');
+      if (!ctx) return;
+
+      if (volumeChartInstance) {
+        volumeChartInstance.destroy();
+      }
+
+      currentVolumeMode = mode;
+
+      if (mode === 'rolling' && typeof rollingVolume !== 'undefined' && rollingVolume.dates) {
+        // 過去30日ローリング移動合計モード
+        volumeChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: rollingVolume.dates,
+            datasets: [
+              {
+                label: '過去30日合計 (km)',
+                data: rollingVolume.volumes,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.25,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: '#10b981',
+                yAxisID: 'y'
+              },
+              {
+                label: '過去30日出走 (回)',
+                data: rollingVolume.runs,
+                borderColor: '#38bdf8',
+                backgroundColor: 'transparent',
+                borderWidth: 1.5,
+                borderDash: [3, 3],
+                tension: 0.25,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                pointHoverBackgroundColor: '#38bdf8',
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: {
+                  color: '#94a3b8',
+                  maxTicksLimit: 8
+                }
+              },
+              y: {
+                title: { display: true, text: '過去30日合計 km', color: '#94a3b8', font: { size: 10 } },
+                grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                ticks: { color: '#94a3b8' }
+              },
+              y1: {
+                position: 'right',
+                title: { display: true, text: '出走回', color: '#94a3b8', font: { size: 10 } },
+                grid: { display: false },
+                ticks: { color: '#94a3b8', stepSize: 1 }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: { color: '#cbd5e1', font: { size: 11 }, boxWidth: 12 }
+              },
+              tooltip: {
+                callbacks: {
+                  afterBody: function(tooltipItems) {
+                    const idx = tooltipItems[0].dataIndex;
+                    const daily = rollingVolume.daily_distances ? rollingVolume.daily_distances[idx] : 0;
+                    return daily > 0 ? `当日走行: ${daily} km` : `当日走行: 休息 (0 km)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      } else {
+        // カレンダー月別モード
+        volumeChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: chartData.monthly_labels,
+            datasets: [
+              {
+                type: 'bar',
+                label: '月間走行距離 (km)',
+                data: chartData.monthly_distances,
+                backgroundColor: '#10b981',
+                borderRadius: 6,
+                yAxisID: 'y'
+              },
+              {
+                type: 'line',
+                label: '月間出走回数',
+                data: chartData.monthly_runs,
+                borderColor: '#38bdf8',
+                backgroundColor: '#38bdf8',
+                tension: 0.3,
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+              y: {
+                title: { display: true, text: 'km', color: '#94a3b8' },
+                grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                ticks: { color: '#94a3b8' }
+              },
+              y1: {
+                position: 'right',
+                title: { display: true, text: '回', color: '#94a3b8' },
+                grid: { display: false },
+                ticks: { color: '#94a3b8', stepSize: 1 }
+              }
+            },
+            plugins: {
+              legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+            }
+          }
+        });
+      }
+    }
+
+    function toggleVolumeChartMode(mode) {
+      const btnRolling = document.getElementById('btn-vol-rolling');
+      const btnMonthly = document.getElementById('btn-vol-monthly');
+      const title = document.getElementById('volume-chart-title');
+      const desc = document.getElementById('volume-chart-desc');
+      const badge = document.getElementById('volume-chart-badge');
+      const statsBox = document.getElementById('rolling-volume-stats');
+
+      if (mode === 'rolling') {
+        if (btnRolling) btnRolling.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm';
+        if (btnMonthly) btnMonthly.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        if (title) title.textContent = '過去30日間の合計走行距離 (移動累計)';
+        if (desc) desc.textContent = 'その日から過去30日間のスライディングウィンドウ合計走行距離推移';
+        if (badge) {
+          badge.textContent = 'Rolling 30 Days';
+          badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono';
+        }
+        if (statsBox) statsBox.style.display = '';
+        initVolumeChart('rolling');
+      } else {
+        if (btnMonthly) btnMonthly.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm';
+        if (btnRolling) btnRolling.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        if (title) title.textContent = '月別走行距離 & 出走回数';
+        if (desc) desc.textContent = 'カレンダー月ごとの走行ボリュームと出走回数の推移';
+        if (badge) {
+          badge.textContent = 'Monthly Calendar';
+          badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30 font-mono';
+        }
+        if (statsBox) statsBox.style.display = 'none';
+        initVolumeChart('monthly');
+      }
+    }
+
+    // 初期化実行 (デフォルト: 過去30日ローリング合計)
+    initVolumeChart('rolling');
+
+    // 2. ペース & 心拍数推移
+    new Chart(document.getElementById('paceHrChart'), {
+      type: 'line',
+      data: {
+        labels: chartData.dates,
+        datasets: [
+          {
+            label: '平均ペース (分/km)',
+            data: chartData.paces_min,
+            borderColor: '#34d399',
+            backgroundColor: 'rgba(52, 211, 153, 0.1)',
+            yAxisID: 'yPace',
+            tension: 0.2
+          },
+          {
+            label: '平均心拍 (bpm)',
+            data: chartData.avg_hrs,
+            borderColor: '#f43f5e',
+            backgroundColor: 'transparent',
+            borderDash: [4, 4],
+            yAxisID: 'yHr',
+            tension: 0.2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 7 } },
+          yPace: {
+            reverse: true, // ペースは小さいほど速いので反転
+            title: { display: true, text: 'ペース (分/km)', color: '#94a3b8' },
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: {
+              color: '#94a3b8',
+              callback: val => {
+                const min = Math.floor(val);
+                const sec = Math.round((val - min) * 60);
+                return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+              }
+            }
+          },
+          yHr: {
+            position: 'right',
+            title: { display: true, text: '心拍数 (bpm)', color: '#94a3b8' },
+            grid: { display: false },
+            ticks: { color: '#94a3b8' }
+          }
+        },
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+        }
+      }
+    });
+
+    // 3. 有酸素効率 散布図 (心拍数 vs ペース)
+    new Chart(document.getElementById('scatterChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: '各アクティビティ',
+          data: chartData.scatter_hr_pace,
+          backgroundColor: '#818cf8',
+          pointRadius: 6,
+          pointHoverRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            title: { display: true, text: 'ペース (分/km)', color: '#94a3b8' },
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: {
+              color: '#94a3b8',
+              callback: val => {
+                const min = Math.floor(val);
+                const sec = Math.round((val - min) * 60);
+                return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+              }
+            }
+          },
+          y: {
+            title: { display: true, text: '平均心拍数 (bpm)', color: '#94a3b8' },
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: { color: '#94a3b8' }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const p = ctx.raw;
+                const min = Math.floor(p.x);
+                const sec = Math.round((p.x - min) * 60);
+                return `${p.date}: ${p.dist}km | ${min}:${sec < 10 ? '0' : ''}${sec}/km | ${p.y} bpm`;
+              }
+            }
+          },
+          legend: { display: false }
+        }
+      }
+    });
+
+    // 4. ピッチ vs 歩幅
+    new Chart(document.getElementById('formChart'), {
+      type: 'line',
+      data: {
+        labels: chartData.dates,
+        datasets: [
+          {
+            label: '平均ピッチ (spm)',
+            data: chartData.cadences,
+            borderColor: '#2dd4bf',
+            backgroundColor: 'transparent',
+            yAxisID: 'yCadence',
+            tension: 0.2
+          },
+          {
+            label: '平均歩幅 (m)',
+            data: chartData.strides,
+            borderColor: '#c084fc',
+            backgroundColor: 'transparent',
+            yAxisID: 'yStride',
+            tension: 0.2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 7 } },
+          yCadence: {
+            title: { display: true, text: 'ピッチ (spm)', color: '#94a3b8' },
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: { color: '#94a3b8' }
+          },
+          yStride: {
+            position: 'right',
+            title: { display: true, text: '歩幅 (m)', color: '#94a3b8' },
+            grid: { display: false },
+            ticks: { color: '#94a3b8' }
+          }
+        },
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+        }
+      }
+    });
+
+    // ==========================================
+    // 🔀 3-View 切り替えナビゲーションロジック
+    // ==========================================
+    function switchView(viewName) {
+      const views = {
+        cockpit: document.getElementById('view-cockpit'),
+        activity: document.getElementById('view-activity'),
+        trends: document.getElementById('view-trends')
+      };
+
+      const tabs = {
+        cockpit: document.getElementById('tab-cockpit'),
+        activity: document.getElementById('tab-activity'),
+        trends: document.getElementById('tab-trends'),
+        all: document.getElementById('tab-all')
+      };
+
+      // タブボタンスタイル更新
+      Object.keys(tabs).forEach(k => {
+        if (tabs[k]) {
+          if (k === viewName) {
+            tabs[k].classList.add('active');
+          } else {
+            tabs[k].classList.remove('active');
+          }
+        }
+      });
+
+      // パネル表示切り替え
+      if (viewName === 'all') {
+        Object.values(views).forEach(el => {
+          if (el) el.classList.remove('hidden');
+        });
+        history.replaceState(null, null, '#all');
+      } else {
+        Object.keys(views).forEach(k => {
+          if (views[k]) {
+            if (k === viewName) {
+              views[k].classList.remove('hidden');
+            } else {
+              views[k].classList.add('hidden');
+            }
+          }
+        });
+        history.replaceState(null, null, '#' + viewName);
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // カラーテーマ切り替え機能
+    // ==========================================
+    function setTheme(themeName) {
+      const validThemes = ['volt', 'cyan', 'emerald', 'orange'];
+      if (!validThemes.includes(themeName)) {
+        themeName = 'volt';
+      }
+
+      if (themeName === 'volt') {
+        document.documentElement.removeAttribute('data-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', themeName);
+      }
+      localStorage.setItem('running_analytics_theme', themeName);
+
+      // テーマドットのアクティブスタイル更新
+      document.querySelectorAll('.theme-dot').forEach(dot => {
+        if (dot.getAttribute('onclick')?.includes(`'${themeName}'`)) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    }
+
+    // 初期テーマの復元
+    try {
+      const savedTheme = localStorage.getItem('running_analytics_theme') || 'volt';
+      setTheme(savedTheme);
+    } catch (e) {
+      console.warn('localStorage access failed:', e);
+    }
+
+    // テーブルから個別分析へジャンプ
+    function selectActivityAndSwitch(id) {
+      selectActivity(id);
+      switchView('activity');
+      const coachSec = document.getElementById('coach-section');
+      if (coachSec) {
+        coachSec.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // ページ初期ロード時のハッシュチェック
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (['cockpit', 'activity', 'trends', 'all'].includes(hash)) {
+        switchView(hash);
+      } else {
+        switchView('cockpit');
+      }
+    });

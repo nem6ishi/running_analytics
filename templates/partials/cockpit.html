@@ -1,0 +1,525 @@
+    <!-- ======================================================= -->
+    <!-- 🏁 VIEW 1: COCKPIT (総合ダッシュボード) -->
+    <!-- ======================================================= -->
+    <div id="view-cockpit" class="view-panel space-y-8">
+
+      <!-- ========================================== -->
+      <!-- 🎯 レイヤー1: GOAL & VDOT FITNESS ENGINE -->
+      <!-- (サブ50プログレス × ジャック・ダニエルズ式VDOT) -->
+      <!-- ========================================== -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- 左カラム: 10km 50分切り (サブ50) プログレストラッカー -->
+        <div class="lg:col-span-6 glass-card rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl relative overflow-hidden flex flex-col justify-between">
+          <div class="space-y-4">
+            <!-- ヘッダー -->
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sm font-bold shadow-inner">🎯</span>
+                <div>
+                  <h3 class="text-sm font-black text-white tracking-tight">10km 50分切り (サブ50) プログレス</h3>
+                  <p class="text-[11px] text-slate-400">目標ペース（5:00/km）に対する達成進捗</p>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-black font-mono border" style="background: rgba(var(--theme-primary-rgb), 0.12); color: var(--theme-primary); border-color: rgba(var(--theme-primary-rgb), 0.25);">
+                GOAL: 50:00
+              </span>
+            </div>
+
+            <!-- 現在推定タイムと進捗率 -->
+            <div class="grid grid-cols-2 gap-3 bg-slate-950/70 p-3.5 rounded-2xl border border-slate-800/80">
+              <div>
+                <span class="text-[11px] text-slate-400 font-medium block">現在の推定10km力</span>
+                <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight mt-0.5">
+                  {{ sub50_progress.est_10k_time_str }}
+                </div>
+                <span class="text-[11px] text-slate-400 font-mono">({{ sub50_progress.est_10k_pace_str }}/km)</span>
+              </div>
+              <div>
+                <span class="text-[11px] text-slate-400 font-medium block">サブ50到達進捗率</span>
+                <div class="text-2xl sm:text-3xl font-black font-mono tracking-tight mt-0.5" style="color: var(--theme-primary);">
+                  {{ sub50_progress.progress_pct }}%
+                </div>
+                <span class="text-[11px] text-slate-400 font-medium">基準60分 ➔ 50分</span>
+              </div>
+            </div>
+
+            <!-- 進捗バー -->
+            <div class="space-y-1.5">
+              <div class="w-full bg-slate-950/80 rounded-full h-3 p-0.5 border border-slate-800 overflow-hidden shadow-inner">
+                <div class="h-full rounded-full transition-all duration-700 shadow-sm" style="width: {{ sub50_progress.progress_pct }}%; background: linear-gradient(90deg, #334155 0%, var(--theme-primary) 100%);"></div>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                <span>60:00 (6:00/km)</span>
+                <span class="text-slate-300 font-semibold">{{ sub50_progress.gap_status }}</span>
+                <span class="font-semibold" style="color: var(--theme-primary);">目標 50:00 (5:00/km)</span>
+              </div>
+            </div>
+
+            <!-- サブ50維持距離 & 残りギャップ -->
+            <div class="grid grid-cols-2 gap-3 pt-1">
+              <div class="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-3 text-center">
+                <span class="text-[10px] text-slate-400 block font-medium">キロ5分以内 維持最長記録</span>
+                <span class="text-xl font-black text-white font-mono">{{ sub50_progress.max_sustained_km }} <span class="text-xs text-slate-400 font-normal">km</span></span>
+                <span class="text-[10px] text-slate-500 block font-mono">直近走: {{ sub50_progress.latest_sustained_km }}km</span>
+              </div>
+              <div class="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-3 text-center">
+                <span class="text-[10px] text-slate-400 block font-medium">サブ50までの必要短縮</span>
+                <span class="text-xl font-black text-white font-mono">{{ sub50_progress.gap_pace_str }}</span>
+                <span class="text-[10px] text-slate-500 block font-mono">総タイム {{ sub50_progress.gap_time_str }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/80 text-[11px] text-slate-300 leading-relaxed mt-2 flex items-center space-x-2">
+            <span style="color: var(--theme-primary);">💡</span>
+            <span>キロ5分ペースを現在の <strong class="text-white">{{ sub50_progress.max_sustained_km }}km</strong> から段階的に5km、7kmへと巡航距離を延伸させることがサブ50への最短ロードマップです。</span>
+          </div>
+        </div>
+
+        <!-- 右カラム: VDOT ＆ 5大科学的トレーニングペース -->
+        <div class="lg:col-span-6 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sm font-bold shadow-inner">🧪</span>
+                <div>
+                  <h3 class="text-sm font-black text-white tracking-tight">VDOT ＆ 5大科学的トレーニングペース</h3>
+                  <p class="text-[11px] text-slate-400">ジャック・ダニエルズ式走力指数 × 目的別ゾーン</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2 font-mono">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-black border" style="background: rgba(var(--theme-primary-rgb), 0.12); color: var(--theme-primary); border-color: rgba(var(--theme-primary-rgb), 0.25);">
+                  VDOT: {{ vdot_data.current_vdot }}
+                </span>
+                <span class="text-[11px] text-slate-500">Peak: {{ vdot_data.peak_vdot }}</span>
+              </div>
+            </div>
+
+            <!-- 5大ペース表 -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
+              <!-- Eペース -->
+              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border {{ vdot_data.paces.e_pace.badge_color }}">
+                  E (Easy)
+                </span>
+                <div class="text-xs font-black text-white font-mono tracking-tight">{{ vdot_data.paces.e_pace.range_str }}</div>
+                <p class="text-[9px] text-slate-400 leading-tight">基礎毛細血管</p>
+              </div>
+
+              <!-- Mペース -->
+              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border {{ vdot_data.paces.m_pace.badge_color }}">
+                  M (Marathon)
+                </span>
+                <div class="text-xs font-black text-white font-mono tracking-tight">{{ vdot_data.paces.m_pace.pace_str }}</div>
+                <p class="text-[9px] text-slate-400 leading-tight">マラソン巡航</p>
+              </div>
+
+              <!-- Tペース (サブ50キー) -->
+              <div class="bg-slate-950/60 border border-slate-700/80 rounded-2xl p-2.5 space-y-1 relative overflow-hidden shadow-sm">
+                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border {{ vdot_data.paces.t_pace.badge_color }}">
+                  T (閾値/LT)
+                </span>
+                <div class="text-xs font-black font-mono tracking-tight" style="color: var(--theme-primary);">{{ vdot_data.paces.t_pace.pace_str }}</div>
+                <p class="text-[9px] text-slate-300 leading-tight font-bold">★最重要</p>
+              </div>
+
+              <!-- Iペース -->
+              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border {{ vdot_data.paces.i_pace.badge_color }}">
+                  I (Interval)
+                </span>
+                <div class="text-xs font-black text-white font-mono tracking-tight">{{ vdot_data.paces.i_pace.pace_str }}</div>
+                <p class="text-[9px] text-slate-400 leading-tight">VO2max向上</p>
+              </div>
+
+              <!-- Rペース -->
+              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1 col-span-2 sm:col-span-1">
+                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border {{ vdot_data.paces.r_pace.badge_color }}">
+                  R (Repetition)
+                </span>
+                <div class="text-xs font-black text-white font-mono tracking-tight">{{ vdot_data.paces.r_pace.pace_str }}</div>
+                <p class="text-[9px] text-slate-400 leading-tight">スピード経済性</p>
+              </div>
+            </div>
+
+            <!-- 予想レースタイム 4項目 -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              {% for pred in race_predictions %}
+              <div class="bg-slate-950/50 border border-slate-800/60 rounded-xl p-2 text-center">
+                <div class="text-[10px] text-slate-400 font-medium flex items-center justify-center space-x-1">
+                  <span>{{ pred.icon }}</span>
+                  <span>{{ pred.name }}</span>
+                </div>
+                <div class="text-sm font-black text-white font-mono mt-0.5">{{ pred.time_str }}</div>
+                <div class="text-[9px] text-slate-400 font-mono">{{ pred.pace_str }}/km</div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/60 text-[11px] text-slate-400 leading-relaxed">
+            💡 <strong class="text-slate-200">練習方針:</strong> ジョグは <strong class="text-slate-300 font-mono">{{ vdot_data.paces.e_pace.range_str }}</strong> を超えないよう徹底して疲労を抜き、ポイント練習では <strong class="text-white font-mono">{{ vdot_data.paces.t_pace.pace_str }}</strong> の持続走で閾値を押し上げます。
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- ⚡ レイヤー2: ATHLETE HUD (自己ベスト ＆ KPI) -->
+      <!-- ========================================== -->
+      <section class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-base">⚡</span>
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-400">Athlete HUD & All-Time Performance</h2>
+          </div>
+          <span class="text-[11px] text-slate-500 font-mono">{{ overview.date_range }}</span>
+        </div>
+
+        <!-- 自己ベスト 5大レコード (統一感のあるプレミアムスレート) -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <!-- 最長走行距離 -->
+          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span>🏃 最長走破</span>
+              <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.longest_dist.date }}</span>
+            </div>
+            <div class="text-2xl font-black text-white font-mono tracking-tight">{{ personal_records.longest_dist.val }}</div>
+            <div class="text-[11px] text-slate-400 font-mono">{{ personal_records.longest_dist.time }} ({{ personal_records.longest_dist.pace }}/km)</div>
+          </div>
+
+          <!-- 最速平均ペース -->
+          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span>⚡ 最速ペース</span>
+              <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.best_pace.date }}</span>
+            </div>
+            <div class="text-2xl font-black text-white font-mono tracking-tight">{{ personal_records.best_pace.val }}</div>
+            <div class="text-[11px] text-slate-400 font-mono">{{ personal_records.best_pace.dist }} (HR {{ personal_records.best_pace.hr }})</div>
+          </div>
+
+          <!-- 推定最速5km -->
+          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span>⏱️ 最速5km換算</span>
+              <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.best_5k.date }}</span>
+            </div>
+            <div class="text-2xl font-black text-white font-mono tracking-tight">{{ personal_records.best_5k.val }}</div>
+            <div class="text-[11px] text-slate-400 font-mono">平均 {{ personal_records.best_5k.pace }}/km</div>
+          </div>
+
+          <!-- 最高有酸素効率 (AEI) -->
+          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span>💎 最高有酸素効率</span>
+              <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.best_aei.date }}</span>
+            </div>
+            <div class="text-2xl font-black text-white font-mono tracking-tight">{{ personal_records.best_aei.val }}</div>
+            <div class="text-[11px] text-slate-400 font-mono">{{ personal_records.best_aei.pace }}/km • {{ personal_records.best_aei.hr }}</div>
+          </div>
+
+          <!-- 月間最多走行距離 -->
+          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group col-span-2 sm:col-span-1">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span>📅 月間最多走行</span>
+              <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.best_month.date }}</span>
+            </div>
+            <div class="text-2xl font-black text-white font-mono tracking-tight">{{ personal_records.best_month.val }}</div>
+            <div class="text-[11px] text-slate-400">歴代最高月間ボリューム</div>
+          </div>
+        </div>
+
+        <!-- 6大 All-Time 通算統計 (ミニマル・プロ仕様) -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div class="glass-card rounded-2xl p-3.5">
+            <div class="text-[11px] font-medium text-slate-400">総走行距離</div>
+            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+              {{ overview.total_distance_km }} <span class="text-xs font-normal text-slate-400">km</span>
+            </div>
+            <div class="text-[10px] text-slate-500 mt-0.5">全{{ overview.total_runs }}アクティビティ</div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-3.5">
+            <div class="text-[11px] font-medium text-slate-400">通算平均ペース</div>
+            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+              {{ overview.avg_pace_str }} <span class="text-xs font-normal text-slate-400">/km</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono mt-0.5">最速 {{ overview.best_pace_str }}/km</div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-3.5">
+            <div class="text-[11px] font-medium text-slate-400">通算平均心拍数</div>
+            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+              {{ overview.avg_hr }} <span class="text-xs font-normal text-slate-400">bpm</span>
+            </div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Zone 4 (閾値帯寄り)</div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-3.5">
+            <div class="text-[11px] font-medium text-slate-400">通算平均ピッチ</div>
+            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+              {{ overview.avg_cadence }} <span class="text-xs font-normal text-slate-400">spm</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">理想リズム (170-180)</div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-3.5">
+            <div class="text-[11px] font-medium text-slate-400">通算平均歩幅</div>
+            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+              {{ overview.avg_stride_m }} <span class="text-xs font-normal text-slate-400">m</span>
+            </div>
+            <div class="text-[10px] text-slate-500 mt-0.5">ストライド安定</div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-3.5">
+            <div class="text-[11px] font-medium text-slate-400">総消費エネルギー</div>
+            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+              {{ overview.total_calories }} <span class="text-xs font-normal text-slate-400">kcal</span>
+            </div>
+            <div class="text-[10px] text-slate-500 mt-0.5">総時間 {{ overview.total_time_str }}</div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- 🛡️ レイヤー3: 週間負荷 & 年間カレンダー草表示 -->
+      <!-- ========================================== -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- 週間走行負荷 ＆ 怪我予防管理 -->
+        <div class="lg:col-span-5 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
+          <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            <div class="flex items-center space-x-2">
+              <span class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold border border-blue-500/30">🛡️</span>
+              <div>
+                <h3 class="text-sm font-black text-white tracking-tight">週間走行負荷 ＆ 怪我予防管理</h3>
+                <p class="text-[11px] text-slate-400">急激な走行増（スパイク）による怪我リスクの抑制</p>
+              </div>
+            </div>
+            <span class="text-xs px-2.5 py-0.5 rounded-full border {{ weekly_workload.status_badge }} font-bold">
+              {{ weekly_workload.status }}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 text-center">
+              <span class="text-[10px] text-slate-400 font-medium block">今週の走行</span>
+              <span class="text-lg font-black text-white font-mono">{{ weekly_workload.current_week_dist }}</span>
+              <span class="text-[10px] text-slate-400">km</span>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 text-center">
+              <span class="text-[10px] text-slate-400 font-medium block">前週の走行</span>
+              <span class="text-lg font-black text-slate-300 font-mono">{{ weekly_workload.prev_week_dist }}</span>
+              <span class="text-[10px] text-slate-400">km</span>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 text-center">
+              <span class="text-[10px] text-slate-400 font-medium block">前週比負荷</span>
+              <span class="text-lg font-black {{ weekly_workload.status_color }} font-mono">{{ weekly_workload.ratio_pct }}%</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-300 bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60 leading-relaxed">
+            {{ weekly_workload.desc }}
+          </p>
+
+          <!-- 週間チャート -->
+          <div class="space-y-1 pt-1">
+            <div class="text-[11px] text-slate-400 flex justify-between font-mono">
+              <span>直近8週間の走行距離 (km)</span>
+              <span class="text-emerald-400">今週 / 過去週</span>
+            </div>
+            <div class="h-28 relative">
+              <canvas id="weeklyWorkloadChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 年間走行カレンダーヒートマップ (Consistency Heatmap) -->
+        <div class="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold border border-emerald-500/30">📅</span>
+                <div>
+                  <h3 class="text-sm font-black text-white tracking-tight">年間走行カレンダーヒートマップ</h3>
+                  <p class="text-[11px] text-slate-400">日々の練習継続性（濃い緑ほど長距離走）</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-400 font-mono">
+                <!-- 凡例: 走行距離 -->
+                <div class="flex items-center space-x-1">
+                  <span class="text-[10px]">少</span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-slate-900 border border-slate-800 inline-block"></span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-950 inline-block"></span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-700 inline-block"></span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
+                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-300 inline-block"></span>
+                  <span class="text-[10px]">多 (12k+)</span>
+                </div>
+                <!-- 凡例: 月初マーク -->
+                <div class="flex items-center space-x-1 pl-2 border-l border-slate-800">
+                  <span class="w-2.5 h-2.5 rounded-sm bg-slate-900 ring-1 ring-white/70 inline-block"></span>
+                  <span class="text-[10px] text-slate-400">月初(1日)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ヒートマップコンテナ (横スクロール対応) -->
+            <div class="overflow-x-auto pb-2 pt-3 select-none scrollbar-thin">
+              <div class="min-w-[780px] inline-flex flex-col">
+                <!-- 1. 月ラベル行 (各週に対応して月名を表示) -->
+                <div class="flex items-center mb-1">
+                  <!-- 曜日ラベル幅分のインデント -->
+                  <div class="w-5 sm:w-6 mr-1.5 sm:mr-2 shrink-0"></div>
+                  <!-- 各週のスロット -->
+                  <div id="heatmap-month-labels" class="flex gap-1 sm:gap-1.5 flex-1 relative h-4">
+                    <!-- JSで動的に月ラベルを生成 -->
+                  </div>
+                </div>
+
+                <!-- 2. カレンダー本体 (曜日ラベル + グリッド) -->
+                <div class="flex items-start">
+                  <!-- 曜日ラベル (月・水・金・日) -->
+                  <div class="flex flex-col gap-1 text-[9px] sm:text-[10px] font-mono text-slate-400 w-5 sm:w-6 mr-1.5 sm:mr-2 text-right shrink-0">
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">月</div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">水</div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">金</div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
+                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none text-slate-500">日</div>
+                  </div>
+
+                  <!-- 週ごとのセル列 -->
+                  <div id="heatmap-grid" class="flex gap-1 sm:gap-1.5 py-0.5">
+                    <!-- JSで各週のセル列を動的生成 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. 月別サマリーバッジ (ホバーで該当月をハイライト) -->
+            <div class="pt-2.5 mt-1 border-t border-slate-800/60">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1.5">
+                  <span>🗓️</span> 月別走行サマリー <span class="text-[10px] font-normal text-slate-500 hidden sm:inline">(クリックで月固定 / ホバーでハイライト)</span>
+                </span>
+                <button type="button" id="heatmap-reset-filter" onclick="resetHeatmapMonthFilter()" class="text-[10px] text-slate-400 hover:text-emerald-400 transition hidden">
+                  フィルター解除 ✕
+                </button>
+              </div>
+              <div id="heatmap-month-pills" class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px] font-mono">
+                <!-- JSで月別バッジを動的生成 -->
+              </div>
+            </div>
+          </div>
+
+          <div id="heatmap-tooltip" class="text-xs text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-2 border-t border-slate-800/50">
+            <div id="heatmap-info" class="flex items-center space-x-1.5 min-h-[20px]">
+              <span>マス目にカーソルを合わせるとその日の走行データが表示されます</span>
+            </div>
+            <span class="text-[11px] text-slate-500 font-mono">全{{ overview.total_runs }}ラン (月曜始まり)</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 📊 レイヤー4: パフォーマンス推移 & 相関トレンド -->
+      <!-- ========================================== -->
+      <section class="space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm font-bold border border-sky-500/30">📈</span>
+            <div>
+              <h2 class="text-base sm:text-lg font-black text-white tracking-tight">パフォーマンス推移 & 相関トレンド</h2>
+              <p class="text-[11px] sm:text-xs text-slate-400">長期的なトレーニング進化と心肺効率の可視化</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono text-slate-500">4 CORE CORRELATIONS</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- トレーニングボリューム推移 (過去30日ローリング移動累計 / カレンダー月別切り替え) -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl flex flex-col justify-between">
+            <div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-3 mb-3">
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <h3 class="text-sm font-bold text-slate-200" id="volume-chart-title">過去30日間の合計走行距離 (移動累計)</h3>
+                    <span id="volume-chart-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+                      Rolling 30 Days
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-0.5" id="volume-chart-desc">その日から過去30日間のスライディングウィンドウ合計走行距離推移</p>
+                </div>
+
+                <!-- 切り替えトグルスイッチ -->
+                <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-xl text-xs font-mono shrink-0">
+                  <button type="button" id="btn-vol-rolling" onclick="toggleVolumeChartMode('rolling')" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm">
+                    過去30日移動
+                  </button>
+                  <button type="button" id="btn-vol-monthly" onclick="toggleVolumeChartMode('monthly')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all">
+                    カレンダー月別
+                  </button>
+                </div>
+              </div>
+
+              <!-- ローリングサマリーメトリクス (現在値 / ピーク / 平均) -->
+              <div id="rolling-volume-stats" class="grid grid-cols-3 gap-2 mb-3">
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2 text-center">
+                  <span class="text-[10px] text-slate-400 block font-sans">直近30日合計</span>
+                  <span class="text-sm sm:text-base font-black text-emerald-400 font-mono">{{ rolling_volume.current_volume }} <span class="text-[10px] font-normal text-slate-400">km</span></span>
+                </div>
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2 text-center">
+                  <span class="text-[10px] text-slate-400 block font-sans">過去30日ピーク</span>
+                  <span class="text-sm sm:text-base font-black text-white font-mono">{{ rolling_volume.peak_volume }} <span class="text-[10px] font-normal text-slate-400">km</span></span>
+                </div>
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2 text-center">
+                  <span class="text-[10px] text-slate-400 block font-sans">30日平均ボリューム</span>
+                  <span class="text-sm sm:text-base font-black text-slate-300 font-mono">{{ rolling_volume.mean_volume }} <span class="text-[10px] font-normal text-slate-400">km</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- チャートキャンバス -->
+            <div class="relative h-60">
+              <canvas id="monthlyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- ペース & 心拍数推移 -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-slate-200 mb-1">ペース & 平均心拍数の推移</h3>
+            <p class="text-xs text-slate-400 mb-4">ペース（分/km）は上にいくほど高速</p>
+            <div class="relative h-64">
+              <canvas id="paceHrChart"></canvas>
+            </div>
+          </div>
+
+          <!-- 心拍数 vs ペース (散布図) -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-slate-200 mb-1">有酸素効率 (心拍数 vs ペース)</h3>
+            <p class="text-xs text-slate-400 mb-4">左下（低心拍かつ速いペース）にあるほど有酸素能力が高い状態</p>
+            <div class="relative h-64">
+              <canvas id="scatterChart"></canvas>
+            </div>
+          </div>
+
+          <!-- ピッチ vs ストライド推移 -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-slate-200 mb-1">ピッチ (spm) と 歩幅 (m) の推移</h3>
+            <p class="text-xs text-slate-400 mb-4">ランニングフォームとケイデンスの安定性</p>
+            <div class="relative h-64">
+              <canvas id="formChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+    <!-- END VIEW 1: COCKPIT -->
+

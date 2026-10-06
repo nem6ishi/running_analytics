@@ -1,0 +1,81 @@
+  <!-- Ambient Light Effects (テーマ連動ブラー) -->
+  <div id="ambient-glow-1" class="fixed top-0 left-1/4 w-[600px] h-[300px] rounded-full blur-[150px] pointer-events-none -z-10 transition-all duration-700" style="background: var(--theme-glow);"></div>
+  <div id="ambient-glow-2" class="fixed top-1/3 right-10 w-[500px] h-[300px] bg-slate-800/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-[#080c14]/85 border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3.5">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ring-1 ring-white/10" style="background: linear-gradient(135deg, var(--theme-primary), #0f172a);">
+          <span class="text-xl">🏃</span>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-base sm:text-lg font-black text-white tracking-tight leading-tight">Running Analytics</h1>
+            <span class="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border" style="background: rgba(var(--theme-primary-rgb), 0.12); color: var(--theme-primary); border-color: rgba(var(--theme-primary-rgb), 0.25);">PRO</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium">Science & Coaching Dashboard</p>
+        </div>
+      </div>
+
+      <!-- 右側: テーマパレット選択 & ログ数 -->
+      <div class="flex items-center space-x-3">
+        <!-- カラーテーマ切り替えピル -->
+        <div class="flex items-center space-x-1.5 bg-slate-900/80 border border-slate-800 px-2.5 py-1.5 rounded-full shadow-inner" title="カラーテーマ切り替え">
+          <span class="text-[10px] text-slate-400 mr-1 hidden sm:inline font-mono">THEME:</span>
+          <button onclick="setTheme('volt')" class="theme-dot active" style="background-color: #a3e635; color: #a3e635;" title="Volt Lime (Nike/Garmin風)"></button>
+          <button onclick="setTheme('cyan')" class="theme-dot" style="background-color: #06b6d4; color: #06b6d4;" title="Cyber Cyan (COROS風)"></button>
+          <button onclick="setTheme('emerald')" class="theme-dot" style="background-color: #10b981; color: #10b981;" title="Pro Emerald (正統派グリーン)"></button>
+          <button onclick="setTheme('orange')" class="theme-dot" style="background-color: #f97316; color: #f97316;" title="Solar Orange (Strava風)"></button>
+        </div>
+
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-semibold bg-slate-900 border border-slate-800 text-slate-300 shadow-sm">
+          <span class="w-1.5 h-1.5 rounded-full mr-2" style="background-color: var(--theme-primary);"></span>
+          {{ overview.total_runs }} RUNS LOGGED
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Navigation: 3-View Switcher -->
+  <nav class="sticky top-16 z-40 backdrop-blur-xl bg-[#080c14]/90 border-b border-slate-800/80 py-2.5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <div class="flex items-center space-x-1 sm:space-x-2 p-1 bg-slate-900/90 border border-slate-800 rounded-2xl shadow-inner">
+        <button onclick="switchView('cockpit')" id="tab-cockpit" class="tab-btn active px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center space-x-1.5">
+          <span>🏁</span>
+          <span>Cockpit (総合)</span>
+        </button>
+        <button onclick="switchView('activity')" id="tab-activity" class="tab-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center space-x-1.5">
+          <span>🏃</span>
+          <span>Activity & Coach (個別分析)</span>
+        </button>
+        <button onclick="switchView('trends')" id="tab-trends" class="tab-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center space-x-1.5">
+          <span>📋</span>
+          <span>History (全履歴一覧)</span>
+        </button>
+        <button onclick="switchView('all')" id="tab-all" class="tab-btn px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all duration-200 hidden md:inline-flex items-center space-x-1">
+          <span>👁️</span>
+          <span>全表示</span>
+        </button>
+      </div>
+
+      <div class="hidden lg:flex items-center space-x-4 text-xs font-mono text-slate-400">
+        <div class="flex items-center space-x-1.5">
+          <span class="text-slate-500">VDOT:</span>
+          <span class="font-bold text-white">{{ vdot_data.current_vdot }}</span>
+        </div>
+        <div class="w-1 h-3 bg-slate-800 rounded"></div>
+        <div class="flex items-center space-x-1.5">
+          <span class="text-slate-500">10k目標:</span>
+          <span class="font-bold text-white">50:00</span>
+        </div>
+        <div class="w-1 h-3 bg-slate-800 rounded"></div>
+        <div class="flex items-center space-x-1.5">
+          <span class="text-slate-500">維持最長:</span>
+          <span class="font-bold text-theme-primary">{{ sub50_progress.max_sustained_km }}km</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+

@@ -1,9 +1,26 @@
 import json
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
+import pytailwindcss
 from src.parser import load_activities
 from src.analytics import prepare_full_analytics
 from src.fit_parser import load_all_fit_series
+
+
+def compile_css(root_dir: Path) -> str:
+    input_css = root_dir / "templates" / "assets" / "tailwind.in.css"
+    if not input_css.exists():
+        raise FileNotFoundError(f"Tailwind input CSS not found: {input_css}")
+
+    print("Compiling Tailwind CSS with pytailwindcss...")
+    compiled = pytailwindcss.run(
+        ["-i", str(input_css), "--minify"],
+        version="v3.4.17",
+        auto_install=True,
+        cwd=root_dir,
+    )
+    print(f"Tailwind CSS compiled ({len(compiled)} bytes).")
+    return compiled
 
 
 def build():
@@ -16,6 +33,15 @@ def build():
 
     if not data_path.exists():
         raise FileNotFoundError(f"データファイルが見つかりません: {data_path}")
+
+    # CSS コンパイル
+    app_css = compile_css(root_dir)
+
+    # JavaScript 読み込み
+    app_js_path = templates_dir / "assets" / "app.js"
+    if not app_js_path.exists():
+        raise FileNotFoundError(f"app.js が見つかりません: {app_js_path}")
+    app_js = app_js_path.read_text(encoding="utf-8")
 
     print(f"Loading data from {data_path}...")
     df = load_activities(data_path)
@@ -40,6 +66,8 @@ def build():
         return str(obj)
 
     rendered_html = template.render(
+        app_css=app_css,
+        app_js=app_js,
         overview=analytics_data["overview"],
         overview_json=json.dumps(analytics_data["overview"], ensure_ascii=False, default=json_default),
         monthly=analytics_data["monthly"],
