@@ -7,7 +7,7 @@ from .fit_parser import generate_estimated_series
 from .vdot import calculate_vdot, get_training_paces
 
 
-def get_hr_zone(avg_hr: float) -> Dict[str, str]:
+def get_hr_zone(avg_hr: float, hr_max: Optional[int] = None) -> Dict[str, str]:
     """平均心拍数から心拍ゾーン・強度を判定 (config.HR_ZONES 準拠)"""
     if avg_hr <= 0:
         return {
@@ -19,7 +19,8 @@ def get_hr_zone(avg_hr: float) -> Dict[str, str]:
             "desc": "心拍データがありません",
         }
 
-    pct = (avg_hr / HR_MAX) * 100
+    effective_hr_max = hr_max if hr_max and hr_max > 0 else HR_MAX
+    pct = (avg_hr / effective_hr_max) * 100
     if pct < 65:
         z = HR_ZONES["zone1"]
         return {"zone": "Zone 1", "name": z["label"], "intensity": z["intensity"], "color": z["color"], "bg_color": z["bg_color"], "desc": z["desc"]}
@@ -345,7 +346,11 @@ def detect_workout_structure(
     }
 
 
-def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+def calculate_activity_insights(
+    df: pd.DataFrame,
+    fit_dict: Optional[Dict[str, Any]] = None,
+    hr_params: Optional[Dict[str, Any]] = None,
+) -> List[Dict[str, Any]]:
     """全アクティビティに対して詳細な「評価」「分析」「次回おすすめとリカバリー提案」データを生成"""
     insights_list = []
     total_runs = len(df)
@@ -354,6 +359,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
 
     best_pace_sec = df["avg_pace_sec"].min()
     longest_dist = df["distance_km"].max()
+    effective_hr_max = hr_params.get("hr_max") if hr_params else None
 
     for i, row in df.iterrows():
         dist = row["distance_km"]
@@ -369,7 +375,7 @@ def calculate_activity_insights(df: pd.DataFrame, fit_dict: Optional[Dict[str, A
         time_of_day = row["time_of_day"]
 
         # 1. 心拍ゾーン判定
-        hr_zone = get_hr_zone(avg_hr)
+        hr_zone = get_hr_zone(avg_hr, hr_max=effective_hr_max)
 
         # 2. 速度・有酸素効率
         speed_kmh = (3600.0 / pace_sec) if pace_sec > 0 else 0.0

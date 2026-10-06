@@ -254,7 +254,7 @@
             <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
               {{ overview.avg_hr }} <span class="text-xs font-normal text-slate-400">bpm</span>
             </div>
-            <div class="text-[10px] text-slate-500 mt-0.5">Zone 4 (閾値帯寄り)</div>
+            <div class="text-[10px] text-slate-400 mt-0.5 font-mono">HRmax比 {{ (overview.avg_hr / hr_params.hr_max * 100) | round(1) }}%</div>
           </div>
 
           <div class="glass-card rounded-2xl p-3.5">
@@ -279,6 +279,84 @@
               {{ overview.total_calories }} <span class="text-xs font-normal text-slate-400">kcal</span>
             </div>
             <div class="text-[10px] text-slate-500 mt-0.5">総時間 {{ overview.total_time_str }}</div>
+          </div>
+        </div>
+
+        <!-- 🫀 生理学的パラメータ ＆ 心拍ゾーン自動設定 -->
+        <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5 shadow-xl border border-slate-800/80">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+            <div class="flex items-center space-x-2">
+              <span class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sm font-bold shadow-inner">🫀</span>
+              <div>
+                <h3 class="text-sm font-black text-white tracking-tight">生理学的パラメータ ＆ 心拍ゾーン (Dynamic Physiology)</h3>
+                <p class="text-[11px] text-slate-400">Garmin同期および実測最大心拍数から自動更新された生理指標</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 font-mono text-xs">
+              <div class="bg-slate-950/80 border border-slate-800/80 px-2.5 py-1 rounded-xl flex items-center space-x-1.5 shadow-inner">
+                <span class="text-slate-400 text-[10px]">HRmax:</span>
+                <span class="font-black text-rose-400">{{ hr_params.hr_max }} bpm</span>
+                <span class="text-[9px] px-1.5 py-0.2 rounded font-sans font-semibold {% if hr_params.hr_max_source == 'アクティビティ実測最大' %}bg-rose-500/20 text-rose-300 border border-rose-500/30{% else %}bg-slate-800 text-slate-400{% endif %}">
+                  {{ hr_params.hr_max_source }}
+                </span>
+              </div>
+              <div class="bg-slate-950/80 border border-slate-800/80 px-2.5 py-1 rounded-xl flex items-center space-x-1.5 shadow-inner">
+                <span class="text-slate-400 text-[10px]">安静時 (RHR):</span>
+                <span class="font-black text-emerald-400">{{ hr_params.hr_resting }} bpm</span>
+                <span class="text-[9px] px-1.5 py-0.2 rounded font-sans font-semibold {% if hr_params.hr_resting_source == 'Garmin実測' %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/30{% else %}bg-slate-800 text-slate-400{% endif %}">
+                  {{ hr_params.hr_resting_source }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5大ゾーン グリッド -->
+          <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-1 font-mono">
+            <!-- Zone 1 -->
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold text-emerald-400">Zone 1</span>
+                <span class="text-[9px] text-slate-400">~65%</span>
+              </div>
+              <div class="text-xs font-black text-white">{{ hr_params.zones.zone1.bpm_label }}</div>
+              <p class="text-[9px] text-slate-400 font-sans leading-tight">アクティブリカバリー</p>
+            </div>
+            <!-- Zone 2 -->
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold text-blue-400">Zone 2</span>
+                <span class="text-[9px] text-slate-400">65-76%</span>
+              </div>
+              <div class="text-xs font-black text-white">{{ hr_params.zones.zone2.bpm_label }}</div>
+              <p class="text-[9px] text-slate-400 font-sans leading-tight">基礎有酸素 (イージー)</p>
+            </div>
+            <!-- Zone 3 -->
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold text-amber-400">Zone 3</span>
+                <span class="text-[9px] text-slate-400">76-86%</span>
+              </div>
+              <div class="text-xs font-black text-white">{{ hr_params.zones.zone3.bpm_label }}</div>
+              <p class="text-[9px] text-slate-400 font-sans leading-tight">テンポ走 (有酸素強化)</p>
+            </div>
+            <!-- Zone 4 -->
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold text-orange-400">Zone 4</span>
+                <span class="text-[9px] text-slate-400">86-93%</span>
+              </div>
+              <div class="text-xs font-black text-white">{{ hr_params.zones.zone4.bpm_label }}</div>
+              <p class="text-[9px] text-slate-400 font-sans leading-tight">乳酸閾値 (LT / しきい値)</p>
+            </div>
+            <!-- Zone 5 -->
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold text-rose-400">Zone 5</span>
+                <span class="text-[9px] text-slate-400">93-100%</span>
+              </div>
+              <div class="text-xs font-black text-white">{{ hr_params.zones.zone5.bpm_label }}</div>
+              <p class="text-[9px] text-slate-400 font-sans leading-tight">無酸素 / VO2max</p>
+            </div>
           </div>
         </div>
       </section>

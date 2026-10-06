@@ -63,3 +63,20 @@ def test_analytics_with_real_csv():
     assert rolling["current_volume"] > 0
     assert rolling["peak_volume"] >= rolling["current_volume"]
     assert rolling["window_days"] == 30
+
+
+def test_prepare_full_analytics():
+    from src.analytics import prepare_full_analytics
+    csv_path = Path("data/Activities.csv")
+    if not csv_path.exists():
+        pytest.skip("Activities.csv not found")
+
+    df = load_activities(csv_path)
+    res = prepare_full_analytics(df, data_dir=Path("data"))
+    assert "hr_params" in res
+    assert res["hr_params"]["hr_max"] >= 195
+    assert "hr_max_source" in res["hr_params"]
+    assert "hr_resting" in res["hr_params"]
+    assert "hr_resting_source" in res["hr_params"]
+    assert "zones" in res["hr_params"]
+    assert len(res["insights"]) == len(df)

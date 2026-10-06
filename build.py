@@ -52,7 +52,7 @@ def build():
     print(f"Loaded {len(fit_dict)} FIT activity entries.")
 
     print("Analyzing data & generating insights...")
-    analytics_data = prepare_full_analytics(df, fit_dict)
+    analytics_data = prepare_full_analytics(df, fit_dict, data_dir=data_dir)
 
     print("Rendering HTML with Jinja2...")
     env = Environment(loader=FileSystemLoader(templates_dir), autoescape=True)
@@ -89,6 +89,8 @@ def build():
         weekly_workload_json=json.dumps(analytics_data["weekly_workload"], ensure_ascii=False, default=json_default),
         form_evolution=analytics_data["form_evolution"],
         form_evolution_json=json.dumps(analytics_data["form_evolution"], ensure_ascii=False, default=json_default),
+        hr_params=analytics_data["hr_params"],
+        hr_params_json=json.dumps(analytics_data["hr_params"], ensure_ascii=False, default=json_default),
     )
 
     output_html_path = docs_dir / "index.html"

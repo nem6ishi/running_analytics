@@ -187,11 +187,12 @@ const {
         `;
       }
 
-      // 心拍ゾーンメーターの位置計算 (120bpm〜195bpmの範囲を0%〜100%にマッピング)
+      // 心拍ゾーンメーターの位置計算 (120bpm〜HRmaxの範囲を0%〜100%にマッピング)
+      const hrParams = (window.RUNNING_DATA && window.RUNNING_DATA.hrParams) || null;
       const hrMin = 120;
-      const hrMax = 195;
-      const avgHrPct = Math.max(0, Math.min(100, ((act.avg_hr - hrMin) / (hrMax - hrMin)) * 100));
-      const maxHrPct = Math.max(0, Math.min(100, ((act.max_hr - hrMin) / (hrMax - hrMin)) * 100));
+      const effectiveHrMax = hrParams?.hr_max || 195;
+      const avgHrPct = Math.max(0, Math.min(100, ((act.avg_hr - hrMin) / (effectiveHrMax - hrMin)) * 100));
+      const maxHrPct = Math.max(0, Math.min(100, ((act.max_hr - hrMin) / (effectiveHrMax - hrMin)) * 100));
 
       container.innerHTML = `
         <!-- 基本指標クイックバー -->
@@ -280,11 +281,11 @@ const {
               <!-- Color Gauge Bar -->
               <div class="relative pt-4 pb-2">
                 <div class="relative w-full h-3 rounded-full overflow-hidden flex bg-slate-800 shadow-inner">
-                  <div class="h-full bg-emerald-500 w-[20%]" title="Zone 1: 回復 (<126bpm)"></div>
-                  <div class="h-full bg-blue-500 w-[25%]" title="Zone 2: 基礎有酸素 (127-146bpm)"></div>
-                  <div class="h-full bg-amber-500 w-[25%]" title="Zone 3: テンポ (147-165bpm)"></div>
-                  <div class="h-full bg-orange-500 w-[18%]" title="Zone 4: 乳酸閾値 (166-179bpm)"></div>
-                  <div class="h-full bg-rose-600 w-[12%]" title="Zone 5: VO2max (180bpm+)"></div>
+                  <div class="h-full bg-emerald-500 w-[20%]" title="Zone 1: 回復 (${hrParams?.zones?.zone1?.bpm_label || '<126 bpm'})"></div>
+                  <div class="h-full bg-blue-500 w-[25%]" title="Zone 2: 基礎有酸素 (${hrParams?.zones?.zone2?.bpm_label || '127-146 bpm'})"></div>
+                  <div class="h-full bg-amber-500 w-[25%]" title="Zone 3: テンポ (${hrParams?.zones?.zone3?.bpm_label || '147-165 bpm'})"></div>
+                  <div class="h-full bg-orange-500 w-[18%]" title="Zone 4: 乳酸閾値 (${hrParams?.zones?.zone4?.bpm_label || '166-179 bpm'})"></div>
+                  <div class="h-full bg-rose-600 w-[12%]" title="Zone 5: VO2max (${hrParams?.zones?.zone5?.bpm_label || '180 bpm+'})"></div>
                 </div>
 
                 <!-- Average HR Pin -->
@@ -301,11 +302,11 @@ const {
               </div>
 
               <div class="flex justify-between text-[10px] text-slate-500 font-mono pt-1">
-                <span>Z1: 回復 (&lt;126)</span>
-                <span>Z2: 基礎 (127-146)</span>
-                <span>Z3: テンポ (147-165)</span>
-                <span>Z4: 閾値 (166-179)</span>
-                <span>Z5: 無酸素 (180+)</span>
+                <span>Z1: 回復 (${hrParams?.zones?.zone1?.bpm_label || '<126'})</span>
+                <span>Z2: 基礎 (${hrParams?.zones?.zone2?.bpm_label || '127-149'})</span>
+                <span>Z3: テンポ (${hrParams?.zones?.zone3?.bpm_label || '149-169'})</span>
+                <span>Z4: 閾値 (${hrParams?.zones?.zone4?.bpm_label || '169-182'})</span>
+                <span>Z5: 無酸素 (${hrParams?.zones?.zone5?.bpm_label || '182+'})</span>
               </div>
             </div>
 

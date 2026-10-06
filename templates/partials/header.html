@@ -59,7 +59,7 @@
         </button>
       </div>
 
-      <div class="hidden lg:flex items-center space-x-4 text-xs font-mono text-slate-400">
+      <div class="hidden lg:flex items-center space-x-3 text-xs font-mono text-slate-400">
         <div class="flex items-center space-x-1.5">
           <span class="text-slate-500">VDOT:</span>
           <span class="font-bold text-white">{{ vdot_data.current_vdot }}</span>
@@ -73,6 +73,18 @@
         <div class="flex items-center space-x-1.5">
           <span class="text-slate-500">維持最長:</span>
           <span class="font-bold text-theme-primary">{{ sub50_progress.max_sustained_km }}km</span>
+        </div>
+        <div class="w-1 h-3 bg-slate-800 rounded"></div>
+        <div class="flex items-center space-x-1.5" title="最大心拍数 ({{ hr_params.hr_max_source }})">
+          <span class="text-slate-500">HRmax:</span>
+          <span class="font-bold text-rose-400">{{ hr_params.hr_max }}</span>
+          <span class="text-[9px] px-1 py-0.2 rounded font-sans text-rose-300 bg-rose-500/10 border border-rose-500/20">{{ hr_params.hr_max_source }}</span>
+        </div>
+        <div class="w-1 h-3 bg-slate-800 rounded"></div>
+        <div class="flex items-center space-x-1.5" title="安静時心拍数 ({{ hr_params.hr_resting_source }})">
+          <span class="text-slate-500">RHR:</span>
+          <span class="font-bold text-emerald-400">{{ hr_params.hr_resting }}</span>
+          <span class="text-[9px] px-1 py-0.2 rounded font-sans text-emerald-300 bg-emerald-500/10 border border-emerald-500/20">{{ hr_params.hr_resting_source }}</span>
         </div>
       </div>
     </div>

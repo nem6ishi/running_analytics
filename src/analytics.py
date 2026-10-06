@@ -1,10 +1,12 @@
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
+from pathlib import Path
 import pandas as pd
 from config import TARGET_DISTANCE_KM, TARGET_TIME_SEC, TARGET_PACE_SEC, TARGET_LABEL
 from .parser import seconds_to_pace_str, seconds_to_time_str
 from .coach import calculate_activity_insights
 from .vdot import calculate_vdot, get_training_paces, predict_race_times_vdot
+from .profile import get_hr_params
 
 
 def compute_overview_stats(df: pd.DataFrame) -> Dict[str, Any]:
@@ -512,11 +514,16 @@ def compute_rolling_volume(df: pd.DataFrame, window_days: int = 30) -> Dict[str,
     }
 
 
-def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def prepare_full_analytics(
+    df: pd.DataFrame,
+    fit_dict: Optional[Dict[str, Any]] = None,
+    data_dir: Optional[Path] = None,
+) -> Dict[str, Any]:
     """サイト描画に必要な全分析データをまとめる"""
+    hr_params = get_hr_params(data_dir=data_dir, df=df)
     overview = compute_overview_stats(df)
     monthly = compute_monthly_stats(df)
-    insights = calculate_activity_insights(df, fit_dict)
+    insights = calculate_activity_insights(df, fit_dict, hr_params=hr_params)
     personal_records = compute_personal_records(df)
 
     # VDOT & トレーニングゾーン分析
@@ -564,6 +571,7 @@ def prepare_full_analytics(df: pd.DataFrame, fit_dict: Optional[Dict[str, Any]] 
         "form_evolution": form_evolution,
         "calendar_heatmap": calendar_heatmap,
         "rolling_volume": rolling_volume,
+        "hr_params": hr_params,
         "chart_data": {
             "dates": chart_dates,
             "distances": chart_distances,

@@ -200,6 +200,65 @@ def build_csv_row_from_activity(act: Dict[str, Any]) -> Dict[str, str]:
     }
 
 
+def sync_resting_heart_rate(client: Garmin, data_dir: Path) -> Optional[int]:
+    """直近（今日〜昨日）の日付で Garmin API から安静時心拍数を取得し、profile.json に更新する。"""
+    from datetime import date, timedelta
+    from src.profile import load_profile, save_profile
+
+    today = date.today()
+    check_dates = [
+        today.strftime("%Y-%m-%d"),
+        (today - timedelta(days=1)).strftime("%Y-%m-%d"),
+    ]
+
+    rhr = None
+    for d_str in check_dates:
+        # 1. get_user_summary からの取得を試みる
+        try:
+            summary = client.get_user_summary(d_str)
+            if summary and isinstance(summary, dict):
+                val = summary.get("restingHeartRate")
+                if val is not None and int(val) > 0:
+                    rhr = int(val)
+                    break
+        except Exception:
+            pass
+
+        # 2. get_rhr_day からの取得を試みる
+        try:
+            rhr_data = client.get_rhr_day(d_str)
+            if rhr_data and isinstance(rhr_data, dict):
+                all_metrics = rhr_data.get("allMetrics", {})
+                metrics_map = all_metrics.get("metricsMap", {}) if isinstance(all_metrics, dict) else {}
+                rhr_list = metrics_map.get("WELLNESS_RESTING_HEART_RATE", [])
+                if rhr_list and isinstance(rhr_list, list):
+                    first_val = rhr_list[0].get("value")
+                    if first_val is not None and int(first_val) > 0:
+                        rhr = int(first_val)
+                        break
+        except Exception:
+            pass
+
+    if rhr is not None:
+        try:
+            profile = load_profile(data_dir)
+            old_rhr = profile.get("resting_heart_rate")
+            profile["resting_heart_rate"] = rhr
+            profile["updated_at"] = today.strftime("%Y-%m-%d")
+            save_profile(data_dir, profile)
+            if old_rhr != rhr:
+                print(f"❤️ 安静時心拍数を更新しました: {rhr} bpm (profile.json 保存完了)")
+            else:
+                print(f"❤️ 安静時心拍数を確認しました: {rhr} bpm (最新データ維持)")
+            return rhr
+        except Exception as e:
+            print(f"⚠️ profile.json の保存に失敗しました: {e}")
+            return None
+    else:
+        print("ℹ️ 直近の安静時心拍数データは見つかりませんでした（既定値または既存値を使用）。")
+        return None
+
+
 def sync_activities(
     client: Garmin,
     data_dir: Path,
@@ -357,7 +416,14 @@ def sync_activities(
             new_df.to_csv(csv_path, index=False, encoding="utf-8")
             print(f"✅ Activities.csv を新規作成しました。")
 
+    # 安静時心拍数 (RHR) の同期
+    try:
+        sync_resting_heart_rate(client, data_dir)
+    except Exception as e:
+        print(f"⚠️ 安静時心拍数の同期失敗 (処理は継続します): {e}")
+
     return downloaded_count, new_csv_rows
+
 
 
 def main():
