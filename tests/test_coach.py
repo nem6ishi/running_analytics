@@ -72,6 +72,31 @@ def test_detect_workout_structure_interval():
     assert res["is_interval"] or "疾走" in str(res["phases"])
 
 
+def test_detect_workout_structure_lsd():
+    # LSD走（15km、2時間、低心拍ゾーン130-145bpm、坂道によるペースの揺らぎあり）
+    laps_lsd = [
+        {"lap_index": 1, "distance_km": 1.0, "time_sec": 462.0, "pace_sec": 462.0, "pace_str": "7:42", "avg_hr": 129},
+        {"lap_index": 2, "distance_km": 1.0, "time_sec": 577.0, "pace_sec": 577.0, "pace_str": "9:37", "avg_hr": 132},
+        {"lap_index": 3, "distance_km": 1.0, "time_sec": 481.0, "pace_sec": 481.0, "pace_str": "8:01", "avg_hr": 138},
+        {"lap_index": 4, "distance_km": 1.0, "time_sec": 450.0, "pace_sec": 450.0, "pace_str": "7:30", "avg_hr": 135},
+        {"lap_index": 5, "distance_km": 1.0, "time_sec": 461.0, "pace_sec": 461.0, "pace_str": "7:41", "avg_hr": 140},
+        {"lap_index": 6, "distance_km": 1.0, "time_sec": 419.0, "pace_sec": 419.0, "pace_str": "6:59", "avg_hr": 144},
+        {"lap_index": 7, "distance_km": 1.0, "time_sec": 463.0, "pace_sec": 463.0, "pace_str": "7:43", "avg_hr": 139},
+        {"lap_index": 8, "distance_km": 1.0, "time_sec": 453.0, "pace_sec": 453.0, "pace_str": "7:33", "avg_hr": 142},
+        {"lap_index": 9, "distance_km": 1.0, "time_sec": 552.0, "pace_sec": 552.0, "pace_str": "9:12", "avg_hr": 139},
+        {"lap_index": 10, "distance_km": 1.0, "time_sec": 489.0, "pace_sec": 489.0, "pace_str": "8:09", "avg_hr": 143},
+        {"lap_index": 11, "distance_km": 1.0, "time_sec": 551.0, "pace_sec": 551.0, "pace_str": "9:11", "avg_hr": 140},
+        {"lap_index": 12, "distance_km": 1.0, "time_sec": 496.0, "pace_sec": 496.0, "pace_str": "8:16", "avg_hr": 139},
+        {"lap_index": 13, "distance_km": 1.0, "time_sec": 441.0, "pace_sec": 441.0, "pace_str": "7:21", "avg_hr": 144},
+        {"lap_index": 14, "distance_km": 1.0, "time_sec": 500.0, "pace_sec": 500.0, "pace_str": "8:20", "avg_hr": 143},
+        {"lap_index": 15, "distance_km": 1.0, "time_sec": 507.0, "pace_sec": 507.0, "pace_str": "8:27", "avg_hr": 144},
+    ]
+    res = detect_workout_structure(laps_lsd, 15.0, 488.0, 139)
+    assert not res["is_interval"]
+    assert res.get("is_lsd")
+    assert "LSD" in res["type"]
+
+
 def test_calculate_activity_insights_dummy_df(tmp_path: Path):
     # ダミー CSV を経由して load_activities で読み込み
     csv_content = """アクティビティタイプ,日付,お気に入り,タイトル,距離,カロリー,タイム,平均心拍数,最大心拍数,平均ピッチ,最高ピッチ,平均ペース,最高ペース,総上昇量,総下降量,平均歩幅,Training Stress Score®,ステップ,減圧,ベストラップタイム,ラップ数,移動時間,経過時間,最低高度,最高高度,シューズ

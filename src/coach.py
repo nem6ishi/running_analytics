@@ -186,6 +186,33 @@ def detect_workout_structure(
     paces = [l["pace_sec"] for l in valid_laps]
     overall_avg_pace = sum(paces) / len(paces)
 
+    # 0. LSD (Long Slow Distance) 判定
+    # 長時間（75分以上または12km以上）かつ低強度（avg_hr <= 148、各ラップ心拍 <= 155）
+    total_time_estimate = sum(l.get("time_sec", 0) for l in valid_laps)
+    if total_time_estimate <= 0:
+        total_time_estimate = dist_km * avg_pace_sec
+    max_lap_hr = max((l.get("avg_hr", 0) for l in valid_laps), default=0)
+
+    if (dist_km >= 12.0 or total_time_estimate >= 4500) and (0 < avg_hr <= 148) and (max_lap_hr <= 155):
+        for l in valid_laps:
+            l["role_tag"] = "低心拍巡航"
+            l["role_badge"] = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+
+        return {
+            "type": "LSD (Long Slow Distance)",
+            "badge": "🌱 LSD (有酸素ベース構築)",
+            "badge_color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+            "summary_title": f"【LSD】{dist_km:.1f}km 有酸素ベース構築走（低心拍キープ）",
+            "summary_desc": (
+                f"走行距離 **{dist_km:.2f}km** を平均心拍 **{avg_hr} bpm** の低強度有酸素ゾーン（Z1〜Z2）を保ち続けて走破した理想的なLSDです。"
+                "地形の起伏に合わせてペースを自然にコントロールし、心拍の跳ね上がりを抑制。"
+                "末梢の毛細血管網の新生、遅筋線維のミトコンドリア活性化、および脂質代謝効率を高める最高の有酸素土台作りができています。"
+            ),
+            "phases": [],
+            "is_interval": False,
+            "is_lsd": True,
+        }
+
     # 1. 疾走（fast）ラップの判定: 全体平均より12秒以上速く、かつ前後のラップより18秒以上速い
     lap_roles = []
     for i, l in enumerate(valid_laps):
@@ -196,7 +223,11 @@ def detect_workout_structure(
         is_fast = (p < overall_avg_pace - 12) and (prev_p - p >= 18 or next_p - p >= 18)
         lap_roles.append("fast" if is_fast else "base")
 
-    fast_count = lap_roles.count("fast")
+    # 低強度ジョグ（avg_hr <= 145 かつ max_lap_hr <= 150）で起伏等によりラップペースがばらついただけの場合はファルトレクとみなさない
+    if 0 < avg_hr <= 145 and max_lap_hr <= 150:
+        fast_count = 0
+    else:
+        fast_count = lap_roles.count("fast")
 
     # A. 変化走 / ファルトレク / インターバル判定 (急加速と緩走が交互に存在)
     if fast_count >= 1 and "base" in lap_roles:
@@ -409,6 +440,7 @@ def calculate_activity_insights(
         # 4. 時系列グラフの分析 & ワークアウト構造の自動検出
         series_analysis = analyze_time_series(distance_series, dist)
         workout_structure = detect_workout_structure(distance_series.get("laps", []), dist, pace_sec, avg_hr)
+        is_lsd = workout_structure.get("is_lsd", False)
 
         # 5. VDOT スコアの算出 (ダニエルズ式)
         act_vdot = calculate_vdot(dist * 1000.0, duration_sec) if dist >= 1.0 and duration_sec > 0 else 0.0
@@ -527,8 +559,8 @@ def calculate_activity_insights(
                     "短い距離でもキロ5分を切る絶対スピードの引き上げが急務です。"
                 )
 
-        # 5. 巡航ペースの大幅遅れ
-        if not workout_structure.get("is_interval") and gap_sec > 30 and dist >= 5.0:
+        # 5. 巡航ペースの大幅遅れ (LSD走以外)
+        if not workout_structure.get("is_interval") and not is_lsd and gap_sec > 30 and dist >= 5.0:
             critical_bottlenecks.append(
                 f"**目標ペース（5:00/km）から大幅乖離（+{int(round(gap_sec))}秒/km）**: 巡航スピードが50分目標から大きく離れています。"
                 "5:15〜5:25/km でのLTテンポ走（4〜6km）を取り入れ、目標速度に対する耐性を養う必要があります。"
@@ -542,20 +574,32 @@ def calculate_activity_insights(
             )
 
         # 7. 歩幅不足
-        if stride < 0.95 and stride > 0 and pace_sec > 340:
+        if stride < 0.95 and stride > 0 and pace_sec > 340 and not is_lsd:
             critical_bottlenecks.append(
                 f"**歩幅不足（平均 {stride:.2f} m）**: 地面を真後ろに押せておらず、ピッチだけで刻むちょこちょこ走りになっています。"
                 "体幹の前傾を使って骨盤から脚を振り出す意識が必要です。"
             )
 
         if not critical_bottlenecks:
-            critical_bottlenecks.append(
-                "**現状維持の打破**: ペースと心拍のバランスは良好ですが、目標（5:00/km）に向けてさらに距離を伸ばすか、設定ペースを5秒引き上げる挑戦が必要です。"
-            )
+            if is_lsd:
+                critical_bottlenecks.append(
+                    "**長時間の脚筋疲労に留意**: ペース・心拍コントロールは完璧ですが、2時間におよぶ着地衝撃により関節や腱に深部疲労が蓄積しています。無理な連日走を避け、十分な休息を確保してください。"
+                )
+            else:
+                critical_bottlenecks.append(
+                    "**現状維持の打破**: ペースと心拍のバランスは良好ですが、目標（5:00/km）に向けてさらに距離を伸ばすか、設定ペースを5秒引き上げる挑戦が必要です。"
+                )
 
         # --- ◎ 客観的な収穫・強み (Strong Points) の抽出 ---
         strong_points = []
-        if workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) < TARGET_PACE_SEC:
+        if is_lsd:
+            strong_points.append(
+                f"**低心拍ゾーンの徹底維持（平均 {avg_hr} bpm）**: 長時間走の中で心拍をZone 1〜Zone 2に完璧にコントロールし、毛細血管網の新生と脂質代謝効率を飛躍的に強化。"
+            )
+            strong_points.append(
+                f"**{dist:.1f}km・2時間の接地耐久性**: 2時間以上の長時間接地衝撃に耐え、後半も大崩れせずに完走した高い脚筋スタミナを発揮。"
+            )
+        elif workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) < TARGET_PACE_SEC:
             best_f_pace = seconds_to_pace_str(workout_structure.get("best_fast_pace_sec"))
             strong_points.append(
                 f"**キロ5分を切るスピード出力（最速 {best_f_pace}/km）**: 疾走ラップで目標を上回るトップスピードを叩き出し、50分切りに必要なスピード自体のポテンシャルを実証。"
@@ -606,7 +650,13 @@ def calculate_activity_insights(
             )
 
         # --- 【総括 (Overall Verdict)】忖度なしの現在地診断 ---
-        if workout_structure.get("is_interval"):
+        if is_lsd:
+            overall_verdict = (
+                f"**【理想的な有酸素ベース構築】走行距離 {dist:.1f}km を平均心拍 {avg_hr} bpm で完走。** "
+                f"起伏のあるタフなコースでも心拍急上昇をコントロールし、約2時間の長時間接地を達成。"
+                "フルマラソンやサブ50の後半を粘り抜くための『有酸素の器（毛細血管網・脂質代謝）』を確実に広げる完璧なLSDセッションです。"
+            )
+        elif workout_structure.get("is_interval"):
             fast_c = workout_structure.get("fast_count", 2)
             best_f_str = seconds_to_pace_str(workout_structure.get("best_fast_pace_sec", pace_sec))
             best_fast_val = workout_structure.get("best_fast_pace_sec", 999)
@@ -652,7 +702,9 @@ def calculate_activity_insights(
             )
 
         # --- 【🔥 次回への是正アクション (Actionable Focus)】 ---
-        if decoupling_pct > 8.0 or hr_drift_val >= 8 or (pace_sec >= 360 and avg_hr >= 162):
+        if is_lsd:
+            actionable_focus = "次回は【48時間の休養または軽めの疲労抜きウォーク/超スロージョグ】で脚筋の超回復を最優先。脚の張りが抜けたらLT走へステップアップすること。"
+        elif decoupling_pct > 8.0 or hr_drift_val >= 8 or (pace_sec >= 360 and avg_hr >= 162):
             actionable_focus = "次回は【有酸素土台の再構築：心拍上限 145 bpm を死守】。ペースを 6:20〜6:50/km に落としてでも毛細血管を育てる超スロージョグに徹すること。"
         elif workout_structure.get("is_interval") and workout_structure.get("best_fast_pace_sec", 999) > TARGET_PACE_SEC:
             actionable_focus = "次回は【4:45〜4:55/km の1km疾走×3本】に挑戦し、5:00/km を楽に感じるスピード余裕度を身体に叩き込むこと。"
@@ -676,7 +728,17 @@ def calculate_activity_insights(
         }
 
         # 次回おすすめメニュー & リカバリー提案
-        if workout_structure.get("is_interval"):
+        if is_lsd:
+            next_menu_title = "完全休養 または 30分 疲労抜きアクティブリカバリー（散歩・ストレッチ）"
+            next_menu_desc = (
+                f"今回は **{dist:.1f}km・約2時間のLSD** を低心拍で完璧に完遂しました。"
+                "心肺への負担は穏やかですが、2時間におよぶ接地衝撃により脚の深部筋肉や関節・腱には強い疲労が蓄積しています。"
+                "次回は **完全休養** または **軽い散歩・フォームローラーでの筋膜リリース** に留め、48時間しっかりと筋線維を超回復させましょう。"
+            )
+            form_advice = "スピードは完全に意識せず、脱力して手足をリラックスさせ、血流を促すことだけに集中してください。"
+            recovery_hours = "48時間"
+            recovery_tips = "ふくらはぎ・ハムストリングスのフォームローラーほぐし、温冷交代浴、クエン酸とたんぱく質の積極的摂取を推奨します。"
+        elif workout_structure.get("is_interval"):
             fast_c = workout_structure.get("fast_count", 2)
             next_menu_title = "完全休養 または 4km 超スロージョグ (アクティブリカバリー)"
             next_menu_desc = (
