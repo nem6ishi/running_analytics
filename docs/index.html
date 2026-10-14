@@ -4745,6 +4745,24 @@ const {
               </div>
             </div>
 
+            <!-- 1.5 速度 × 心拍数 散布図 (ラン内の関係性) -->
+            <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3 shadow-xl">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-800/80 pb-2.5">
+                <div class="flex items-center space-x-2">
+                  <span class="text-base">🔬</span>
+                  <h4 class="text-xs sm:text-sm font-black text-white tracking-tight">速度 × 心拍数 の関係（このラン内）</h4>
+                </div>
+                <div id="speedHrStats" class="flex flex-wrap items-center gap-2 text-[10px] font-mono text-slate-400"></div>
+              </div>
+              <div class="w-full h-72 sm:h-80 relative bg-slate-950/60 rounded-2xl p-2 border border-slate-800/60 shadow-inner">
+                <canvas id="speedHrScatterChart"></canvas>
+              </div>
+              <div class="text-[10px] text-slate-500 flex flex-wrap justify-between gap-1 font-mono px-1">
+                <span>※点の色 = 走行の進行度（<span style="color:#38bdf8;">序盤</span> → <span style="color:#f43f5e;">終盤</span>）。同じ速度で終盤の点が上にずれるほど心拍ドリフト大</span>
+                <span>◆ = ラップ平均 / 破線 = 回帰直線</span>
+              </div>
+            </div>
+
             <!-- 2. 心拍ゾーン負荷メーター (推定運動強度分布) -->
             <div class="glass-card rounded-3xl p-4 space-y-2.5 shadow-xl">
               <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
@@ -4919,6 +4937,169 @@ const {
 
       // グラフを描画・更新
       updateUnifiedChart(act);
+      updateSpeedHrScatter(act);
+    }
+
+    let speedHrScatterChart = null;
+
+    // ★ラン内の速度 × 心拍数 散布図（進行度カラー + ラップ平均 + 回帰直線）
+    function updateSpeedHrScatter(act) {
+      const ctx = document.getElementById('speedHrScatterChart');
+      if (!ctx) return;
+      if (speedHrScatterChart) {
+        speedHrScatterChart.destroy();
+        speedHrScatterChart = null;
+      }
+      const statsEl = document.getElementById('speedHrStats');
+      const series = act.distance_series || {};
+      const dists = series.distances || [];
+      const speeds = series.speeds_kmh || [];
+      const hrs = series.heart_rates || [];
+      const paces = series.paces_str || [];
+      const totalDist = dists.length ? (dists[dists.length - 1] || act.distance_km) : act.distance_km;
+
+      // 停止・歩き（4km/h未満）や心拍欠損は除外
+      const pts = [];
+      for (let i = 0; i < speeds.length; i++) {
+        const s = Number(speeds[i]);
+        const h = Number(hrs[i]);
+        if (!(s >= 4 && s <= 30) || !(h >= 60)) continue;
+        pts.push({ x: s, y: h, d: Number(dists[i]) || 0, pace: paces[i] || '--:--' });
+      }
+
+      if (pts.length < 3) {
+        if (statsEl) statsEl.innerHTML = '<span>データ不足</span>';
+        return;
+      }
+
+      // 進行度カラー (sky-400 → rose-500)
+      const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+      const colorAt = t => `rgba(${lerp(56, 244, t)}, ${lerp(189, 63, t)}, ${lerp(248, 94, t)}, 0.75)`;
+      const pointColors = pts.map(p => colorAt(totalDist > 0 ? Math.min(1, p.d / totalDist) : 0));
+
+      // 線形回帰 & 相関係数
+      const n = pts.length;
+      const mx = pts.reduce((a, p) => a + p.x, 0) / n;
+      const my = pts.reduce((a, p) => a + p.y, 0) / n;
+      let sxx = 0, syy = 0, sxy = 0;
+      pts.forEach(p => {
+        sxx += (p.x - mx) ** 2;
+        syy += (p.y - my) ** 2;
+        sxy += (p.x - mx) * (p.y - my);
+      });
+      const slope = sxx > 0 ? sxy / sxx : 0;
+      const intercept = my - slope * mx;
+      const r = (sxx > 0 && syy > 0) ? sxy / Math.sqrt(sxx * syy) : 0;
+      const xs = pts.map(p => p.x);
+      const xMin = Math.min(...xs);
+      const xMax = Math.max(...xs);
+      const regLine = [
+        { x: xMin, y: Math.round((slope * xMin + intercept) * 10) / 10 },
+        { x: xMax, y: Math.round((slope * xMax + intercept) * 10) / 10 }
+      ];
+
+      // ラップ平均
+      const lapPts = ((series.laps) || [])
+        .filter(l => l.pace_sec > 0 && l.avg_hr > 0)
+        .map(l => ({ x: Math.round((3600 / l.pace_sec) * 100) / 100, y: l.avg_hr, lap: l.lap_index, pace: l.pace_str, dist: l.distance_km }))
+        .filter(l => l.x >= 4 && l.x <= 30);
+
+      const paceFromKmh = v => {
+        if (!v || v <= 0) return '--:--';
+        const sec = Math.round(3600 / v);
+        return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+      };
+
+      if (statsEl) {
+        const rAbs = Math.abs(r);
+        const rLabel = rAbs >= 0.7 ? '強い相関' : rAbs >= 0.4 ? '中程度' : '弱い相関';
+        statsEl.innerHTML = `
+          <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700">傾き: <b class="text-white">${slope >= 0 ? '+' : ''}${slope.toFixed(1)}</b> bpm / (km/h)</span>
+          <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700">r = <b class="text-white">${r.toFixed(2)}</b> (${rLabel})</span>
+          <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700">${n} pts</span>
+        `;
+      }
+
+      const datasets = [
+        {
+          label: '計測ポイント',
+          data: pts,
+          backgroundColor: pointColors,
+          borderColor: 'transparent',
+          pointRadius: 3.5,
+          pointHoverRadius: 6,
+          order: 3
+        },
+        {
+          label: '回帰直線',
+          type: 'line',
+          data: regLine,
+          borderColor: 'rgba(250, 204, 21, 0.85)',
+          borderDash: [6, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+          order: 1
+        }
+      ];
+      if (lapPts.length > 0) {
+        datasets.push({
+          label: 'ラップ平均',
+          data: lapPts,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          borderColor: '#0f172a',
+          borderWidth: 1.5,
+          pointStyle: 'rectRot',
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          order: 0
+        });
+      }
+
+      speedHrScatterChart = new Chart(ctx, {
+        type: 'scatter',
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: { display: true, text: '走行速度 (km/h)  ※下段: ペース /km', color: '#94a3b8', font: { size: 10 } },
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: {
+                color: '#94a3b8',
+                font: { size: 10 },
+                callback: v => [`${v}`, paceFromKmh(v)]
+              }
+            },
+            y: {
+              title: { display: true, text: '心拍数 (bpm)', color: '#f43f5e', font: { size: 10 } },
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#cbd5e1', font: { size: 11 }, boxWidth: 12, usePointStyle: true }
+            },
+            tooltip: {
+              callbacks: {
+                label: c => {
+                  const p = c.raw;
+                  if (c.dataset.label === '計測ポイント') {
+                    return `${p.d.toFixed(2)} km地点: ${p.x} km/h (${p.pace}/km) | ${p.y} bpm`;
+                  }
+                  if (c.dataset.label === 'ラップ平均') {
+                    return `Lap ${p.lap} (${p.dist}km): ${p.pace}/km | ${p.y} bpm`;
+                  }
+                  return `回帰: ${p.x.toFixed(1)} km/h → ${p.y} bpm`;
+                }
+              }
+            }
+          }
+        }
+      });
     }
 
     let unifiedMetricChart = null;
