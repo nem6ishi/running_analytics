@@ -7,7 +7,7 @@ from .parser import seconds_to_pace_str, seconds_to_time_str
 
 
 def parse_fit_file(fit_path: Path) -> Optional[Dict[str, Any]]:
-    """1つのFITファイルをパースして、距離軸の時系列データ、ラップ、GPS座標を返す"""
+    """1つのFITファイルをパースして、距離軸の時系列データとラップを返す（GPS座標は抽出しない）"""
     try:
         fitfile = FitFile(str(fit_path))
     except Exception as e:
