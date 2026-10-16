@@ -1882,6 +1882,67 @@ const {
     }
 
     // ==========================================
+    // 🧭 Cockpit サブタブ切り替えロジック
+    // ==========================================
+    function resizeVisibleCharts(container) {
+      if (!container || typeof Chart === 'undefined') return;
+      container.querySelectorAll('canvas').forEach(canvas => {
+        const chart = Chart.getChart(canvas);
+        if (chart) {
+          chart.resize();
+        }
+      });
+    }
+
+    function switchCockpitSubtab(subtabName) {
+      const panels = {
+        overview: document.getElementById('cockpit-panel-overview'),
+        condition: document.getElementById('cockpit-panel-condition'),
+        charts: document.getElementById('cockpit-panel-charts'),
+        records: document.getElementById('cockpit-panel-records')
+      };
+
+      const buttons = {
+        overview: document.getElementById('subtab-overview'),
+        condition: document.getElementById('subtab-condition'),
+        charts: document.getElementById('subtab-charts'),
+        records: document.getElementById('subtab-records'),
+        all: document.getElementById('subtab-all')
+      };
+
+      Object.keys(buttons).forEach(k => {
+        if (buttons[k]) {
+          if (k === subtabName) {
+            buttons[k].classList.add('active');
+          } else {
+            buttons[k].classList.remove('active');
+          }
+        }
+      });
+
+      if (subtabName === 'all') {
+        Object.values(panels).forEach(el => {
+          if (el) el.classList.remove('hidden');
+        });
+      } else {
+        Object.keys(panels).forEach(k => {
+          if (panels[k]) {
+            if (k === subtabName) {
+              panels[k].classList.remove('hidden');
+            } else {
+              panels[k].classList.add('hidden');
+            }
+          }
+        });
+      }
+
+      // 非表示から表示に切り替わったChart.jsキャンバスをリサイズ
+      requestAnimationFrame(() => {
+        resizeVisibleCharts(document.getElementById('view-cockpit'));
+      });
+    }
+
+    // ==========================================
     // 🔀 3-View 切り替えナビゲーションロジック
     // ==========================================
     function switchView(viewName) {
@@ -1914,6 +1975,7 @@ const {
         Object.values(views).forEach(el => {
           if (el) el.classList.remove('hidden');
         });
+        switchCockpitSubtab('all');
         history.replaceState(null, null, '#all');
       } else {
         Object.keys(views).forEach(k => {
@@ -1928,6 +1990,9 @@ const {
         history.replaceState(null, null, '#' + viewName);
       }
 
+      requestAnimationFrame(() => {
+        resizeVisibleCharts(document.querySelector('main'));
+      });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 

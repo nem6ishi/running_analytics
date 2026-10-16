@@ -12,8 +12,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <!-- Compiled Tailwind CSS & Custom Design System -->
   <style>
-:root{--theme-primary:#a3e635;--theme-primary-rgb:163,230,53;--theme-glow:rgba(163,230,53,.25);--theme-surface:rgba(15,20,31,.72);--theme-border:hsla(0,0%,100%,.08);--theme-border-hover:rgba(163,230,53,.35)}[data-theme=cyan]{--theme-primary:#06b6d4;--theme-primary-rgb:6,182,212;--theme-glow:rgba(6,182,212,.25);--theme-border-hover:rgba(6,182,212,.35)}[data-theme=emerald]{--theme-primary:#10b981;--theme-primary-rgb:16,185,129;--theme-glow:rgba(16,185,129,.25);--theme-border-hover:rgba(16,185,129,.35)}[data-theme=orange]{--theme-primary:#f97316;--theme-primary-rgb:249,115,22;--theme-glow:rgba(249,115,22,.25);--theme-border-hover:rgba(249,115,22,.35)}body{background-color:#080c14;font-family:Outfit,Noto Sans JP,sans-serif}.font-mono-metric{font-family:JetBrains Mono,monospace}.glass-card{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:var(--theme-surface);border:1px solid var(--theme-border);transition:all .25s ease-out}.glass-card:hover{border-color:var(--theme-border-hover)}.text-theme-primary{color:var(--theme-primary)}.bg-theme-primary{background-color:var(--theme-primary)}.border-theme-primary{border-color:var(--theme-primary)}.tab-btn.active{background:var(--theme-primary);box-shadow:0 4px 16px 0 var(--theme-glow);color:#080c14;font-weight:800}.tab-btn:not(.active){color:#94a3b8}.tab-btn:not(.active):hover{background:hsla(0,0%,100%,.05);color:#f1f5f9}.theme-dot{border-radius:9999px;cursor:pointer;height:14px;transition:transform .2s,box-shadow .2s;width:14px}.theme-dot.active,.theme-dot:hover{box-shadow:0 0 8px currentColor;transform:scale(1.25)}*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }
-/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:Outfit,Noto Sans JP,sans-serif;font-feature-settings:normal;font-variation-settings:normal;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-tap-highlight-color:transparent}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:JetBrains Mono,ui-monospace,monospace;font-feature-settings:normal;font-size:1em;font-variation-settings:normal}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-feature-settings:inherit;font-size:100%;font-variation-settings:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{color:#9ca3af;opacity:1}input::placeholder,textarea::placeholder{color:#9ca3af;opacity:1}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{height:auto;max-width:100%}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width:640px){.container{max-width:640px}}@media (min-width:768px){.container{max-width:768px}}@media (min-width:1024px){.container{max-width:1024px}}@media (min-width:1280px){.container{max-width:1280px}}@media (min-width:1536px){.container{max-width:1536px}}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.bottom-0{bottom:0}.left-0{left:0}.left-1\/4{left:25%}.right-10{right:2.5rem}.top-0{top:0}.top-1\/3{top:33.333333%}.top-16{top:4rem}.-z-10{z-index:-10}.z-10{z-index:10}.z-40{z-index:40}.z-50{z-index:50}.col-span-2{grid-column:span 2/span 2}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mb-1\.5{margin-bottom:.375rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.ml-0\.5{margin-left:.125rem}.ml-1{margin-left:.25rem}.mr-1{margin-right:.25rem}.mr-1\.5{margin-right:.375rem}.mr-2{margin-right:.5rem}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-16{margin-top:4rem}.mt-2{margin-top:.5rem}.mt-6{margin-top:1.5rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-1\.5{height:.375rem}.h-10{height:2.5rem}.h-16{height:4rem}.h-2{height:.5rem}.h-2\.5{height:.625rem}.h-28{height:7rem}.h-3{height:.75rem}.h-4{height:1rem}.h-60{height:15rem}.h-64{height:16rem}.h-72{height:18rem}.h-8{height:2rem}.h-\[300px\]{height:300px}.h-full{height:100%}.min-h-\[20px\]{min-height:20px}.min-h-screen{min-height:100vh}.w-0\.5{width:.125rem}.w-1{width:.25rem}.w-1\.5{width:.375rem}.w-10{width:2.5rem}.w-2{width:.5rem}.w-2\.5{width:.625rem}.w-3{width:.75rem}.w-44{width:11rem}.w-48{width:12rem}.w-5{width:1.25rem}.w-8{width:2rem}.w-\[12\%\]{width:12%}.w-\[18\%\]{width:18%}.w-\[20\%\]{width:20%}.w-\[25\%\]{width:25%}.w-\[500px\]{width:500px}.w-\[600px\]{width:600px}.w-full{width:100%}.min-w-\[100px\]{min-width:100px}.min-w-\[780px\]{min-width:780px}.max-w-7xl{max-width:80rem}.max-w-sm{max-width:24rem}.flex-1{flex:1 1 0%}.flex-shrink-0,.shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%}.-translate-x-1\/2,.scale-110{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.scale-110{--tw-scale-x:1.1;--tw-scale-y:1.1}.scale-125{--tw-scale-x:1.25;--tw-scale-y:1.25}.scale-125,.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-default{cursor:default}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;-moz-user-select:none;user-select:none}.scroll-mt-28{scroll-margin-top:7rem}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.items-baseline{align-items:baseline}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-2\.5{gap:.625rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-x-1>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.25rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.25rem*var(--tw-space-x-reverse))}.space-x-1\.5>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.375rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.375rem*var(--tw-space-x-reverse))}.space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.5rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.5rem*var(--tw-space-x-reverse))}.space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.75rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.75rem*var(--tw-space-x-reverse))}.space-x-3\.5>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.875rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.875rem*var(--tw-space-x-reverse))}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.25rem*var(--tw-space-y-reverse));margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)))}.space-y-1\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.375rem*var(--tw-space-y-reverse));margin-top:calc(.375rem*(1 - var(--tw-space-y-reverse)))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.5rem*var(--tw-space-y-reverse));margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)))}.space-y-2\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.625rem*var(--tw-space-y-reverse));margin-top:calc(.625rem*(1 - var(--tw-space-y-reverse)))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.75rem*var(--tw-space-y-reverse));margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)))}.space-y-3\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.875rem*var(--tw-space-y-reverse));margin-top:calc(.875rem*(1 - var(--tw-space-y-reverse)))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(1rem*var(--tw-space-y-reverse));margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(1.25rem*var(--tw-space-y-reverse));margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)))}.space-y-6>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(1.5rem*var(--tw-space-y-reverse));margin-top:calc(1.5rem*(1 - var(--tw-space-y-reverse)))}.space-y-8>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(2rem*var(--tw-space-y-reverse));margin-top:calc(2rem*(1 - var(--tw-space-y-reverse)))}.divide-y>:not([hidden])~:not([hidden]){--tw-divide-y-reverse:0;border-bottom-width:calc(1px*var(--tw-divide-y-reverse));border-top-width:calc(1px*(1 - var(--tw-divide-y-reverse)))}.divide-slate-800\/40>:not([hidden])~:not([hidden]){border-color:rgba(30,41,59,.4)}.divide-slate-800\/50>:not([hidden])~:not([hidden]){border-color:rgba(30,41,59,.5)}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-x-hidden{overflow-x:hidden}.scroll-smooth{scroll-behavior:smooth}.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-sm{border-radius:.125rem}.rounded-xl{border-radius:.75rem}.rounded-l-full{border-bottom-left-radius:9999px;border-top-left-radius:9999px}.rounded-r-full{border-bottom-right-radius:9999px;border-top-right-radius:9999px}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-l{border-left-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-amber-500\/30{border-color:rgba(245,158,11,.3)}.border-blue-500\/30{border-color:rgba(59,130,246,.3)}.border-emerald-400{--tw-border-opacity:1;border-color:rgb(52 211 153/var(--tw-border-opacity,1))}.border-emerald-500\/20{border-color:rgba(16,185,129,.2)}.border-emerald-500\/30{border-color:rgba(16,185,129,.3)}.border-emerald-800\/60{border-color:rgba(6,95,70,.6)}.border-indigo-500{--tw-border-opacity:1;border-color:rgb(99 102 241/var(--tw-border-opacity,1))}.border-indigo-500\/20{border-color:rgba(99,102,241,.2)}.border-indigo-500\/30{border-color:rgba(99,102,241,.3)}.border-indigo-500\/50{border-color:rgba(99,102,241,.5)}.border-orange-500\/30{border-color:rgba(249,115,22,.3)}.border-purple-500\/30{border-color:rgba(168,85,247,.3)}.border-rose-500\/10{border-color:rgba(244,63,94,.1)}.border-rose-500\/20{border-color:rgba(244,63,94,.2)}.border-rose-500\/25{border-color:rgba(244,63,94,.25)}.border-rose-500\/30{border-color:rgba(244,63,94,.3)}.border-sky-500\/30{border-color:rgba(14,165,233,.3)}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85/var(--tw-border-opacity,1))}.border-slate-700\/70{border-color:rgba(51,65,85,.7)}.border-slate-700\/80{border-color:rgba(51,65,85,.8)}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59/var(--tw-border-opacity,1))}.border-slate-800\/40{border-color:rgba(30,41,59,.4)}.border-slate-800\/50{border-color:rgba(30,41,59,.5)}.border-slate-800\/60{border-color:rgba(30,41,59,.6)}.border-slate-800\/70{border-color:rgba(30,41,59,.7)}.border-slate-800\/80{border-color:rgba(30,41,59,.8)}.border-slate-800\/90{border-color:rgba(30,41,59,.9)}.border-teal-500\/30{border-color:rgba(20,184,166,.3)}.bg-\[\#080c14\]{--tw-bg-opacity:1;background-color:rgb(8 12 20/var(--tw-bg-opacity,1))}.bg-\[\#080c14\]\/85{background-color:rgba(8,12,20,.85)}.bg-\[\#080c14\]\/90{background-color:rgba(8,12,20,.9)}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.bg-amber-500\/20{background-color:rgba(245,158,11,.2)}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246/var(--tw-bg-opacity,1))}.bg-blue-500\/20{background-color:rgba(59,130,246,.2)}.bg-emerald-300{--tw-bg-opacity:1;background-color:rgb(110 231 183/var(--tw-bg-opacity,1))}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153/var(--tw-bg-opacity,1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.bg-emerald-500\/10{background-color:rgba(16,185,129,.1)}.bg-emerald-500\/20{background-color:rgba(16,185,129,.2)}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105/var(--tw-bg-opacity,1))}.bg-emerald-700{--tw-bg-opacity:1;background-color:rgb(4 120 87/var(--tw-bg-opacity,1))}.bg-emerald-950{--tw-bg-opacity:1;background-color:rgb(2 44 34/var(--tw-bg-opacity,1))}.bg-emerald-950\/80{background-color:rgba(2,44,34,.8)}.bg-indigo-400{--tw-bg-opacity:1;background-color:rgb(129 140 248/var(--tw-bg-opacity,1))}.bg-indigo-500\/10{background-color:rgba(99,102,241,.1)}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229/var(--tw-bg-opacity,1))}.bg-indigo-950\/20{background-color:rgba(30,27,75,.2)}.bg-orange-500{--tw-bg-opacity:1;background-color:rgb(249 115 22/var(--tw-bg-opacity,1))}.bg-orange-500\/20{background-color:rgba(249,115,22,.2)}.bg-purple-400{--tw-bg-opacity:1;background-color:rgb(192 132 252/var(--tw-bg-opacity,1))}.bg-purple-500\/20{background-color:rgba(168,85,247,.2)}.bg-rose-400{--tw-bg-opacity:1;background-color:rgb(251 113 133/var(--tw-bg-opacity,1))}.bg-rose-500{--tw-bg-opacity:1;background-color:rgb(244 63 94/var(--tw-bg-opacity,1))}.bg-rose-500\/10{background-color:rgba(244,63,94,.1)}.bg-rose-500\/20{background-color:rgba(244,63,94,.2)}.bg-rose-600{--tw-bg-opacity:1;background-color:rgb(225 29 72/var(--tw-bg-opacity,1))}.bg-sky-400{--tw-bg-opacity:1;background-color:rgb(56 189 248/var(--tw-bg-opacity,1))}.bg-sky-500\/20{background-color:rgba(14,165,233,.2)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.bg-slate-800\/10{background-color:rgba(30,41,59,.1)}.bg-slate-800\/70{background-color:rgba(30,41,59,.7)}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42/var(--tw-bg-opacity,1))}.bg-slate-900\/40{background-color:rgba(15,23,42,.4)}.bg-slate-900\/50{background-color:rgba(15,23,42,.5)}.bg-slate-900\/60{background-color:rgba(15,23,42,.6)}.bg-slate-900\/80{background-color:rgba(15,23,42,.8)}.bg-slate-900\/90{background-color:rgba(15,23,42,.9)}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23/var(--tw-bg-opacity,1))}.bg-slate-950\/30{background-color:rgba(2,6,23,.3)}.bg-slate-950\/40{background-color:rgba(2,6,23,.4)}.bg-slate-950\/50{background-color:rgba(2,6,23,.5)}.bg-slate-950\/60{background-color:rgba(2,6,23,.6)}.bg-slate-950\/70{background-color:rgba(2,6,23,.7)}.bg-slate-950\/80{background-color:rgba(2,6,23,.8)}.bg-teal-400{--tw-bg-opacity:1;background-color:rgb(45 212 191/var(--tw-bg-opacity,1))}.bg-teal-500\/20{background-color:rgba(20,184,166,.2)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right,var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops))}.from-amber-500{--tw-gradient-from:#f59e0b var(--tw-gradient-from-position);--tw-gradient-to:rgba(245,158,11,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-emerald-500{--tw-gradient-from:#10b981 var(--tw-gradient-from-position);--tw-gradient-to:rgba(16,185,129,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-slate-900{--tw-gradient-from:#0f172a var(--tw-gradient-from-position);--tw-gradient-to:rgba(15,23,42,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.via-slate-900\/95{--tw-gradient-to:rgba(15,23,42,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),rgba(15,23,42,.95) var(--tw-gradient-via-position),var(--tw-gradient-to)}.to-indigo-950\/40{--tw-gradient-to:rgba(30,27,75,.4) var(--tw-gradient-to-position)}.to-rose-500{--tw-gradient-to:#f43f5e var(--tw-gradient-to-position)}.to-teal-400{--tw-gradient-to:#2dd4bf var(--tw-gradient-to-position)}.p-0\.5{padding:.125rem}.p-1{padding:.25rem}.p-2{padding:.5rem}.p-2\.5{padding:.625rem}.p-3{padding:.75rem}.p-3\.5{padding:.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-1{padding-left:.25rem;padding-right:.25rem}.px-1\.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-2\.5{padding-left:.625rem;padding-right:.625rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-bottom:.125rem;padding-top:.125rem}.py-1{padding-bottom:.25rem;padding-top:.25rem}.py-1\.5{padding-bottom:.375rem;padding-top:.375rem}.py-2{padding-bottom:.5rem;padding-top:.5rem}.py-2\.5{padding-bottom:.625rem;padding-top:.625rem}.py-3{padding-bottom:.75rem;padding-top:.75rem}.py-3\.5{padding-bottom:.875rem;padding-top:.875rem}.py-8{padding-bottom:2rem;padding-top:2rem}.pb-1{padding-bottom:.25rem}.pb-2{padding-bottom:.5rem}.pb-2\.5{padding-bottom:.625rem}.pb-3{padding-bottom:.75rem}.pb-6{padding-bottom:1.5rem}.pl-2{padding-left:.5rem}.pt-0\.5{padding-top:.125rem}.pt-1{padding-top:.25rem}.pt-2{padding-top:.5rem}.pt-2\.5{padding-top:.625rem}.pt-3{padding-top:.75rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:JetBrains Mono,ui-monospace,monospace}.font-sans{font-family:Outfit,Noto Sans JP,sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.leading-tight{line-height:1.25}.tracking-tight{letter-spacing:-.025em}.tracking-wider{letter-spacing:.05em}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-blue-400{--tw-text-opacity:1;color:rgb(96 165 250/var(--tw-text-opacity,1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183/var(--tw-text-opacity,1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.text-indigo-200{--tw-text-opacity:1;color:rgb(199 210 254/var(--tw-text-opacity,1))}.text-indigo-300{--tw-text-opacity:1;color:rgb(165 180 252/var(--tw-text-opacity,1))}.text-indigo-400{--tw-text-opacity:1;color:rgb(129 140 248/var(--tw-text-opacity,1))}.text-orange-400{--tw-text-opacity:1;color:rgb(251 146 60/var(--tw-text-opacity,1))}.text-purple-400{--tw-text-opacity:1;color:rgb(192 132 252/var(--tw-text-opacity,1))}.text-rose-200{--tw-text-opacity:1;color:rgb(254 205 211/var(--tw-text-opacity,1))}.text-rose-300{--tw-text-opacity:1;color:rgb(253 164 175/var(--tw-text-opacity,1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133/var(--tw-text-opacity,1))}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252/var(--tw-text-opacity,1))}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248/var(--tw-text-opacity,1))}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249/var(--tw-text-opacity,1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225/var(--tw-text-opacity,1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184/var(--tw-text-opacity,1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139/var(--tw-text-opacity,1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105/var(--tw-text-opacity,1))}.text-teal-400{--tw-text-opacity:1;color:rgb(45 212 191/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-20{opacity:.2}.shadow{--tw-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color),0 1px 2px -1px var(--tw-shadow-color)}.shadow,.shadow-2xl{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgba(0,0,0,.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color)}.shadow-inner,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-md{--tw-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color),0 2px 4px -2px var(--tw-shadow-color)}.shadow-md,.shadow-sm{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgba(0,0,0,.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-emerald-400\/50{--tw-shadow-color:rgba(52,211,153,.5);--tw-shadow:var(--tw-shadow-colored)}.shadow-emerald-500\/30{--tw-shadow-color:rgba(16,185,129,.3);--tw-shadow:var(--tw-shadow-colored)}.ring-1{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.ring-1,.ring-2{box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.ring-2{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.ring-emerald-400{--tw-ring-opacity:1;--tw-ring-color:rgb(52 211 153/var(--tw-ring-opacity,1))}.ring-white\/10{--tw-ring-color:hsla(0,0%,100%,.1)}.ring-white\/70{--tw-ring-color:hsla(0,0%,100%,.7)}.ring-white\/80{--tw-ring-color:hsla(0,0%,100%,.8)}.blur-\[150px\]{--tw-blur:blur(150px)}.blur-\[150px\],.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-xl{--tw-backdrop-blur:blur(24px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-duration:.15s;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1)}.duration-150,.transition-all{transition-duration:.15s}.duration-200{transition-duration:.2s}.duration-300{transition-duration:.3s}.duration-700{transition-duration:.7s}.selection\:bg-lime-400 ::-moz-selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:bg-lime-400 ::selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:text-slate-950 ::-moz-selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.selection\:text-slate-950 ::selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.selection\:bg-lime-400::-moz-selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:bg-lime-400::selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:text-slate-950::-moz-selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.selection\:text-slate-950::selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.hover\:z-20:hover{z-index:20}.hover\:scale-125:hover{--tw-scale-x:1.25;--tw-scale-y:1.25;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-emerald-400:hover{--tw-border-opacity:1;border-color:rgb(52 211 153/var(--tw-border-opacity,1))}.hover\:border-emerald-500\/50:hover{border-color:rgba(16,185,129,.5)}.hover\:bg-emerald-100:hover{--tw-bg-opacity:1;background-color:rgb(209 250 229/var(--tw-bg-opacity,1))}.hover\:bg-emerald-400:hover{--tw-bg-opacity:1;background-color:rgb(52 211 153/var(--tw-bg-opacity,1))}.hover\:bg-emerald-500:hover{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85/var(--tw-bg-opacity,1))}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.hover\:bg-slate-800\/30:hover{background-color:rgba(30,41,59,.3)}.hover\:bg-slate-800\/50:hover{background-color:rgba(30,41,59,.5)}.hover\:text-emerald-400:hover{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.hover\:text-slate-200:hover{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.focus\:ring-emerald-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(16 185 129/var(--tw-ring-opacity,1))}.focus\:ring-indigo-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(99 102 241/var(--tw-ring-opacity,1))}.group:hover .group-hover\:bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.group:hover .group-hover\:text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}@media (min-width:640px){.sm\:col-span-1{grid-column:span 1/span 1}.sm\:ml-1{margin-left:.25rem}.sm\:mr-2{margin-right:.5rem}.sm\:inline{display:inline}.sm\:h-3\.5{height:.875rem}.sm\:h-80{height:20rem}.sm\:w-3\.5{width:.875rem}.sm\:w-56{width:14rem}.sm\:w-6{width:1.5rem}.sm\:w-60{width:15rem}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.sm\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.sm\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:gap-1\.5{gap:.375rem}.sm\:gap-3{gap:.75rem}.sm\:space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.5rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.5rem*var(--tw-space-x-reverse))}.sm\:p-5{padding:1.25rem}.sm\:p-6{padding:1.5rem}.sm\:p-7{padding:1.75rem}.sm\:px-3{padding-left:.75rem;padding-right:.75rem}.sm\:px-4{padding-left:1rem;padding-right:1rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:text-2xl{font-size:1.5rem;line-height:2rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}.sm\:text-\[10px\]{font-size:10px}.sm\:text-\[11px\]{font-size:11px}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:.875rem;line-height:1.25rem}.sm\:text-xl{font-size:1.25rem;line-height:1.75rem}.sm\:text-xs{font-size:.75rem;line-height:1rem}}@media (min-width:768px){.md\:inline-flex{display:inline-flex}.md\:w-auto{width:auto}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.md\:flex-row{flex-direction:row}.md\:items-center{align-items:center}}@media (min-width:1024px){.lg\:sticky{position:sticky}.lg\:top-32{top:8rem}.lg\:col-span-4{grid-column:span 4/span 4}.lg\:col-span-5{grid-column:span 5/span 5}.lg\:col-span-6{grid-column:span 6/span 6}.lg\:col-span-7{grid-column:span 7/span 7}.lg\:col-span-8{grid-column:span 8/span 8}.lg\:flex{display:flex}.lg\:grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}.lg\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.lg\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.lg\:grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr))}.lg\:px-8{padding-left:2rem;padding-right:2rem}}
+:root{--theme-primary:#a3e635;--theme-primary-rgb:163,230,53;--theme-glow:rgba(163,230,53,.25);--theme-surface:rgba(15,20,31,.72);--theme-border:hsla(0,0%,100%,.08);--theme-border-hover:rgba(163,230,53,.35)}[data-theme=cyan]{--theme-primary:#06b6d4;--theme-primary-rgb:6,182,212;--theme-glow:rgba(6,182,212,.25);--theme-border-hover:rgba(6,182,212,.35)}[data-theme=emerald]{--theme-primary:#10b981;--theme-primary-rgb:16,185,129;--theme-glow:rgba(16,185,129,.25);--theme-border-hover:rgba(16,185,129,.35)}[data-theme=orange]{--theme-primary:#f97316;--theme-primary-rgb:249,115,22;--theme-glow:rgba(249,115,22,.25);--theme-border-hover:rgba(249,115,22,.35)}body{background-color:#080c14;font-family:Outfit,Noto Sans JP,sans-serif}.font-mono-metric{font-family:JetBrains Mono,monospace}.glass-card{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:var(--theme-surface);border:1px solid var(--theme-border);transition:all .25s ease-out}.glass-card:hover{border-color:var(--theme-border-hover)}.text-theme-primary{color:var(--theme-primary)}.bg-theme-primary{background-color:var(--theme-primary)}.border-theme-primary{border-color:var(--theme-primary)}.tab-btn.active{background:var(--theme-primary);box-shadow:0 4px 16px 0 var(--theme-glow);color:#080c14;font-weight:800}.tab-btn:not(.active){color:#94a3b8}.tab-btn:not(.active):hover{background:hsla(0,0%,100%,.05);color:#f1f5f9}.theme-dot{border-radius:9999px;cursor:pointer;height:14px;transition:transform .2s,box-shadow .2s;width:14px}.theme-dot.active,.theme-dot:hover{box-shadow:0 0 8px currentColor;transform:scale(1.25)}.cockpit-subtab-btn.active{background:rgba(var(--theme-primary-rgb),.16);border-color:rgba(var(--theme-primary-rgb),.45);box-shadow:0 2px 10px 0 rgba(0,0,0,.25);color:var(--theme-primary);font-weight:800}.cockpit-subtab-btn:not(.active){border-color:transparent;color:#94a3b8}.cockpit-subtab-btn:not(.active):hover{background:hsla(0,0%,100%,.04);color:#f1f5f9}*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }
+/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:Outfit,Noto Sans JP,sans-serif;font-feature-settings:normal;font-variation-settings:normal;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-tap-highlight-color:transparent}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:JetBrains Mono,ui-monospace,monospace;font-feature-settings:normal;font-size:1em;font-variation-settings:normal}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-feature-settings:inherit;font-size:100%;font-variation-settings:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{color:#9ca3af;opacity:1}input::placeholder,textarea::placeholder{color:#9ca3af;opacity:1}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{height:auto;max-width:100%}[hidden]:where(:not([hidden=until-found])){display:none}.\!container{width:100%!important}.container{width:100%}@media (min-width:640px){.\!container{max-width:640px!important}.container{max-width:640px}}@media (min-width:768px){.\!container{max-width:768px!important}.container{max-width:768px}}@media (min-width:1024px){.\!container{max-width:1024px!important}.container{max-width:1024px}}@media (min-width:1280px){.\!container{max-width:1280px!important}.container{max-width:1280px}}@media (min-width:1536px){.\!container{max-width:1536px!important}.container{max-width:1536px}}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.bottom-0{bottom:0}.left-0{left:0}.left-1\/4{left:25%}.right-10{right:2.5rem}.top-0{top:0}.top-1\/3{top:33.333333%}.top-16{top:4rem}.-z-10{z-index:-10}.z-10{z-index:10}.z-40{z-index:40}.z-50{z-index:50}.col-span-2{grid-column:span 2/span 2}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mb-1\.5{margin-bottom:.375rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.ml-0\.5{margin-left:.125rem}.ml-1{margin-left:.25rem}.ml-auto{margin-left:auto}.mr-1{margin-right:.25rem}.mr-1\.5{margin-right:.375rem}.mr-2{margin-right:.5rem}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-1\.5{margin-top:.375rem}.mt-16{margin-top:4rem}.mt-2{margin-top:.5rem}.mt-6{margin-top:1.5rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-1\.5{height:.375rem}.h-10{height:2.5rem}.h-16{height:4rem}.h-2{height:.5rem}.h-2\.5{height:.625rem}.h-28{height:7rem}.h-3{height:.75rem}.h-3\.5{height:.875rem}.h-4{height:1rem}.h-60{height:15rem}.h-64{height:16rem}.h-72{height:18rem}.h-8{height:2rem}.h-\[300px\]{height:300px}.h-full{height:100%}.min-h-\[20px\]{min-height:20px}.min-h-screen{min-height:100vh}.w-0\.5{width:.125rem}.w-1{width:.25rem}.w-1\.5{width:.375rem}.w-10{width:2.5rem}.w-2{width:.5rem}.w-2\.5{width:.625rem}.w-3{width:.75rem}.w-44{width:11rem}.w-48{width:12rem}.w-5{width:1.25rem}.w-8{width:2rem}.w-\[12\%\]{width:12%}.w-\[18\%\]{width:18%}.w-\[20\%\]{width:20%}.w-\[25\%\]{width:25%}.w-\[500px\]{width:500px}.w-\[600px\]{width:600px}.w-full{width:100%}.min-w-\[100px\]{min-width:100px}.min-w-\[780px\]{min-width:780px}.max-w-7xl{max-width:80rem}.max-w-sm{max-width:24rem}.flex-1{flex:1 1 0%}.flex-shrink-0,.shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%}.-translate-x-1\/2,.scale-110{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.scale-110{--tw-scale-x:1.1;--tw-scale-y:1.1}.scale-125{--tw-scale-x:1.25;--tw-scale-y:1.25}.scale-125,.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-default{cursor:default}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;-moz-user-select:none;user-select:none}.resize{resize:both}.scroll-mt-28{scroll-margin-top:7rem}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.items-baseline{align-items:baseline}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-2\.5{gap:.625rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-x-1>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.25rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.25rem*var(--tw-space-x-reverse))}.space-x-1\.5>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.375rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.375rem*var(--tw-space-x-reverse))}.space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.5rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.5rem*var(--tw-space-x-reverse))}.space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.75rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.75rem*var(--tw-space-x-reverse))}.space-x-3\.5>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.875rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.875rem*var(--tw-space-x-reverse))}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.25rem*var(--tw-space-y-reverse));margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)))}.space-y-1\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.375rem*var(--tw-space-y-reverse));margin-top:calc(.375rem*(1 - var(--tw-space-y-reverse)))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.5rem*var(--tw-space-y-reverse));margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)))}.space-y-2\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.625rem*var(--tw-space-y-reverse));margin-top:calc(.625rem*(1 - var(--tw-space-y-reverse)))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.75rem*var(--tw-space-y-reverse));margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)))}.space-y-3\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.875rem*var(--tw-space-y-reverse));margin-top:calc(.875rem*(1 - var(--tw-space-y-reverse)))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(1rem*var(--tw-space-y-reverse));margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(1.25rem*var(--tw-space-y-reverse));margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)))}.space-y-6>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(1.5rem*var(--tw-space-y-reverse));margin-top:calc(1.5rem*(1 - var(--tw-space-y-reverse)))}.space-y-8>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(2rem*var(--tw-space-y-reverse));margin-top:calc(2rem*(1 - var(--tw-space-y-reverse)))}.divide-y>:not([hidden])~:not([hidden]){--tw-divide-y-reverse:0;border-bottom-width:calc(1px*var(--tw-divide-y-reverse));border-top-width:calc(1px*(1 - var(--tw-divide-y-reverse)))}.divide-slate-800\/40>:not([hidden])~:not([hidden]){border-color:rgba(30,41,59,.4)}.divide-slate-800\/50>:not([hidden])~:not([hidden]){border-color:rgba(30,41,59,.5)}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-x-hidden{overflow-x:hidden}.scroll-smooth{scroll-behavior:smooth}.truncate{overflow:hidden;text-overflow:ellipsis}.truncate,.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-sm{border-radius:.125rem}.rounded-xl{border-radius:.75rem}.rounded-l-full{border-bottom-left-radius:9999px;border-top-left-radius:9999px}.rounded-r-full{border-bottom-right-radius:9999px;border-top-right-radius:9999px}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-l{border-left-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-amber-500\/30{border-color:rgba(245,158,11,.3)}.border-blue-500\/30{border-color:rgba(59,130,246,.3)}.border-emerald-400{--tw-border-opacity:1;border-color:rgb(52 211 153/var(--tw-border-opacity,1))}.border-emerald-500\/20{border-color:rgba(16,185,129,.2)}.border-emerald-500\/30{border-color:rgba(16,185,129,.3)}.border-emerald-800\/60{border-color:rgba(6,95,70,.6)}.border-indigo-500{--tw-border-opacity:1;border-color:rgb(99 102 241/var(--tw-border-opacity,1))}.border-indigo-500\/20{border-color:rgba(99,102,241,.2)}.border-indigo-500\/30{border-color:rgba(99,102,241,.3)}.border-indigo-500\/50{border-color:rgba(99,102,241,.5)}.border-orange-500\/30{border-color:rgba(249,115,22,.3)}.border-purple-500\/30{border-color:rgba(168,85,247,.3)}.border-rose-500\/10{border-color:rgba(244,63,94,.1)}.border-rose-500\/20{border-color:rgba(244,63,94,.2)}.border-rose-500\/25{border-color:rgba(244,63,94,.25)}.border-sky-500\/30{border-color:rgba(14,165,233,.3)}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85/var(--tw-border-opacity,1))}.border-slate-700\/70{border-color:rgba(51,65,85,.7)}.border-slate-700\/80{border-color:rgba(51,65,85,.8)}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59/var(--tw-border-opacity,1))}.border-slate-800\/40{border-color:rgba(30,41,59,.4)}.border-slate-800\/60{border-color:rgba(30,41,59,.6)}.border-slate-800\/70{border-color:rgba(30,41,59,.7)}.border-slate-800\/80{border-color:rgba(30,41,59,.8)}.border-slate-800\/90{border-color:rgba(30,41,59,.9)}.border-teal-500\/30{border-color:rgba(20,184,166,.3)}.bg-\[\#080c14\]{--tw-bg-opacity:1;background-color:rgb(8 12 20/var(--tw-bg-opacity,1))}.bg-\[\#080c14\]\/85{background-color:rgba(8,12,20,.85)}.bg-\[\#080c14\]\/90{background-color:rgba(8,12,20,.9)}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.bg-amber-500\/20{background-color:rgba(245,158,11,.2)}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246/var(--tw-bg-opacity,1))}.bg-blue-500\/20{background-color:rgba(59,130,246,.2)}.bg-emerald-300{--tw-bg-opacity:1;background-color:rgb(110 231 183/var(--tw-bg-opacity,1))}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153/var(--tw-bg-opacity,1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.bg-emerald-500\/10{background-color:rgba(16,185,129,.1)}.bg-emerald-500\/20{background-color:rgba(16,185,129,.2)}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105/var(--tw-bg-opacity,1))}.bg-emerald-700{--tw-bg-opacity:1;background-color:rgb(4 120 87/var(--tw-bg-opacity,1))}.bg-emerald-950{--tw-bg-opacity:1;background-color:rgb(2 44 34/var(--tw-bg-opacity,1))}.bg-emerald-950\/80{background-color:rgba(2,44,34,.8)}.bg-indigo-400{--tw-bg-opacity:1;background-color:rgb(129 140 248/var(--tw-bg-opacity,1))}.bg-indigo-500\/10{background-color:rgba(99,102,241,.1)}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229/var(--tw-bg-opacity,1))}.bg-indigo-950\/20{background-color:rgba(30,27,75,.2)}.bg-orange-500{--tw-bg-opacity:1;background-color:rgb(249 115 22/var(--tw-bg-opacity,1))}.bg-orange-500\/20{background-color:rgba(249,115,22,.2)}.bg-purple-400{--tw-bg-opacity:1;background-color:rgb(192 132 252/var(--tw-bg-opacity,1))}.bg-purple-500\/20{background-color:rgba(168,85,247,.2)}.bg-rose-400{--tw-bg-opacity:1;background-color:rgb(251 113 133/var(--tw-bg-opacity,1))}.bg-rose-500{--tw-bg-opacity:1;background-color:rgb(244 63 94/var(--tw-bg-opacity,1))}.bg-rose-500\/10{background-color:rgba(244,63,94,.1)}.bg-rose-600{--tw-bg-opacity:1;background-color:rgb(225 29 72/var(--tw-bg-opacity,1))}.bg-sky-400{--tw-bg-opacity:1;background-color:rgb(56 189 248/var(--tw-bg-opacity,1))}.bg-sky-500\/20{background-color:rgba(14,165,233,.2)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.bg-slate-800\/10{background-color:rgba(30,41,59,.1)}.bg-slate-800\/70{background-color:rgba(30,41,59,.7)}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42/var(--tw-bg-opacity,1))}.bg-slate-900\/40{background-color:rgba(15,23,42,.4)}.bg-slate-900\/50{background-color:rgba(15,23,42,.5)}.bg-slate-900\/60{background-color:rgba(15,23,42,.6)}.bg-slate-900\/75{background-color:rgba(15,23,42,.75)}.bg-slate-900\/80{background-color:rgba(15,23,42,.8)}.bg-slate-900\/90{background-color:rgba(15,23,42,.9)}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23/var(--tw-bg-opacity,1))}.bg-slate-950\/40{background-color:rgba(2,6,23,.4)}.bg-slate-950\/50{background-color:rgba(2,6,23,.5)}.bg-slate-950\/60{background-color:rgba(2,6,23,.6)}.bg-slate-950\/70{background-color:rgba(2,6,23,.7)}.bg-slate-950\/80{background-color:rgba(2,6,23,.8)}.bg-teal-400{--tw-bg-opacity:1;background-color:rgb(45 212 191/var(--tw-bg-opacity,1))}.bg-teal-500\/20{background-color:rgba(20,184,166,.2)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right,var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops))}.from-amber-500{--tw-gradient-from:#f59e0b var(--tw-gradient-from-position);--tw-gradient-to:rgba(245,158,11,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-emerald-500{--tw-gradient-from:#10b981 var(--tw-gradient-from-position);--tw-gradient-to:rgba(16,185,129,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-slate-900{--tw-gradient-from:#0f172a var(--tw-gradient-from-position);--tw-gradient-to:rgba(15,23,42,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.via-slate-900\/95{--tw-gradient-to:rgba(15,23,42,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),rgba(15,23,42,.95) var(--tw-gradient-via-position),var(--tw-gradient-to)}.to-indigo-950\/40{--tw-gradient-to:rgba(30,27,75,.4) var(--tw-gradient-to-position)}.to-rose-500{--tw-gradient-to:#f43f5e var(--tw-gradient-to-position)}.to-teal-400{--tw-gradient-to:#2dd4bf var(--tw-gradient-to-position)}.p-0\.5{padding:.125rem}.p-1{padding:.25rem}.p-1\.5{padding:.375rem}.p-2{padding:.5rem}.p-2\.5{padding:.625rem}.p-3{padding:.75rem}.p-3\.5{padding:.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-1{padding-left:.25rem;padding-right:.25rem}.px-1\.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-2\.5{padding-left:.625rem;padding-right:.625rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-bottom:.125rem;padding-top:.125rem}.py-1{padding-bottom:.25rem;padding-top:.25rem}.py-1\.5{padding-bottom:.375rem;padding-top:.375rem}.py-2{padding-bottom:.5rem;padding-top:.5rem}.py-2\.5{padding-bottom:.625rem;padding-top:.625rem}.py-3{padding-bottom:.75rem;padding-top:.75rem}.py-3\.5{padding-bottom:.875rem;padding-top:.875rem}.py-8{padding-bottom:2rem;padding-top:2rem}.pb-1{padding-bottom:.25rem}.pb-2{padding-bottom:.5rem}.pb-2\.5{padding-bottom:.625rem}.pb-3{padding-bottom:.75rem}.pb-6{padding-bottom:1.5rem}.pl-2{padding-left:.5rem}.pt-0\.5{padding-top:.125rem}.pt-1{padding-top:.25rem}.pt-2{padding-top:.5rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:JetBrains Mono,ui-monospace,monospace}.font-sans{font-family:Outfit,Noto Sans JP,sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.leading-tight{line-height:1.25}.tracking-tight{letter-spacing:-.025em}.tracking-wider{letter-spacing:.05em}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-blue-400{--tw-text-opacity:1;color:rgb(96 165 250/var(--tw-text-opacity,1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183/var(--tw-text-opacity,1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.text-indigo-200{--tw-text-opacity:1;color:rgb(199 210 254/var(--tw-text-opacity,1))}.text-indigo-300{--tw-text-opacity:1;color:rgb(165 180 252/var(--tw-text-opacity,1))}.text-indigo-400{--tw-text-opacity:1;color:rgb(129 140 248/var(--tw-text-opacity,1))}.text-orange-400{--tw-text-opacity:1;color:rgb(251 146 60/var(--tw-text-opacity,1))}.text-purple-400{--tw-text-opacity:1;color:rgb(192 132 252/var(--tw-text-opacity,1))}.text-rose-200{--tw-text-opacity:1;color:rgb(254 205 211/var(--tw-text-opacity,1))}.text-rose-300{--tw-text-opacity:1;color:rgb(253 164 175/var(--tw-text-opacity,1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133/var(--tw-text-opacity,1))}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252/var(--tw-text-opacity,1))}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248/var(--tw-text-opacity,1))}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249/var(--tw-text-opacity,1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225/var(--tw-text-opacity,1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184/var(--tw-text-opacity,1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139/var(--tw-text-opacity,1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105/var(--tw-text-opacity,1))}.text-teal-400{--tw-text-opacity:1;color:rgb(45 212 191/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-20{opacity:.2}.shadow{--tw-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color),0 1px 2px -1px var(--tw-shadow-color)}.shadow,.shadow-2xl{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgba(0,0,0,.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color)}.shadow-inner,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-md{--tw-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color),0 2px 4px -2px var(--tw-shadow-color)}.shadow-md,.shadow-sm{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgba(0,0,0,.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-emerald-400\/50{--tw-shadow-color:rgba(52,211,153,.5);--tw-shadow:var(--tw-shadow-colored)}.shadow-emerald-500\/30{--tw-shadow-color:rgba(16,185,129,.3);--tw-shadow:var(--tw-shadow-colored)}.ring-1{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.ring-1,.ring-2{box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.ring-2{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.ring-emerald-400{--tw-ring-opacity:1;--tw-ring-color:rgb(52 211 153/var(--tw-ring-opacity,1))}.ring-white\/10{--tw-ring-color:hsla(0,0%,100%,.1)}.ring-white\/70{--tw-ring-color:hsla(0,0%,100%,.7)}.ring-white\/80{--tw-ring-color:hsla(0,0%,100%,.8)}.blur-\[150px\]{--tw-blur:blur(150px)}.blur-\[150px\],.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-xl{--tw-backdrop-blur:blur(24px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-duration:.15s;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1)}.transition-all{transition-duration:.15s;transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1)}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(.4,0,.2,1)}.duration-150,.transition-transform{transition-duration:.15s}.duration-200{transition-duration:.2s}.duration-300{transition-duration:.3s}.duration-700{transition-duration:.7s}.selection\:bg-lime-400 ::-moz-selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:bg-lime-400 ::selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:text-slate-950 ::-moz-selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.selection\:text-slate-950 ::selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.selection\:bg-lime-400::-moz-selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:bg-lime-400::selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:text-slate-950::-moz-selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.selection\:text-slate-950::selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.hover\:z-20:hover{z-index:20}.hover\:scale-125:hover{--tw-scale-x:1.25;--tw-scale-y:1.25;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-emerald-400:hover{--tw-border-opacity:1;border-color:rgb(52 211 153/var(--tw-border-opacity,1))}.hover\:border-emerald-500\/50:hover{border-color:rgba(16,185,129,.5)}.hover\:border-slate-700:hover{--tw-border-opacity:1;border-color:rgb(51 65 85/var(--tw-border-opacity,1))}.hover\:bg-emerald-100:hover{--tw-bg-opacity:1;background-color:rgb(209 250 229/var(--tw-bg-opacity,1))}.hover\:bg-emerald-400:hover{--tw-bg-opacity:1;background-color:rgb(52 211 153/var(--tw-bg-opacity,1))}.hover\:bg-emerald-500:hover{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85/var(--tw-bg-opacity,1))}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.hover\:bg-slate-800\/30:hover{background-color:rgba(30,41,59,.3)}.hover\:bg-slate-800\/50:hover{background-color:rgba(30,41,59,.5)}.hover\:text-emerald-400:hover{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.hover\:text-slate-200:hover{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.focus\:ring-emerald-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(16 185 129/var(--tw-ring-opacity,1))}.focus\:ring-indigo-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(99 102 241/var(--tw-ring-opacity,1))}.group[open] .group-open\:rotate-180{--tw-rotate:180deg;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.group:hover .group-hover\:text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}@media (min-width:640px){.sm\:col-span-1{grid-column:span 1/span 1}.sm\:ml-1{margin-left:.25rem}.sm\:mr-2{margin-right:.5rem}.sm\:inline{display:inline}.sm\:h-3\.5{height:.875rem}.sm\:h-72{height:18rem}.sm\:h-80{height:20rem}.sm\:w-3\.5{width:.875rem}.sm\:w-56{width:14rem}.sm\:w-6{width:1.5rem}.sm\:w-60{width:15rem}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.sm\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.sm\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:gap-1\.5{gap:.375rem}.sm\:gap-3{gap:.75rem}.sm\:space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.5rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.5rem*var(--tw-space-x-reverse))}.sm\:p-5{padding:1.25rem}.sm\:p-6{padding:1.5rem}.sm\:p-7{padding:1.75rem}.sm\:px-3{padding-left:.75rem;padding-right:.75rem}.sm\:px-4{padding-left:1rem;padding-right:1rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:text-2xl{font-size:1.5rem;line-height:2rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}.sm\:text-\[10px\]{font-size:10px}.sm\:text-\[11px\]{font-size:11px}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:.875rem;line-height:1.25rem}.sm\:text-xl{font-size:1.25rem;line-height:1.75rem}}@media (min-width:768px){.md\:inline-flex{display:inline-flex}.md\:w-auto{width:auto}.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.md\:flex-row{flex-direction:row}.md\:items-center{align-items:center}}@media (min-width:1024px){.lg\:sticky{position:sticky}.lg\:top-32{top:8rem}.lg\:col-span-4{grid-column:span 4/span 4}.lg\:col-span-5{grid-column:span 5/span 5}.lg\:col-span-6{grid-column:span 6/span 6}.lg\:col-span-7{grid-column:span 7/span 7}.lg\:col-span-8{grid-column:span 8/span 8}.lg\:flex{display:flex}.lg\:grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}.lg\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.lg\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.lg\:grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr))}.lg\:px-8{padding-left:2rem;padding-right:2rem}}
   </style>
 </head>
 <body class="bg-[#080c14] text-slate-100 min-h-screen antialiased selection:bg-lime-400 selection:text-slate-950 relative overflow-x-hidden">
@@ -114,440 +114,396 @@
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- ======================================================= -->
-    <!-- 🏁 VIEW 1: COCKPIT (総合ダッシュボード) -->
+    <!-- 🏁 VIEW 1: COCKPIT (総合ダッシュボード - サブタブ整理版) -->
     <!-- ======================================================= -->
-    <div id="view-cockpit" class="view-panel space-y-8">
+    <div id="view-cockpit" class="view-panel space-y-5">
 
       <!-- ========================================== -->
-      <!-- 🎯 レイヤー1: GOAL & VDOT FITNESS ENGINE -->
-      <!-- (サブ50プログレス × ジャック・ダニエルズ式VDOT) -->
+      <!-- 📌 常時表示: 4大コア指標クイックスナップショット -->
+      <!-- (クリックで該当サブタブへダイレクト移動) -->
       <!-- ========================================== -->
-      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <!-- 1. サブ50進捗 -->
+        <button type="button" onclick="switchCockpitSubtab('overview')" class="glass-card rounded-2xl p-3.5 text-left hover:border-slate-700 transition group">
+          <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+            <span class="flex items-center space-x-1.5"><span>🎯</span><span>推定10km / サブ50進捗</span></span>
+            <span class="font-mono font-bold px-1.5 py-0.2 rounded text-[10px]" style="background: rgba(var(--theme-primary-rgb), 0.12); color: var(--theme-primary);">10.0%</span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1.5">
+            <span class="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">01:02:14</span>
+            <span class="text-[11px] text-slate-400 font-mono">6:13/km</span>
+          </div>
+          <div class="w-full bg-slate-950 rounded-full h-1.5 mt-2 overflow-hidden border border-slate-800/80">
+            <div class="h-full rounded-full" style="width: 10.0%; background: var(--theme-primary);"></div>
+          </div>
+        </button>
 
-        <!-- 左カラム: 10km 50分切り (サブ50) プログレストラッカー -->
-        <div class="lg:col-span-6 glass-card rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl relative overflow-hidden flex flex-col justify-between">
-          <div class="space-y-4">
-            <!-- ヘッダー -->
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-              <div class="flex items-center space-x-2">
-                <span class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sm font-bold shadow-inner">🎯</span>
-                <div>
-                  <h3 class="text-sm font-black text-white tracking-tight">10km 50分切り (サブ50) プログレス</h3>
-                  <p class="text-[11px] text-slate-400">目標ペース（5:00/km）に対する達成進捗</p>
+        <!-- 2. VDOT & 閾値ペース -->
+        <button type="button" onclick="switchCockpitSubtab('overview')" class="glass-card rounded-2xl p-3.5 text-left hover:border-slate-700 transition group">
+          <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+            <span class="flex items-center space-x-1.5"><span>🧪</span><span>現在走力 (VDOT)</span></span>
+            <span class="text-[10px] text-slate-500 font-mono">Peak 38.3</span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1.5">
+            <span class="text-xl sm:text-2xl font-black font-mono tracking-tight" style="color: var(--theme-primary);">30.9</span>
+            <span class="text-[11px] text-slate-300 font-mono">T: 6:15 /km</span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-1.5 font-mono truncate">
+            E: 6:53 〜 7:55
+          </div>
+        </button>
+
+        <!-- 3. コンディション (TSB / CTL / ATL) -->
+        <button type="button" onclick="switchCockpitSubtab('condition')" class="glass-card rounded-2xl p-3.5 text-left hover:border-slate-700 transition group">
+          <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+            <span class="flex items-center space-x-1.5"><span>⚡</span><span>コンディション (TSB)</span></span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full border bg-sky-500/20 text-sky-300 border-sky-500/40 font-bold">最適トレーニング領域 (Optimal)</span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1.5">
+            <span class="text-xl sm:text-2xl font-black text-sky-400 font-mono tracking-tight">-9.6</span>
+            <span class="text-[11px] text-slate-400 font-mono">CTL 15.6 / ATL 25.2</span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-1.5 font-mono truncate">
+            80/20低強度比: <strong class="text-emerald-400">45.2%</strong> (直近4週)
+          </div>
+        </button>
+
+        <!-- 4. 今週の走行負荷 -->
+        <button type="button" onclick="switchCockpitSubtab('condition')" class="glass-card rounded-2xl p-3.5 text-left hover:border-slate-700 transition group">
+          <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+            <span class="flex items-center space-x-1.5"><span>🛡️</span><span>今週の走行距離</span></span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full border bg-sky-500/10 text-sky-300 border-sky-500/20 font-bold">リカバリー・減量週</span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1.5">
+            <span class="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">8.0 <span class="text-xs font-normal text-slate-400">km</span></span>
+            <span class="text-[11px] text-sky-400 font-mono font-bold">前週比 38%</span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-1.5 font-mono truncate">
+            前週実績: 21.1 km • 直近30日: 46.13 km
+          </div>
+        </button>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- 🧭 COCKPIT サブタブ・スイッチャー -->
+      <!-- ========================================== -->
+      <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-900/75 border border-slate-800/90 p-1.5 rounded-2xl shadow-inner">
+        <div class="flex flex-wrap items-center gap-1 sm:gap-1.5">
+          <button type="button" onclick="switchCockpitSubtab('overview')" id="subtab-overview" class="cockpit-subtab-btn active px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold border transition-all duration-150 flex items-center space-x-1.5">
+            <span>🎯</span>
+            <span>概要・目標</span>
+          </button>
+          <button type="button" onclick="switchCockpitSubtab('condition')" id="subtab-condition" class="cockpit-subtab-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold border transition-all duration-150 flex items-center space-x-1.5">
+            <span>⚡</span>
+            <span>コンディション・負荷</span>
+          </button>
+          <button type="button" onclick="switchCockpitSubtab('charts')" id="subtab-charts" class="cockpit-subtab-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold border transition-all duration-150 flex items-center space-x-1.5">
+            <span>📈</span>
+            <span>トレンド推移 (4グラフ)</span>
+          </button>
+          <button type="button" onclick="switchCockpitSubtab('records')" id="subtab-records" class="cockpit-subtab-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold border transition-all duration-150 flex items-center space-x-1.5">
+            <span>🏆</span>
+            <span>自己ベスト・統計・ギア</span>
+          </button>
+        </div>
+
+        <button type="button" onclick="switchCockpitSubtab('all')" id="subtab-all" class="cockpit-subtab-btn px-2.5 py-1.5 rounded-xl text-[11px] font-semibold border transition-all duration-150 flex items-center space-x-1 ml-auto">
+          <span>👁️</span>
+          <span>すべて展開</span>
+        </button>
+      </div>
+
+      <!-- ====================================================================== -->
+      <!-- 🎯 SUB-PANEL 1: 概要・目標 (サブ50進捗 × VDOTペース × 年間カレンダー) -->
+      <!-- ====================================================================== -->
+      <div id="cockpit-panel-overview" class="cockpit-subpanel space-y-6">
+
+        <!-- 目標進捗 & VDOT 2カラム -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          <!-- 左カラム: 10km 50分切り (サブ50) プログレストラッカー -->
+          <div class="lg:col-span-6 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl relative overflow-hidden flex flex-col justify-between">
+            <div class="space-y-4">
+              <!-- ヘッダー -->
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <div class="flex items-center space-x-2">
+                  <span class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sm font-bold shadow-inner">🎯</span>
+                  <div>
+                    <h3 class="text-sm font-black text-white tracking-tight">10km 50分切り (サブ50) プログレス</h3>
+                    <p class="text-[11px] text-slate-400">目標ペース（5:00/km）に対する達成進捗と予測</p>
+                  </div>
+                </div>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-black font-mono border" style="background: rgba(var(--theme-primary-rgb), 0.12); color: var(--theme-primary); border-color: rgba(var(--theme-primary-rgb), 0.25);">
+                  GOAL: 50:00
+                </span>
+              </div>
+
+              <!-- 現在推定タイム・進捗率・維持最長・必要短縮をコンパクト4分割に整理 -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80">
+                  <span class="text-[10px] text-slate-400 font-medium block">推定10km力</span>
+                  <div class="text-xl font-black text-white font-mono tracking-tight mt-0.5">01:02:14</div>
+                  <span class="text-[10px] text-slate-400 font-mono">6:13/km</span>
+                </div>
+                <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80">
+                  <span class="text-[10px] text-slate-400 font-medium block">到達進捗率</span>
+                  <div class="text-xl font-black font-mono tracking-tight mt-0.5" style="color: var(--theme-primary);">10.0%</div>
+                  <span class="text-[10px] text-slate-500">基準60分➔50分</span>
+                </div>
+                <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80">
+                  <span class="text-[10px] text-slate-400 font-medium block">5:00/km維持最長</span>
+                  <div class="text-xl font-black text-white font-mono tracking-tight mt-0.5">2.0<span class="text-xs font-normal text-slate-400 ml-0.5">km</span></div>
+                  <span class="text-[10px] text-slate-500 font-mono">直近 1.0km</span>
+                </div>
+                <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80">
+                  <span class="text-[10px] text-slate-400 font-medium block">目標とのギャップ</span>
+                  <div class="text-xl font-black text-white font-mono tracking-tight mt-0.5">+73秒/km</div>
+                  <span class="text-[10px] text-slate-500 font-mono">計 +12分14秒</span>
                 </div>
               </div>
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-black font-mono border" style="background: rgba(var(--theme-primary-rgb), 0.12); color: var(--theme-primary); border-color: rgba(var(--theme-primary-rgb), 0.25);">
-                GOAL: 50:00
-              </span>
-            </div>
 
-            <!-- 現在推定タイムと進捗率 -->
-            <div class="grid grid-cols-2 gap-3 bg-slate-950/70 p-3.5 rounded-2xl border border-slate-800/80">
+              <!-- 進捗バー -->
+              <div class="space-y-1">
+                <div class="w-full bg-slate-950/80 rounded-full h-2.5 p-0.5 border border-slate-800 overflow-hidden shadow-inner">
+                  <div class="h-full rounded-full transition-all duration-700 shadow-sm" style="width: 10.0%; background: linear-gradient(90deg, #334155 0%, var(--theme-primary) 100%);"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                  <span>60:00 (6:00/km)</span>
+                  <span class="text-slate-300 font-semibold">あと 12分14秒 短縮が必要</span>
+                  <span class="font-semibold" style="color: var(--theme-primary);">目標 50:00 (5:00/km)</span>
+                </div>
+              </div>
+
+              <!-- サブ50到達予測推計 (VDOT線形回帰トレンド) -->
+              <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-bold text-slate-300 flex items-center space-x-1.5">
+                    <span>📈</span>
+                    <span>到達予測推計 (目標 VDOT 40.8)</span>
+                  </span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full border bg-sky-500/20 text-sky-300 border-sky-500/40 font-bold">
+                    約 1958 日後 (2032年02月23日頃) 到達予測
+                  </span>
+                </div>
+                <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                  <span>月間成長トレンド: <strong class="text-white">+0.15 VDOT/月</strong></span>
+                  <span>現在: <strong class="text-white">VDOT 30.9</strong></span>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed font-sans">
+                  直近の成長傾向（月間 +0.15 VDOT）を維持した場合、約 1958 日後（2032年02月23日頃）にサブ50相当走力（VDOT 40.8）へ到達する見込みです。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右カラム: VDOT ＆ 5大科学的トレーニングペース -->
+          <div class="lg:col-span-6 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl flex flex-col justify-between">
+            <div class="space-y-3.5">
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <div class="flex items-center space-x-2">
+                  <span class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sm font-bold shadow-inner">🧪</span>
+                  <div>
+                    <h3 class="text-sm font-black text-white tracking-tight">VDOT ＆ 5大科学的トレーニングペース</h3>
+                    <p class="text-[11px] text-slate-400">ジャック・ダニエルズ式走力指数 × 目的別ゾーン</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2 font-mono">
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-black border" style="background: rgba(var(--theme-primary-rgb), 0.12); color: var(--theme-primary); border-color: rgba(var(--theme-primary-rgb), 0.25);">
+                    VDOT: 30.9
+                  </span>
+                  <span class="text-[11px] text-slate-500">Peak: 38.3</span>
+                </div>
+              </div>
+
+              <!-- 5大ペース表 -->
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <!-- Eペース -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                  <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                    E (Easy)
+                  </span>
+                  <div class="text-xs font-black text-white font-mono tracking-tight">6:53 〜 7:55</div>
+                  <p class="text-[9px] text-slate-400 leading-tight">基礎有酸素・疲労抜き</p>
+                </div>
+
+                <!-- Mペース -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                  <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-blue-500/20 text-blue-300 border-blue-500/30">
+                    M (Marathon)
+                  </span>
+                  <div class="text-xs font-black text-white font-mono tracking-tight">6:29 /km</div>
+                  <p class="text-[9px] text-slate-400 leading-tight">マラソン巡航</p>
+                </div>
+
+                <!-- Tペース (サブ50キー) -->
+                <div class="bg-slate-950/60 border border-slate-700/80 rounded-2xl p-2.5 space-y-1 relative overflow-hidden shadow-sm">
+                  <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-amber-500/20 text-amber-300 border-amber-500/30">
+                    T (閾値/LT)
+                  </span>
+                  <div class="text-xs font-black font-mono tracking-tight" style="color: var(--theme-primary);">6:15 /km</div>
+                  <p class="text-[9px] text-slate-300 leading-tight font-bold">★持久力向上の要</p>
+                </div>
+
+                <!-- Iペース -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                  <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-rose-500/20 text-rose-300 border-rose-500/30">
+                    I (Interval)
+                  </span>
+                  <div class="text-xs font-black text-white font-mono tracking-tight">5:47 /km</div>
+                  <p class="text-[9px] text-slate-400 leading-tight">VO2max刺激</p>
+                </div>
+
+                <!-- Rペース -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1 col-span-2 sm:col-span-1">
+                  <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-purple-500/20 text-purple-300 border-purple-500/30">
+                    R (Repetition)
+                  </span>
+                  <div class="text-xs font-black text-white font-mono tracking-tight">5:26 /km</div>
+                  <p class="text-[9px] text-slate-400 leading-tight">スピード経済性</p>
+                </div>
+              </div>
+
+              <!-- 予想レースタイム 4項目 -->
               <div>
-                <span class="text-[11px] text-slate-400 font-medium block">現在の推定10km力</span>
-                <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight mt-0.5">
-                  01:02:14
-                </div>
-                <span class="text-[11px] text-slate-400 font-mono">(6:13/km)</span>
-              </div>
-              <div>
-                <span class="text-[11px] text-slate-400 font-medium block">サブ50到達進捗率</span>
-                <div class="text-2xl sm:text-3xl font-black font-mono tracking-tight mt-0.5" style="color: var(--theme-primary);">
-                  10.0%
-                </div>
-                <span class="text-[11px] text-slate-400 font-medium">基準60分 ➔ 50分</span>
-              </div>
-            </div>
-
-            <!-- 進捗バー -->
-            <div class="space-y-1.5">
-              <div class="w-full bg-slate-950/80 rounded-full h-3 p-0.5 border border-slate-800 overflow-hidden shadow-inner">
-                <div class="h-full rounded-full transition-all duration-700 shadow-sm" style="width: 10.0%; background: linear-gradient(90deg, #334155 0%, var(--theme-primary) 100%);"></div>
-              </div>
-              <div class="flex justify-between text-[10px] text-slate-500 font-mono">
-                <span>60:00 (6:00/km)</span>
-                <span class="text-slate-300 font-semibold">あと 12分14秒 短縮が必要</span>
-                <span class="font-semibold" style="color: var(--theme-primary);">目標 50:00 (5:00/km)</span>
-              </div>
-            </div>
-
-            <!-- サブ50維持距離 & 残りギャップ -->
-            <div class="grid grid-cols-2 gap-3 pt-1">
-              <div class="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-3 text-center">
-                <span class="text-[10px] text-slate-400 block font-medium">キロ5分以内 維持最長記録</span>
-                <span class="text-xl font-black text-white font-mono">2.0 <span class="text-xs text-slate-400 font-normal">km</span></span>
-                <span class="text-[10px] text-slate-500 block font-mono">直近走: 1.0km</span>
-              </div>
-              <div class="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-3 text-center">
-                <span class="text-[10px] text-slate-400 block font-medium">サブ50までの必要短縮</span>
-                <span class="text-xl font-black text-white font-mono">+73秒/km</span>
-                <span class="text-[10px] text-slate-500 block font-mono">総タイム +12分14秒</span>
-              </div>
-            </div>
-
-            <!-- サブ50到達予測推計 (VDOT線形回帰トレンド) -->
-            <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80 space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-slate-300 flex items-center space-x-1.5">
-                  <span>📈</span>
-                  <span>到達予測推計 (VDOT 40.8 目標)</span>
-                </span>
-                <span class="text-[10px] px-2 py-0.5 rounded-full border bg-sky-500/20 text-sky-300 border-sky-500/40 font-bold">
-                  約 1958 日後 (2032年02月23日頃) 到達予測
-                </span>
-              </div>
-              <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
-                <span>月間成長トレンド: <strong class="text-white">+0.15 VDOT/月</strong></span>
-                <span>直近走力: <strong class="text-white">VDOT 30.9</strong></span>
-              </div>
-              <p class="text-[10px] text-slate-400 leading-relaxed font-sans">
-                直近の成長傾向（月間 +0.15 VDOT）を維持した場合、約 1958 日後（2032年02月23日頃）にサブ50相当走力（VDOT 40.8）へ到達する見込みです。
-              </p>
-            </div>
-          </div>
-
-          <div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/80 text-[11px] text-slate-300 leading-relaxed mt-2 flex items-center space-x-2">
-            <span style="color: var(--theme-primary);">💡</span>
-            <span>キロ5分ペースを現在の <strong class="text-white">2.0km</strong> から段階的に5km、7kmへと巡航距離を延伸させることがサブ50への最短ロードマップです。</span>
-          </div>
-        </div>
-
-        <!-- 右カラム: VDOT ＆ 5大科学的トレーニングペース -->
-        <div class="lg:col-span-6 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl flex flex-col justify-between">
-          <div class="space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-              <div class="flex items-center space-x-2">
-                <span class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sm font-bold shadow-inner">🧪</span>
-                <div>
-                  <h3 class="text-sm font-black text-white tracking-tight">VDOT ＆ 5大科学的トレーニングペース</h3>
-                  <p class="text-[11px] text-slate-400">ジャック・ダニエルズ式走力指数 × 目的別ゾーン</p>
+                <span class="text-[10px] text-slate-400 font-bold block mb-1.5">🏁 現在のVDOTから算出される同等レース予測</span>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  
+                  <div class="bg-slate-950/50 border border-slate-800/60 rounded-xl p-2 text-center">
+                    <div class="text-[10px] text-slate-400 font-medium flex items-center justify-center space-x-1">
+                      <span>⚡</span>
+                      <span>5km</span>
+                    </div>
+                    <div class="text-sm font-black text-white font-mono mt-0.5">29:56</div>
+                    <div class="text-[9px] text-slate-400 font-mono">5:59/km</div>
+                  </div>
+                  
+                  <div class="bg-slate-950/50 border border-slate-800/60 rounded-xl p-2 text-center">
+                    <div class="text-[10px] text-slate-400 font-medium flex items-center justify-center space-x-1">
+                      <span>🏃</span>
+                      <span>10km</span>
+                    </div>
+                    <div class="text-sm font-black text-white font-mono mt-0.5">01:02:14</div>
+                    <div class="text-[9px] text-slate-400 font-mono">6:13/km</div>
+                  </div>
+                  
+                  <div class="bg-slate-950/50 border border-slate-800/60 rounded-xl p-2 text-center">
+                    <div class="text-[10px] text-slate-400 font-medium flex items-center justify-center space-x-1">
+                      <span>🏅</span>
+                      <span>ハーフマラソン</span>
+                    </div>
+                    <div class="text-sm font-black text-white font-mono mt-0.5">02:17:51</div>
+                    <div class="text-[9px] text-slate-400 font-mono">6:32/km</div>
+                  </div>
+                  
+                  <div class="bg-slate-950/50 border border-slate-800/60 rounded-xl p-2 text-center">
+                    <div class="text-[10px] text-slate-400 font-medium flex items-center justify-center space-x-1">
+                      <span>👑</span>
+                      <span>フルマラソン</span>
+                    </div>
+                    <div class="text-sm font-black text-white font-mono mt-0.5">04:43:03</div>
+                    <div class="text-[9px] text-slate-400 font-mono">6:42/km</div>
+                  </div>
+                  
                 </div>
               </div>
-              <div class="flex items-center space-x-2 font-mono">
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-black border" style="background: rgba(var(--theme-primary-rgb), 0.12); color: var(--theme-primary); border-color: rgba(var(--theme-primary-rgb), 0.25);">
-                  VDOT: 30.9
-                </span>
-                <span class="text-[11px] text-slate-500">Peak: 38.3</span>
-              </div>
             </div>
 
-            <!-- 5大ペース表 -->
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
-              <!-- Eペース -->
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
-                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
-                  E (Easy)
-                </span>
-                <div class="text-xs font-black text-white font-mono tracking-tight">6:53 〜 7:55</div>
-                <p class="text-[9px] text-slate-400 leading-tight">基礎毛細血管</p>
-              </div>
-
-              <!-- Mペース -->
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
-                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-blue-500/20 text-blue-300 border-blue-500/30">
-                  M (Marathon)
-                </span>
-                <div class="text-xs font-black text-white font-mono tracking-tight">6:29 /km</div>
-                <p class="text-[9px] text-slate-400 leading-tight">マラソン巡航</p>
-              </div>
-
-              <!-- Tペース (サブ50キー) -->
-              <div class="bg-slate-950/60 border border-slate-700/80 rounded-2xl p-2.5 space-y-1 relative overflow-hidden shadow-sm">
-                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-amber-500/20 text-amber-300 border-amber-500/30">
-                  T (閾値/LT)
-                </span>
-                <div class="text-xs font-black font-mono tracking-tight" style="color: var(--theme-primary);">6:15 /km</div>
-                <p class="text-[9px] text-slate-300 leading-tight font-bold">★最重要</p>
-              </div>
-
-              <!-- Iペース -->
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
-                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-rose-500/20 text-rose-300 border-rose-500/30">
-                  I (Interval)
-                </span>
-                <div class="text-xs font-black text-white font-mono tracking-tight">5:47 /km</div>
-                <p class="text-[9px] text-slate-400 leading-tight">VO2max向上</p>
-              </div>
-
-              <!-- Rペース -->
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1 col-span-2 sm:col-span-1">
-                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black border bg-purple-500/20 text-purple-300 border-purple-500/30">
-                  R (Repetition)
-                </span>
-                <div class="text-xs font-black text-white font-mono tracking-tight">5:26 /km</div>
-                <p class="text-[9px] text-slate-400 leading-tight">スピード経済性</p>
-              </div>
-            </div>
-
-            <!-- 予想レースタイム 4項目 -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-              
-              <div class="bg-slate-950/50 border border-slate-800/60 rounded-xl p-2 text-center">
-                <div class="text-[10px] text-slate-400 font-medium flex items-center justify-center space-x-1">
-                  <span>⚡</span>
-                  <span>5km</span>
-                </div>
-                <div class="text-sm font-black text-white font-mono mt-0.5">29:56</div>
-                <div class="text-[9px] text-slate-400 font-mono">5:59/km</div>
-              </div>
-              
-              <div class="bg-slate-950/50 border border-slate-800/60 rounded-xl p-2 text-center">
-                <div class="text-[10px] text-slate-400 font-medium flex items-center justify-center space-x-1">
-                  <span>🏃</span>
-                  <span>10km</span>
-                </div>
-                <div class="text-sm font-black text-white font-mono mt-0.5">01:02:14</div>
-                <div class="text-[9px] text-slate-400 font-mono">6:13/km</div>
-              </div>
-              
-              <div class="bg-slate-950/50 border border-slate-800/60 rounded-xl p-2 text-center">
-                <div class="text-[10px] text-slate-400 font-medium flex items-center justify-center space-x-1">
-                  <span>🏅</span>
-                  <span>ハーフマラソン</span>
-                </div>
-                <div class="text-sm font-black text-white font-mono mt-0.5">02:17:51</div>
-                <div class="text-[9px] text-slate-400 font-mono">6:32/km</div>
-              </div>
-              
-              <div class="bg-slate-950/50 border border-slate-800/60 rounded-xl p-2 text-center">
-                <div class="text-[10px] text-slate-400 font-medium flex items-center justify-center space-x-1">
-                  <span>👑</span>
-                  <span>フルマラソン</span>
-                </div>
-                <div class="text-sm font-black text-white font-mono mt-0.5">04:43:03</div>
-                <div class="text-[9px] text-slate-400 font-mono">6:42/km</div>
-              </div>
-              
+            <div class="bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/60 text-[11px] text-slate-400 flex items-center justify-between">
+              <span>💡 日常ジョグは <strong class="text-slate-200 font-mono">6:53 〜 7:55</strong>、ポイント練習は <strong class="text-white font-mono">6:15 /km</strong> を基準に設定</span>
             </div>
           </div>
 
-          <div class="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/60 text-[11px] text-slate-400 leading-relaxed">
-            💡 <strong class="text-slate-200">練習方針:</strong> ジョグは <strong class="text-slate-300 font-mono">6:53 〜 7:55</strong> を超えないよう徹底して疲労を抜き、ポイント練習では <strong class="text-white font-mono">6:15 /km</strong> の持続走で閾値を押し上げます。
-          </div>
-        </div>
+        </section>
 
-      </section>
-
-      <!-- ========================================== -->
-      <!-- ⚡ レイヤー2: ATHLETE HUD (自己ベスト ＆ KPI) -->
-      <!-- ========================================== -->
-      <section class="space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span class="text-base">⚡</span>
-            <h2 class="text-xs font-black uppercase tracking-wider text-slate-400">Athlete HUD & All-Time Performance</h2>
-          </div>
-          <span class="text-[11px] text-slate-500 font-mono">2025.09 - 2026.10</span>
-        </div>
-
-        <!-- 自己ベスト 5大レコード (統一感のあるプレミアムスレート) -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <!-- 最長走行距離 -->
-          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-              <span>🏃 最長走破</span>
-              <span class="text-slate-500 font-mono text-[10px]">2026-10-07</span>
-            </div>
-            <div class="text-2xl font-black text-white font-mono tracking-tight">15.08 km</div>
-            <div class="text-[11px] text-slate-400 font-mono">02:02:31 (8:08/km)</div>
-          </div>
-
-          <!-- 最速平均ペース -->
-          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-              <span>⚡ 最速ペース</span>
-              <span class="text-slate-500 font-mono text-[10px]">2025-11-23</span>
-            </div>
-            <div class="text-2xl font-black text-white font-mono tracking-tight">4:57 /km</div>
-            <div class="text-[11px] text-slate-400 font-mono">4.01 km (HR 180 bpm)</div>
-          </div>
-
-          <!-- 推定最速5km -->
-          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-              <span>⏱️ 最速5km換算</span>
-              <span class="text-slate-500 font-mono text-[10px]">2026-06-17</span>
-            </div>
-            <div class="text-2xl font-black text-white font-mono tracking-tight">27:15</div>
-            <div class="text-[11px] text-slate-400 font-mono">平均 5:27 /km/km</div>
-          </div>
-
-          <!-- 最高有酸素効率 (AEI) -->
-          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-              <span>💎 最高有酸素効率</span>
-              <span class="text-slate-500 font-mono text-[10px]">2026-05-01</span>
-            </div>
-            <div class="text-2xl font-black text-white font-mono tracking-tight">6.95</div>
-            <div class="text-[11px] text-slate-400 font-mono">5:16/km • 164 bpm</div>
-          </div>
-
-          <!-- 月間最多走行距離 -->
-          <div class="glass-card rounded-2xl p-3.5 space-y-1 relative overflow-hidden group col-span-2 sm:col-span-1">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-              <span>📅 月間最多走行</span>
-              <span class="text-slate-500 font-mono text-[10px]">2026-03</span>
-            </div>
-            <div class="text-2xl font-black text-white font-mono tracking-tight">60.1 km</div>
-            <div class="text-[11px] text-slate-400">歴代最高月間ボリューム</div>
-          </div>
-        </div>
-
-        <!-- 6大 All-Time 通算統計 (ミニマル・プロ仕様) -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div class="glass-card rounded-2xl p-3.5">
-            <div class="text-[11px] font-medium text-slate-400">総走行距離</div>
-            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
-              422.9 <span class="text-xs font-normal text-slate-400">km</span>
-            </div>
-            <div class="text-[10px] text-slate-500 mt-0.5">全52アクティビティ</div>
-          </div>
-
-          <div class="glass-card rounded-2xl p-3.5">
-            <div class="text-[11px] font-medium text-slate-400">通算平均ペース</div>
-            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
-              5:55 <span class="text-xs font-normal text-slate-400">/km</span>
-            </div>
-            <div class="text-[10px] text-slate-400 font-mono mt-0.5">最速 4:57/km</div>
-          </div>
-
-          <div class="glass-card rounded-2xl p-3.5">
-            <div class="text-[11px] font-medium text-slate-400">通算平均心拍数</div>
-            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
-              165 <span class="text-xs font-normal text-slate-400">bpm</span>
-            </div>
-            <div class="text-[10px] text-slate-400 mt-0.5 font-mono">HRmax比 84.2%</div>
-          </div>
-
-          <div class="glass-card rounded-2xl p-3.5">
-            <div class="text-[11px] font-medium text-slate-400">通算平均ピッチ</div>
-            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
-              172 <span class="text-xs font-normal text-slate-400">spm</span>
-            </div>
-            <div class="text-[10px] text-slate-400 mt-0.5">理想リズム (170-180)</div>
-          </div>
-
-          <div class="glass-card rounded-2xl p-3.5">
-            <div class="text-[11px] font-medium text-slate-400">通算平均歩幅</div>
-            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
-              0.99 <span class="text-xs font-normal text-slate-400">m</span>
-            </div>
-            <div class="text-[10px] text-slate-500 mt-0.5">ストライド安定</div>
-          </div>
-
-          <div class="glass-card rounded-2xl p-3.5">
-            <div class="text-[11px] font-medium text-slate-400">総消費エネルギー</div>
-            <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
-              26,702 <span class="text-xs font-normal text-slate-400">kcal</span>
-            </div>
-            <div class="text-[10px] text-slate-500 mt-0.5">総時間 42時間1分</div>
-          </div>
-        </div>
-
-        <!-- 🫀 生理学的パラメータ ＆ 心拍ゾーン自動設定 -->
-        <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5 shadow-xl border border-slate-800/80">
+        <!-- 年間走行カレンダーヒートマップ (Consistency Heatmap) -->
+        <section class="glass-card rounded-3xl p-5 sm:p-6 space-y-3.5 shadow-xl">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
             <div class="flex items-center space-x-2">
-              <span class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-sm font-bold shadow-inner">🫀</span>
+              <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold border border-emerald-500/30">📅</span>
               <div>
-                <h3 class="text-sm font-black text-white tracking-tight">生理学的パラメータ ＆ 心拍ゾーン (Dynamic Physiology)</h3>
-                <p class="text-[11px] text-slate-400">Garmin同期および実測最大心拍数から自動更新された生理指標</p>
+                <h3 class="text-sm font-black text-white tracking-tight">年間走行カレンダーヒートマップ</h3>
+                <p class="text-[11px] text-slate-400">日々の練習継続性と月別ボリューム（月バッジをクリックでハイライト固定）</p>
               </div>
             </div>
-            <div class="flex items-center space-x-2 font-mono text-xs">
-              <div class="bg-slate-950/80 border border-slate-800/80 px-2.5 py-1 rounded-xl flex items-center space-x-1.5 shadow-inner">
-                <span class="text-slate-400 text-[10px]">HRmax:</span>
-                <span class="font-black text-rose-400">196 bpm</span>
-                <span class="text-[9px] px-1.5 py-0.2 rounded font-sans font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                  アクティビティ実測最大
-                </span>
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-400 font-mono">
+              <div class="flex items-center space-x-1">
+                <span class="text-[10px]">少</span>
+                <span class="w-2.5 h-2.5 rounded-sm bg-slate-900 border border-slate-800 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-950 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-700 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-300 inline-block"></span>
+                <span class="text-[10px]">多 (12k+)</span>
               </div>
-              <div class="bg-slate-950/80 border border-slate-800/80 px-2.5 py-1 rounded-xl flex items-center space-x-1.5 shadow-inner">
-                <span class="text-slate-400 text-[10px]">安静時 (RHR):</span>
-                <span class="font-black text-emerald-400">73 bpm</span>
-                <span class="text-[9px] px-1.5 py-0.2 rounded font-sans font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  Garmin実測
-                </span>
+              <div class="flex items-center space-x-1 pl-2 border-l border-slate-800">
+                <span class="w-2.5 h-2.5 rounded-sm bg-slate-900 ring-1 ring-white/70 inline-block"></span>
+                <span class="text-[10px] text-slate-400">月初(1日)</span>
               </div>
             </div>
           </div>
 
-          <!-- 5大ゾーン グリッド -->
-          <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-1 font-mono">
-            <!-- Zone 1 -->
-            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold text-emerald-400">Zone 1</span>
-                <span class="text-[9px] text-slate-400">~65%</span>
+          <!-- ヒートマップコンテナ -->
+          <div class="overflow-x-auto pb-1 pt-1 select-none scrollbar-thin">
+            <div class="min-w-[780px] inline-flex flex-col">
+              <div class="flex items-center mb-1">
+                <div class="w-5 sm:w-6 mr-1.5 sm:mr-2 shrink-0"></div>
+                <div id="heatmap-month-labels" class="flex gap-1 sm:gap-1.5 flex-1 relative h-4"></div>
               </div>
-              <div class="text-xs font-black text-white">&lt;127 bpm</div>
-              <p class="text-[9px] text-slate-400 font-sans leading-tight">アクティブリカバリー</p>
-            </div>
-            <!-- Zone 2 -->
-            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold text-blue-400">Zone 2</span>
-                <span class="text-[9px] text-slate-400">65-76%</span>
+              <div class="flex items-start">
+                <div class="flex flex-col gap-1 text-[9px] sm:text-[10px] font-mono text-slate-400 w-5 sm:w-6 mr-1.5 sm:mr-2 text-right shrink-0">
+                  <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">月</div>
+                  <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
+                  <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">水</div>
+                  <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
+                  <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">金</div>
+                  <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
+                  <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none text-slate-500">日</div>
+                </div>
+                <div id="heatmap-grid" class="flex gap-1 sm:gap-1.5 py-0.5"></div>
               </div>
-              <div class="text-xs font-black text-white">127-149 bpm</div>
-              <p class="text-[9px] text-slate-400 font-sans leading-tight">基礎有酸素 (イージー)</p>
-            </div>
-            <!-- Zone 3 -->
-            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold text-amber-400">Zone 3</span>
-                <span class="text-[9px] text-slate-400">76-86%</span>
-              </div>
-              <div class="text-xs font-black text-white">149-169 bpm</div>
-              <p class="text-[9px] text-slate-400 font-sans leading-tight">テンポ走 (有酸素強化)</p>
-            </div>
-            <!-- Zone 4 -->
-            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold text-orange-400">Zone 4</span>
-                <span class="text-[9px] text-slate-400">86-93%</span>
-              </div>
-              <div class="text-xs font-black text-white">169-182 bpm</div>
-              <p class="text-[9px] text-slate-400 font-sans leading-tight">乳酸閾値 (LT / しきい値)</p>
-            </div>
-            <!-- Zone 5 -->
-            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold text-rose-400">Zone 5</span>
-                <span class="text-[9px] text-slate-400">93-100%</span>
-              </div>
-              <div class="text-xs font-black text-white">182 bpm+</div>
-              <p class="text-[9px] text-slate-400 font-sans leading-tight">無酸素 / VO2max</p>
             </div>
           </div>
-        </div>
-      </section>
 
-
-      <!-- ========================================== -->
-      <!-- 🫀 レイヤー: トレーニング負荷・疲労・コンディション (CTL / ATL / TSB) -->
-      <!-- ========================================== -->
-      <section class="space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-          <div class="flex items-center space-x-2">
-            <span class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm font-bold border border-purple-500/30">⚡</span>
-            <div>
-              <h2 class="text-base sm:text-lg font-black text-white tracking-tight">トレーニング負荷・疲労・コンディション (CTL / ATL / TSB)</h2>
-              <p class="text-[11px] sm:text-xs text-slate-400">Banister TRIMPモデルによる長期体力（CTL）、短期疲労（ATL）、調子（TSB）の科学的モニタリング</p>
+          <!-- 月別サマリーバッジ & ツールチップ情報行 -->
+          <div class="pt-2 border-t border-slate-800/60 flex flex-col gap-2">
+            <div class="flex items-center justify-between gap-2">
+              <div id="heatmap-month-pills" class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px] font-mono"></div>
+              <button type="button" id="heatmap-reset-filter" onclick="resetHeatmapMonthFilter()" class="text-[10px] text-slate-400 hover:text-emerald-400 transition hidden shrink-0">
+                解除 ✕
+              </button>
+            </div>
+            <div id="heatmap-tooltip" class="text-xs text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div id="heatmap-info" class="flex items-center space-x-1.5 min-h-[20px]">
+                <span>マス目にカーソルを合わせるとその日の走行データが表示されます</span>
+              </div>
+              <span class="text-[11px] text-slate-500 font-mono">全52ラン (月曜始まり)</span>
             </div>
           </div>
-          <span class="text-xs px-2.5 py-0.5 rounded-full border bg-sky-500/20 text-sky-300 border-sky-500/40 font-bold">
-            最適トレーニング領域 (Optimal)
-          </span>
-        </div>
+        </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      </div>
+
+      <!-- ====================================================================== -->
+      <!-- ⚡ SUB-PANEL 2: コンディション・負荷 (CTL/ATL/TSB × 統合80/20心拍 × 週間負荷) -->
+      <!-- ====================================================================== -->
+      <div id="cockpit-panel-condition" class="cockpit-subpanel space-y-6 hidden">
+
+        <!-- 1. トレーニング負荷・疲労・コンディション (CTL / ATL / TSB) -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <!-- 左カラム: 最新負荷メトリクス & 診断 -->
           <div class="lg:col-span-4 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
             <div class="space-y-4">
-              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
-                <span class="text-xs font-bold text-slate-300">最新ステータス指標</span>
-                <span class="text-[10px] text-slate-400 font-mono">最新ラン反映後</span>
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <div class="flex items-center space-x-2">
+                  <span class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm font-bold border border-purple-500/30">⚡</span>
+                  <div>
+                    <h3 class="text-sm font-black text-white tracking-tight">CTL / ATL / TSB コンディション</h3>
+                    <p class="text-[11px] text-slate-400">Banister TRIMP 負荷・疲労モデル</p>
+                  </div>
+                </div>
+                <span class="text-[11px] px-2.5 py-0.5 rounded-full border bg-sky-500/20 text-sky-300 border-sky-500/40 font-bold">
+                  最適トレーニング領域 (Optimal)
+                </span>
               </div>
 
               <!-- 3大メトリクス (CTL, ATL, TSB) -->
@@ -570,39 +526,40 @@
               </div>
 
               <!-- コンディション診断 -->
-              <div class="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-3.5 space-y-1.5">
+              <div class="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-3.5 space-y-1">
                 <div class="flex items-center justify-between text-xs">
-                  <span class="text-slate-400 font-medium">現在の調子 (Form)</span>
+                  <span class="text-slate-400 font-medium">現在の状態診断</span>
                   <span class="font-bold text-sky-400">最適トレーニング領域 (Optimal)</span>
                 </div>
                 <p class="text-xs text-slate-300 leading-relaxed">
                   適度な負荷と回復の好循環を維持できています。着実な走力向上が期待できる理想的なトレーニング状態です。
                 </p>
               </div>
+            </div>
 
-              <!-- 基準ゾーン目安 -->
-              <div class="text-[10px] text-slate-400 space-y-1 bg-slate-950/30 p-2.5 rounded-xl border border-slate-800/60 font-mono">
-                <div class="flex justify-between"><span>+5 超:</span><span class="text-emerald-400">絶好調 / レース本番期</span></div>
+            <!-- 基準ゾーン目安は折りたたみに格納してノイズを削減 -->
+            <details class="group bg-slate-950/40 rounded-xl border border-slate-800/60 px-3 py-2 text-[11px] text-slate-400">
+              <summary class="cursor-pointer select-none font-medium text-slate-300 flex items-center justify-between">
+                <span>ℹ️ TSB基準ゾーン目安・ピーキングの定石</span>
+                <span class="text-[10px] text-slate-500 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <div class="mt-2 pt-2 border-t border-slate-800/60 space-y-1.5 font-mono text-[10px]">
+                <div class="flex justify-between"><span>+5 超:</span><span class="text-emerald-400">絶好調 / レース本番ピーク領域</span></div>
                 <div class="flex justify-between"><span>-10 〜 +5:</span><span class="text-sky-400">最適トレーニング領域</span></div>
-                <div class="flex justify-between"><span>-30 〜 -10:</span><span class="text-amber-400">高負荷・疲労蓄積期</span></div>
-                <div class="flex justify-between"><span>-30 未満:</span><span class="text-rose-400">過負荷注意・休養推奨</span></div>
+                <div class="flex justify-between"><span>-30 〜 -10:</span><span class="text-amber-400">高負荷・強化蓄積期</span></div>
+                <div class="flex justify-between"><span>-30 未満:</span><span class="text-rose-400">過負荷注意・リカバリー推奨</span></div>
+                <p class="font-sans text-slate-400 pt-1">💡 レース当日に TSB が +5〜+15 になるよう調整（テーパリング）するのが定石です。</p>
               </div>
-            </div>
-
-            <div class="text-[11px] text-slate-400 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/60 flex items-center space-x-2">
-              <span>💡</span>
-              <span>レース当日に TSB が <strong class="text-white">+5 〜 +15</strong> のプラス圏になるよう調整（テーパリング）するのが定石です。</span>
-            </div>
+            </details>
           </div>
 
           <!-- 右カラム: CTL / ATL / TSB チャート -->
           <div class="lg:col-span-8 glass-card rounded-3xl p-5 sm:p-6 space-y-3 shadow-xl flex flex-col justify-between">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-3">
               <div>
-                <h3 class="text-sm font-bold text-slate-200">トレーニング負荷 ＆ コンディション推移</h3>
-                <p class="text-[11px] text-slate-400 mt-0.5">CTL (長期適応) と ATL (短期疲労) の差分から調子 (TSB) の波を可視化</p>
+                <h3 class="text-sm font-bold text-slate-200">トレーニング負荷 ＆ コンディション推移 (CTL / ATL / TSB)</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">長期体力 (CTL) と短期疲労 (ATL) のバランスから調子 (TSB) の波を可視化</p>
               </div>
-              <!-- 凡例 -->
               <div class="flex items-center space-x-3 text-xs font-mono">
                 <span class="flex items-center space-x-1">
                   <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
@@ -618,319 +575,173 @@
                 </span>
               </div>
             </div>
-
-            <!-- チャートキャンバス -->
-            <div class="relative h-72">
+            <div class="relative h-64 sm:h-72">
               <canvas id="trainingLoadChart"></canvas>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- ========================================== -->
-      <!-- ⚖️ レイヤー: 80/20 強度配分 ＆ シューズ管理 -->
-      <!-- ========================================== -->
-      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- 2. 統合版 80/20心拍ゾーン配分 ＆ 週間走行負荷 -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- 80/20 ルール強度配分 -->
-        <div class="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-6 space-y-5 shadow-xl flex flex-col justify-between">
-          <div class="space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-              <div class="flex items-center space-x-2">
-                <span class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-sm font-bold border border-teal-500/30">⚖️</span>
-                <div>
-                  <h3 class="text-sm font-black text-white tracking-tight">80/20 ルール 心拍強度配分 (Polarized Training)</h3>
-                  <p class="text-[11px] text-slate-400">低強度（Z1+Z2）80% : 中・高強度（Z3〜5）20% の黄金比率</p>
+          <!-- 左カラム (7列): 80/20 ルール強度配分 × 生理学的心拍ゾーン統合パネル -->
+          <div class="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                <div class="flex items-center space-x-2">
+                  <span class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-sm font-bold border border-teal-500/30">⚖️</span>
+                  <div>
+                    <h3 class="text-sm font-black text-white tracking-tight">80/20 心拍強度配分 ＆ 生理学的ゾーン</h3>
+                    <p class="text-[11px] text-slate-400">低強度(Z1+Z2) 80% : 中高強度(Z3〜5) 20% と各ゾーンBPM閾値</p>
+                  </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
+                  <span class="px-2 py-0.5 rounded-lg bg-slate-950 border border-slate-800 text-rose-300" title="最大心拍数 (アクティビティ実測最大)">
+                    HRmax 196
+                  </span>
+                  <span class="px-2 py-0.5 rounded-lg bg-slate-950 border border-slate-800 text-emerald-300" title="安静時心拍数 (Garmin実測)">
+                    RHR 73
+                  </span>
+                  <span class="px-2.5 py-0.5 rounded-full border bg-rose-500/20 text-rose-300 border-rose-500/40 font-sans font-bold">
+                    高強度過多 (疲労・怪我注意)
+                  </span>
                 </div>
               </div>
-              <span class="text-xs px-2.5 py-0.5 rounded-full border bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold">
-                高強度過多 (疲労・怪我注意)
-              </span>
+
+              <!-- 直近4週間 80/20 バー -->
+              <div class="bg-slate-950/70 p-3.5 rounded-2xl border border-slate-800/80 space-y-2.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-300">直近4週間 (28日) の強度バランス</span>
+                  <span class="text-slate-400 font-mono">計 5時間00分 (通算低強度: 19.9%)</span>
+                </div>
+
+                <div class="space-y-1">
+                  <div class="w-full bg-slate-900 rounded-full h-3.5 p-0.5 border border-slate-800 overflow-hidden flex">
+                    <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-l-full transition-all duration-700" style="width: 45.2%;"></div>
+                    <div class="h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-r-full transition-all duration-700" style="width: 54.8%;"></div>
+                  </div>
+                  <div class="flex justify-between text-[11px] font-mono">
+                    <span class="text-emerald-400 font-bold">低強度 (Z1+Z2): 45.2%</span>
+                    <span class="text-rose-400 font-bold">中高強度 (Z3〜5): 54.8%</span>
+                  </div>
+                </div>
+
+                <p class="text-[11px] text-slate-300 leading-relaxed pt-0.5">
+                  💡 中・高強度（Z3以上）が 54.8% を占めています。慢性疲労やランナー膝などの障害リスクが高まるため、ゆっくり走るイージージョグ（Z1〜Z2）の割合を増やしましょう。
+                </p>
+              </div>
+
+              <!-- 統合版 Zone 1〜5 グリッド (BPM閾値 + 4週滞在比率・時間を1箇所に集約) -->
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 font-mono">
+                <!-- Zone 1 -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold text-emerald-400">Zone 1</span>
+                    <span class="text-[9px] text-slate-500 font-sans">回復</span>
+                  </div>
+                  <div class="text-sm font-black text-white">5.9% <span class="text-[10px] font-normal text-slate-400">(18分)</span></div>
+                  <div class="text-[10px] text-slate-400 border-t border-slate-800/60 pt-1">&lt;127 bpm</div>
+                </div>
+                <!-- Zone 2 -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold text-blue-400">Zone 2</span>
+                    <span class="text-[9px] text-slate-500 font-sans">有酸素</span>
+                  </div>
+                  <div class="text-sm font-black text-white">39.3% <span class="text-[10px] font-normal text-slate-400">(118分)</span></div>
+                  <div class="text-[10px] text-slate-400 border-t border-slate-800/60 pt-1">127-149 bpm</div>
+                </div>
+                <!-- Zone 3 -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold text-amber-400">Zone 3</span>
+                    <span class="text-[9px] text-slate-500 font-sans">テンポ</span>
+                  </div>
+                  <div class="text-sm font-black text-white">26.0% <span class="text-[10px] font-normal text-slate-400">(78分)</span></div>
+                  <div class="text-[10px] text-slate-400 border-t border-slate-800/60 pt-1">149-169 bpm</div>
+                </div>
+                <!-- Zone 4 -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold text-orange-400">Zone 4</span>
+                    <span class="text-[9px] text-slate-500 font-sans">閾値LT</span>
+                  </div>
+                  <div class="text-sm font-black text-white">26.9% <span class="text-[10px] font-normal text-slate-400">(81分)</span></div>
+                  <div class="text-[10px] text-slate-400 border-t border-slate-800/60 pt-1">169-182 bpm</div>
+                </div>
+                <!-- Zone 5 -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 space-y-1 col-span-2 sm:col-span-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold text-rose-400">Zone 5</span>
+                    <span class="text-[9px] text-slate-500 font-sans">VO2max</span>
+                  </div>
+                  <div class="text-sm font-black text-white">2.0% <span class="text-[10px] font-normal text-slate-400">(6分)</span></div>
+                  <div class="text-[10px] text-slate-400 border-t border-slate-800/60 pt-1">182 bpm+</div>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <!-- 直近4週間 達成状況 -->
-            <div class="bg-slate-950/70 p-4 rounded-2xl border border-slate-800/80 space-y-3">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-bold text-slate-300">直近4週間の強度比率 (直近28日)</span>
-                <span class="text-slate-400 font-mono">総走行時間: 5時間00分</span>
+          <!-- 右カラム (5列): 週間走行負荷 ＆ 怪我予防管理 -->
+          <div class="lg:col-span-5 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
+            <div class="space-y-3.5">
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <div class="flex items-center space-x-2">
+                  <span class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold border border-blue-500/30">🛡️</span>
+                  <div>
+                    <h3 class="text-sm font-black text-white tracking-tight">週間走行負荷 ＆ 怪我予防管理</h3>
+                    <p class="text-[11px] text-slate-400">急激な距離増（スパイク）のモニタリング</p>
+                  </div>
+                </div>
+                <span class="text-xs px-2.5 py-0.5 rounded-full border bg-sky-500/10 text-sky-300 border-sky-500/20 font-bold">
+                  リカバリー・減量週
+                </span>
               </div>
 
-              <!-- プログレスバー (80/20) -->
-              <div class="space-y-1.5">
-                <div class="w-full bg-slate-900 rounded-full h-4 p-0.5 border border-slate-800 overflow-hidden flex">
-                  <!-- 低強度 (Z1+Z2: ターコイズ/エメラルド) -->
-                  <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-l-full transition-all duration-700" style="width: 45.2%;"></div>
-                  <!-- 中高強度 (Z3+Z4+Z5: アンバー/ローズ) -->
-                  <div class="h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-r-full transition-all duration-700" style="width: 54.8%;"></div>
+              <div class="grid grid-cols-3 gap-2.5">
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 text-center">
+                  <span class="text-[10px] text-slate-400 font-medium block">今週の走行</span>
+                  <span class="text-lg font-black text-white font-mono">8.0</span>
+                  <span class="text-[10px] text-slate-400">km</span>
                 </div>
-                <div class="flex justify-between text-[11px] font-mono">
-                  <span class="text-emerald-400 font-bold">低強度 (Z1+Z2): 45.2% (目安 80%+)</span>
-                  <span class="text-rose-400 font-bold">中・高強度 (Z3〜5): 54.8% (目安 ~20%)</span>
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 text-center">
+                  <span class="text-[10px] text-slate-400 font-medium block">前週の走行</span>
+                  <span class="text-lg font-black text-slate-300 font-mono">21.1</span>
+                  <span class="text-[10px] text-slate-400">km</span>
+                </div>
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2.5 text-center">
+                  <span class="text-[10px] text-slate-400 font-medium block">前週比負荷</span>
+                  <span class="text-lg font-black text-sky-400 font-mono">38%</span>
                 </div>
               </div>
 
-              <!-- アドバイス -->
-              <p class="text-xs text-slate-300 leading-relaxed bg-slate-900/40 p-2.5 rounded-xl border border-slate-800/60">
-                💡 中・高強度（Z3以上）が 54.8% を占めています。慢性疲労やランナー膝などの障害リスクが高まるため、ゆっくり走るイージージョグ（Z1〜Z2）の割合を増やしましょう。
+              <p class="text-xs text-slate-300 bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60 leading-relaxed">
+                前週比 38%。疲労を抜き、関節・筋肉の超回復を促すリカバリー週です。
               </p>
             </div>
 
-            <!-- ゾーン別滞在時間グリッド (直近4週) -->
-            <div class="grid grid-cols-5 gap-2 pt-1 font-mono text-center">
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
-                <span class="text-[10px] text-emerald-400 block font-bold">Zone 1</span>
-                <span class="text-sm font-black text-white">5.9%</span>
-                <span class="text-[9px] text-slate-400 block">18分</span>
+            <!-- 週間チャート -->
+            <div class="space-y-1 pt-1">
+              <div class="text-[11px] text-slate-400 flex justify-between font-mono">
+                <span>直近8週間の走行距離推移 (km)</span>
+                <span class="text-emerald-400">今週 / 過去週</span>
               </div>
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
-                <span class="text-[10px] text-blue-400 block font-bold">Zone 2</span>
-                <span class="text-sm font-black text-white">39.3%</span>
-                <span class="text-[9px] text-slate-400 block">118分</span>
-              </div>
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
-                <span class="text-[10px] text-amber-400 block font-bold">Zone 3</span>
-                <span class="text-sm font-black text-white">26.0%</span>
-                <span class="text-[9px] text-slate-400 block">78分</span>
-              </div>
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
-                <span class="text-[10px] text-orange-400 block font-bold">Zone 4</span>
-                <span class="text-sm font-black text-white">26.9%</span>
-                <span class="text-[9px] text-slate-400 block">81分</span>
-              </div>
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-2">
-                <span class="text-[10px] text-rose-400 block font-bold">Zone 5</span>
-                <span class="text-sm font-black text-white">2.0%</span>
-                <span class="text-[9px] text-slate-400 block">6分</span>
+              <div class="h-28 relative">
+                <canvas id="weeklyWorkloadChart"></canvas>
               </div>
             </div>
           </div>
 
-          <div class="text-[11px] text-slate-400 border-t border-slate-800/60 pt-2 flex items-center justify-between font-mono">
-            <span>通算全期間の低強度比率: <strong class="text-white">19.9%</strong> (総42時間01分)</span>
-            <span class="text-slate-500">FIT時系列サンプル集計</span>
-          </div>
-        </div>
+        </section>
 
-        <!-- シューズ別走行距離（ギア管理） -->
-        <div class="lg:col-span-5 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
-          <div class="space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-              <div class="flex items-center space-x-2">
-                <span class="w-8 h-8 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center text-sm font-bold border border-orange-500/30">👟</span>
-                <div>
-                  <h3 class="text-sm font-black text-white tracking-tight">シューズ別走行距離 (ギア管理)</h3>
-                  <p class="text-[11px] text-slate-400">クッション寿命（目安600km）と摩耗進捗のトラッキング</p>
-                </div>
-              </div>
-              <span class="text-xs px-2.5 py-0.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 font-mono">
-                寿命目安 600km
-              </span>
-            </div>
+      </div>
 
-            <!-- シューズリスト -->
-            
-            <div class="space-y-3">
-              
-              <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2.5">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h4 class="text-xs font-black text-white tracking-tight">ゲルニンバス</h4>
-                    <span class="text-[10px] text-slate-400 font-mono">2回走破 • 最終使用 2026-10-14</span>
-                  </div>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/40 font-bold">
-                    良好
-                  </span>
-                </div>
-
-                <!-- プログレスバー -->
-                <div class="space-y-1">
-                  <div class="w-full bg-slate-900 rounded-full h-2.5 p-0.5 border border-slate-800 overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-700 bg-emerald-400" style="width: 3.9%;"></div>
-                  </div>
-                  <div class="flex justify-between text-[10px] font-mono">
-                    <span class="text-white font-bold">23.1 km / 600.0 km (3.9%)</span>
-                    <span class="text-slate-400">
-                      
-                      残り 576.9 km
-                      
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-            
-          </div>
-
-          <div class="text-[11px] text-slate-400 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/60 flex items-center space-x-2">
-            <span>💡</span>
-            <span>600kmを超えたシューズはミッドソールの反発力と衝撃吸収性が低下し、脚部への負担が増加します。</span>
-          </div>
-        </div>
-
-      </section>
-
-
-      <!-- ========================================== -->
-      <!-- 🛡️ レイヤー3: 週間負荷 & 年間カレンダー草表示 -->
-      <!-- ========================================== -->
-      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-        <!-- 週間走行負荷 ＆ 怪我予防管理 -->
-        <div class="lg:col-span-5 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
-          <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-            <div class="flex items-center space-x-2">
-              <span class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold border border-blue-500/30">🛡️</span>
-              <div>
-                <h3 class="text-sm font-black text-white tracking-tight">週間走行負荷 ＆ 怪我予防管理</h3>
-                <p class="text-[11px] text-slate-400">急激な走行増（スパイク）による怪我リスクの抑制</p>
-              </div>
-            </div>
-            <span class="text-xs px-2.5 py-0.5 rounded-full border bg-sky-500/10 text-sky-300 border-sky-500/20 font-bold">
-              リカバリー・減量週
-            </span>
-          </div>
-
-          <div class="grid grid-cols-3 gap-2.5">
-            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 text-center">
-              <span class="text-[10px] text-slate-400 font-medium block">今週の走行</span>
-              <span class="text-lg font-black text-white font-mono">8.0</span>
-              <span class="text-[10px] text-slate-400">km</span>
-            </div>
-            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 text-center">
-              <span class="text-[10px] text-slate-400 font-medium block">前週の走行</span>
-              <span class="text-lg font-black text-slate-300 font-mono">21.1</span>
-              <span class="text-[10px] text-slate-400">km</span>
-            </div>
-            <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 text-center">
-              <span class="text-[10px] text-slate-400 font-medium block">前週比負荷</span>
-              <span class="text-lg font-black text-sky-400 font-mono">38%</span>
-            </div>
-          </div>
-
-          <p class="text-xs text-slate-300 bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60 leading-relaxed">
-            前週比 38%。疲労を抜き、関節・筋肉の超回復を促すリカバリー週です。
-          </p>
-
-          <!-- 週間チャート -->
-          <div class="space-y-1 pt-1">
-            <div class="text-[11px] text-slate-400 flex justify-between font-mono">
-              <span>直近8週間の走行距離 (km)</span>
-              <span class="text-emerald-400">今週 / 過去週</span>
-            </div>
-            <div class="h-28 relative">
-              <canvas id="weeklyWorkloadChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- 年間走行カレンダーヒートマップ (Consistency Heatmap) -->
-        <div class="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex flex-col justify-between">
-          <div>
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
-              <div class="flex items-center space-x-2">
-                <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold border border-emerald-500/30">📅</span>
-                <div>
-                  <h3 class="text-sm font-black text-white tracking-tight">年間走行カレンダーヒートマップ</h3>
-                  <p class="text-[11px] text-slate-400">日々の練習継続性（濃い緑ほど長距離走）</p>
-                </div>
-              </div>
-              <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-400 font-mono">
-                <!-- 凡例: 走行距離 -->
-                <div class="flex items-center space-x-1">
-                  <span class="text-[10px]">少</span>
-                  <span class="w-2.5 h-2.5 rounded-sm bg-slate-900 border border-slate-800 inline-block"></span>
-                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-950 inline-block"></span>
-                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-700 inline-block"></span>
-                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
-                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-300 inline-block"></span>
-                  <span class="text-[10px]">多 (12k+)</span>
-                </div>
-                <!-- 凡例: 月初マーク -->
-                <div class="flex items-center space-x-1 pl-2 border-l border-slate-800">
-                  <span class="w-2.5 h-2.5 rounded-sm bg-slate-900 ring-1 ring-white/70 inline-block"></span>
-                  <span class="text-[10px] text-slate-400">月初(1日)</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- ヒートマップコンテナ (横スクロール対応) -->
-            <div class="overflow-x-auto pb-2 pt-3 select-none scrollbar-thin">
-              <div class="min-w-[780px] inline-flex flex-col">
-                <!-- 1. 月ラベル行 (各週に対応して月名を表示) -->
-                <div class="flex items-center mb-1">
-                  <!-- 曜日ラベル幅分のインデント -->
-                  <div class="w-5 sm:w-6 mr-1.5 sm:mr-2 shrink-0"></div>
-                  <!-- 各週のスロット -->
-                  <div id="heatmap-month-labels" class="flex gap-1 sm:gap-1.5 flex-1 relative h-4">
-                    <!-- JSで動的に月ラベルを生成 -->
-                  </div>
-                </div>
-
-                <!-- 2. カレンダー本体 (曜日ラベル + グリッド) -->
-                <div class="flex items-start">
-                  <!-- 曜日ラベル (月・水・金・日) -->
-                  <div class="flex flex-col gap-1 text-[9px] sm:text-[10px] font-mono text-slate-400 w-5 sm:w-6 mr-1.5 sm:mr-2 text-right shrink-0">
-                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">月</div>
-                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
-                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">水</div>
-                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
-                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none">金</div>
-                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none"></div>
-                    <div class="h-3 sm:h-3.5 flex items-center justify-end leading-none text-slate-500">日</div>
-                  </div>
-
-                  <!-- 週ごとのセル列 -->
-                  <div id="heatmap-grid" class="flex gap-1 sm:gap-1.5 py-0.5">
-                    <!-- JSで各週のセル列を動的生成 -->
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 3. 月別サマリーバッジ (ホバーで該当月をハイライト) -->
-            <div class="pt-2.5 mt-1 border-t border-slate-800/60">
-              <div class="flex items-center justify-between gap-2 mb-1.5">
-                <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1.5">
-                  <span>🗓️</span> 月別走行サマリー <span class="text-[10px] font-normal text-slate-500 hidden sm:inline">(クリックで月固定 / ホバーでハイライト)</span>
-                </span>
-                <button type="button" id="heatmap-reset-filter" onclick="resetHeatmapMonthFilter()" class="text-[10px] text-slate-400 hover:text-emerald-400 transition hidden">
-                  フィルター解除 ✕
-                </button>
-              </div>
-              <div id="heatmap-month-pills" class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px] font-mono">
-                <!-- JSで月別バッジを動的生成 -->
-              </div>
-            </div>
-          </div>
-
-          <div id="heatmap-tooltip" class="text-xs text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-2 border-t border-slate-800/50">
-            <div id="heatmap-info" class="flex items-center space-x-1.5 min-h-[20px]">
-              <span>マス目にカーソルを合わせるとその日の走行データが表示されます</span>
-            </div>
-            <span class="text-[11px] text-slate-500 font-mono">全52ラン (月曜始まり)</span>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 📊 レイヤー4: パフォーマンス推移 & 相関トレンド -->
-      <!-- ========================================== -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-          <div class="flex items-center space-x-2">
-            <span class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm font-bold border border-sky-500/30">📈</span>
-            <div>
-              <h2 class="text-base sm:text-lg font-black text-white tracking-tight">パフォーマンス推移 & 相関トレンド</h2>
-              <p class="text-[11px] sm:text-xs text-slate-400">長期的なトレーニング進化と心肺効率の可視化</p>
-            </div>
-          </div>
-          <span class="text-xs font-mono text-slate-500">4 CORE CORRELATIONS</span>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- トレーニングボリューム推移 (過去30日ローリング移動累計 / カレンダー月別切り替え) -->
+      <!-- ====================================================================== -->
+      <!-- 📈 SUB-PANEL 3: トレンド推移 (4大相関チャート) -->
+      <!-- ====================================================================== -->
+      <div id="cockpit-panel-charts" class="cockpit-subpanel space-y-6 hidden">
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- 1. トレーニングボリューム推移 (過去30日ローリング移動累計 / カレンダー月別切り替え) -->
           <div class="glass-card rounded-3xl p-5 shadow-xl flex flex-col justify-between">
             <div>
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-3 mb-3">
@@ -972,44 +783,211 @@
               </div>
             </div>
 
-            <!-- チャートキャンバス -->
             <div class="relative h-60">
               <canvas id="monthlyChart"></canvas>
             </div>
           </div>
 
-          <!-- ペース & 心拍数推移 -->
-          <div class="glass-card rounded-3xl p-5 shadow-xl">
-            <h3 class="text-sm font-bold text-slate-200 mb-1">ペース & 平均心拍数の推移</h3>
-            <p class="text-xs text-slate-400 mb-4">ペース（分/km）は上にいくほど高速</p>
+          <!-- 2. ペース & 心拍数推移 -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl flex flex-col justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200 mb-1">ペース & 平均心拍数の推移</h3>
+              <p class="text-xs text-slate-400 mb-3">ペース（分/km）は上にいくほど高速</p>
+            </div>
             <div class="relative h-64">
               <canvas id="paceHrChart"></canvas>
             </div>
           </div>
 
-          <!-- 心拍数 vs ペース (散布図) -->
-          <div class="glass-card rounded-3xl p-5 shadow-xl">
-            <h3 class="text-sm font-bold text-slate-200 mb-1">有酸素効率 (心拍数 vs ペース)</h3>
-            <p class="text-xs text-slate-400 mb-4">左下（低心拍かつ速いペース）にあるほど有酸素能力が高い状態</p>
+          <!-- 3. 心拍数 vs ペース (散布図) -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl flex flex-col justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200 mb-1">有酸素効率 (心拍数 vs ペース)</h3>
+              <p class="text-xs text-slate-400 mb-3">左下（低心拍かつ速いペース）にあるほど有酸素能力が高い状態</p>
+            </div>
             <div class="relative h-64">
               <canvas id="scatterChart"></canvas>
             </div>
           </div>
 
-          <!-- ピッチ vs ストライド推移 -->
-          <div class="glass-card rounded-3xl p-5 shadow-xl">
-            <h3 class="text-sm font-bold text-slate-200 mb-1">ピッチ (spm) と 歩幅 (m) の推移</h3>
-            <p class="text-xs text-slate-400 mb-4">ランニングフォームとケイデンスの安定性</p>
+          <!-- 4. ピッチ vs ストライド推移 -->
+          <div class="glass-card rounded-3xl p-5 shadow-xl flex flex-col justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200 mb-1">ピッチ (spm) と 歩幅 (m) の推移</h3>
+              <p class="text-xs text-slate-400 mb-3">ランニングフォームとケイデンスの安定性</p>
+            </div>
             <div class="relative h-64">
               <canvas id="formChart"></canvas>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
+
+      <!-- ====================================================================== -->
+      <!-- 🏆 SUB-PANEL 4: 自己ベスト・通算統計・ギア管理 -->
+      <!-- ====================================================================== -->
+      <div id="cockpit-panel-records" class="cockpit-subpanel space-y-6 hidden">
+
+        <!-- 自己ベスト 5大レコード & 通算統計 6大KPI -->
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span class="text-base">🏆</span>
+              <h2 class="text-xs font-black uppercase tracking-wider text-slate-300">Personal Bests & All-Time Statistics</h2>
+            </div>
+            <span class="text-[11px] text-slate-500 font-mono">集計期間: 2025.09 - 2026.10</span>
+          </div>
+
+          <!-- 自己ベスト 5大レコード -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div class="glass-card rounded-2xl p-3.5 space-y-1">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                <span>🏃 最長走破</span>
+                <span class="text-slate-500 font-mono text-[10px]">2026-10-07</span>
+              </div>
+              <div class="text-2xl font-black text-white font-mono tracking-tight">15.08 km</div>
+              <div class="text-[11px] text-slate-400 font-mono">02:02:31 (8:08/km)</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-3.5 space-y-1">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                <span>⚡ 最速ペース</span>
+                <span class="text-slate-500 font-mono text-[10px]">2025-11-23</span>
+              </div>
+              <div class="text-2xl font-black text-white font-mono tracking-tight">4:57 /km</div>
+              <div class="text-[11px] text-slate-400 font-mono">4.01 km (HR 180 bpm)</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-3.5 space-y-1">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                <span>⏱️ 最速5km換算</span>
+                <span class="text-slate-500 font-mono text-[10px]">2026-06-17</span>
+              </div>
+              <div class="text-2xl font-black text-white font-mono tracking-tight">27:15</div>
+              <div class="text-[11px] text-slate-400 font-mono">平均 5:27 /km/km</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-3.5 space-y-1">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                <span>💎 最高有酸素効率</span>
+                <span class="text-slate-500 font-mono text-[10px]">2026-05-01</span>
+              </div>
+              <div class="text-2xl font-black text-white font-mono tracking-tight">6.95</div>
+              <div class="text-[11px] text-slate-400 font-mono">5:16/km • 164 bpm</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-3.5 space-y-1 col-span-2 sm:col-span-1">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                <span>📅 月間最多走行</span>
+                <span class="text-slate-500 font-mono text-[10px]">2026-03</span>
+              </div>
+              <div class="text-2xl font-black text-white font-mono tracking-tight">60.1 km</div>
+              <div class="text-[11px] text-slate-400">歴代最高月間ボリューム</div>
+            </div>
+          </div>
+
+          <!-- 6大 All-Time 通算統計 -->
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div class="glass-card rounded-2xl p-3.5">
+              <div class="text-[11px] font-medium text-slate-400">総走行距離</div>
+              <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+                422.9 <span class="text-xs font-normal text-slate-400">km</span>
+              </div>
+              <div class="text-[10px] text-slate-500 mt-0.5">全52回出走</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-3.5">
+              <div class="text-[11px] font-medium text-slate-400">通算平均ペース</div>
+              <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+                5:55 <span class="text-xs font-normal text-slate-400">/km</span>
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono mt-0.5">最速 4:57/km</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-3.5">
+              <div class="text-[11px] font-medium text-slate-400">通算平均心拍数</div>
+              <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+                165 <span class="text-xs font-normal text-slate-400">bpm</span>
+              </div>
+              <div class="text-[10px] text-slate-400 mt-0.5 font-mono">HRmax比 84.2%</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-3.5">
+              <div class="text-[11px] font-medium text-slate-400">通算平均ピッチ</div>
+              <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+                172 <span class="text-xs font-normal text-slate-400">spm</span>
+              </div>
+              <div class="text-[10px] text-slate-400 mt-0.5">理想目安 170-180</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-3.5">
+              <div class="text-[11px] font-medium text-slate-400">通算平均歩幅</div>
+              <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+                0.99 <span class="text-xs font-normal text-slate-400">m</span>
+              </div>
+              <div class="text-[10px] text-slate-500 mt-0.5">ストライド推移</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-3.5">
+              <div class="text-[11px] font-medium text-slate-400">総消費エネルギー</div>
+              <div class="text-2xl font-black text-white font-mono mt-1 tracking-tight">
+                26,702 <span class="text-xs font-normal text-slate-400">kcal</span>
+              </div>
+              <div class="text-[10px] text-slate-500 mt-0.5">総時間 42時間1分</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- シューズ別走行距離（ギア管理） -->
+        <section class="glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl">
+          <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            <div class="flex items-center space-x-2">
+              <span class="w-8 h-8 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center text-sm font-bold border border-orange-500/30">👟</span>
+              <div>
+                <h3 class="text-sm font-black text-white tracking-tight">シューズ別走行距離 (ギア寿命管理)</h3>
+                <p class="text-[11px] text-slate-400">クッション寿命（目安600km）と摩耗進捗のトラッキング</p>
+              </div>
+            </div>
+            <span class="text-xs px-2.5 py-0.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 font-mono">
+              寿命目安 600km
+            </span>
+          </div>
+
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+            <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-xs font-black text-white tracking-tight">ゲルニンバス</h4>
+                  <span class="text-[10px] text-slate-400 font-mono">2回走破 • 最終使用 2026-10-14</span>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/40 font-bold">
+                  良好
+                </span>
+              </div>
+
+              <div class="space-y-1">
+                <div class="w-full bg-slate-900 rounded-full h-2.5 p-0.5 border border-slate-800 overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-700 bg-emerald-400" style="width: 3.9%;"></div>
+                </div>
+                <div class="flex justify-between text-[10px] font-mono">
+                  <span class="text-white font-bold">23.1 km / 600.0 km (3.9%)</span>
+                  <span class="text-slate-400">
+                    残り 576.9 km
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          
+        </section>
+
+      </div>
 
     </div>
     <!-- END VIEW 1: COCKPIT -->
-
         <!-- ======================================================= -->
     <!-- 🏃 VIEW 2: ACTIVITY & COACH (個別ラン分析 ＆ 比較) -->
     <!-- ======================================================= -->
@@ -6358,6 +6336,67 @@ const {
     }
 
     // ==========================================
+    // 🧭 Cockpit サブタブ切り替えロジック
+    // ==========================================
+    function resizeVisibleCharts(container) {
+      if (!container || typeof Chart === 'undefined') return;
+      container.querySelectorAll('canvas').forEach(canvas => {
+        const chart = Chart.getChart(canvas);
+        if (chart) {
+          chart.resize();
+        }
+      });
+    }
+
+    function switchCockpitSubtab(subtabName) {
+      const panels = {
+        overview: document.getElementById('cockpit-panel-overview'),
+        condition: document.getElementById('cockpit-panel-condition'),
+        charts: document.getElementById('cockpit-panel-charts'),
+        records: document.getElementById('cockpit-panel-records')
+      };
+
+      const buttons = {
+        overview: document.getElementById('subtab-overview'),
+        condition: document.getElementById('subtab-condition'),
+        charts: document.getElementById('subtab-charts'),
+        records: document.getElementById('subtab-records'),
+        all: document.getElementById('subtab-all')
+      };
+
+      Object.keys(buttons).forEach(k => {
+        if (buttons[k]) {
+          if (k === subtabName) {
+            buttons[k].classList.add('active');
+          } else {
+            buttons[k].classList.remove('active');
+          }
+        }
+      });
+
+      if (subtabName === 'all') {
+        Object.values(panels).forEach(el => {
+          if (el) el.classList.remove('hidden');
+        });
+      } else {
+        Object.keys(panels).forEach(k => {
+          if (panels[k]) {
+            if (k === subtabName) {
+              panels[k].classList.remove('hidden');
+            } else {
+              panels[k].classList.add('hidden');
+            }
+          }
+        });
+      }
+
+      // 非表示から表示に切り替わったChart.jsキャンバスをリサイズ
+      requestAnimationFrame(() => {
+        resizeVisibleCharts(document.getElementById('view-cockpit'));
+      });
+    }
+
+    // ==========================================
     // 🔀 3-View 切り替えナビゲーションロジック
     // ==========================================
     function switchView(viewName) {
@@ -6390,6 +6429,7 @@ const {
         Object.values(views).forEach(el => {
           if (el) el.classList.remove('hidden');
         });
+        switchCockpitSubtab('all');
         history.replaceState(null, null, '#all');
       } else {
         Object.keys(views).forEach(k => {
@@ -6404,6 +6444,9 @@ const {
         history.replaceState(null, null, '#' + viewName);
       }
 
+      requestAnimationFrame(() => {
+        resizeVisibleCharts(document.querySelector('main'));
+      });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
