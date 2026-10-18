@@ -97,6 +97,38 @@ def test_detect_workout_structure_lsd():
     assert "LSD" in res["type"]
 
 
+def test_detect_workout_structure_lsd_with_final_spurt():
+    # 18.4km LSD（平均139bpm）で最終0.4kmラップのみ流し（6:19/km, 156bpm）が入った場合もファルトレクに誤判定せずLSDと判定されること
+    laps_lsd_spurt = [
+        {"lap_index": i, "distance_km": 1.0, "time_sec": 480.0, "pace_sec": 480.0, "pace_str": "8:00", "avg_hr": 139, "ascent": 20}
+        for i in range(1, 19)
+    ] + [
+        {"lap_index": 19, "distance_km": 0.4, "time_sec": 150.4, "pace_sec": 378.9, "pace_str": "6:19", "avg_hr": 156, "ascent": 5}
+    ]
+    res = detect_workout_structure(laps_lsd_spurt, 18.4, 485.0, 139)
+    assert not res["is_interval"]
+    assert res.get("is_lsd")
+    assert "LSD" in res["type"]
+    assert laps_lsd_spurt[-1]["role_tag"] == "⚡ ラスト流し"
+
+
+def test_detect_workout_structure_buildup_with_cooldown():
+    # 8kmビルドアップ走（7km目に4:52/kmまで加速し、8km目に6:03/kmでクールダウン）がファルトレクではなくビルドアップ走と判定されること
+    laps_buildup = [
+        {"lap_index": 1, "distance_km": 1.0, "pace_sec": 366.0, "pace_str": "6:06", "avg_hr": 144},
+        {"lap_index": 2, "distance_km": 1.0, "pace_sec": 374.0, "pace_str": "6:14", "avg_hr": 157},
+        {"lap_index": 3, "distance_km": 1.0, "pace_sec": 368.0, "pace_str": "6:08", "avg_hr": 161},
+        {"lap_index": 4, "distance_km": 1.0, "pace_sec": 341.0, "pace_str": "5:41", "avg_hr": 166},
+        {"lap_index": 5, "distance_km": 1.0, "pace_sec": 333.0, "pace_str": "5:33", "avg_hr": 170},
+        {"lap_index": 6, "distance_km": 1.0, "pace_sec": 320.0, "pace_str": "5:20", "avg_hr": 175},
+        {"lap_index": 7, "distance_km": 1.0, "pace_sec": 292.0, "pace_str": "4:52", "avg_hr": 182},
+        {"lap_index": 8, "distance_km": 1.0, "pace_sec": 363.0, "pace_str": "6:03", "avg_hr": 173},
+    ]
+    res = detect_workout_structure(laps_buildup, 8.01, 344.0, 165)
+    assert not res["is_interval"]
+    assert res["type"] == "ビルドアップ走"
+
+
 def test_calculate_activity_insights_dummy_df(tmp_path: Path):
     # ダミー CSV を経由して load_activities で読み込み
     csv_content = """アクティビティタイプ,日付,お気に入り,タイトル,距離,カロリー,タイム,平均心拍数,最大心拍数,平均ピッチ,最高ピッチ,平均ペース,最高ペース,総上昇量,総下降量,平均歩幅,Training Stress Score®,ステップ,減圧,ベストラップタイム,ラップ数,移動時間,経過時間,最低高度,最高高度,シューズ
@@ -107,7 +139,7 @@ def test_calculate_activity_insights_dummy_df(tmp_path: Path):
     csv_path.write_text(csv_content, encoding="utf-8")
     df = load_activities(csv_path)
 
-    insights = calculate_activity_insights(df, fit_dict=None)
+    insights = calculate_activity_insights(df, fit_dict=None, data_dir=tmp_path)
     assert len(insights) == 2
     for ins in insights:
         assert "evaluation" in ins

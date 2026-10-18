@@ -175,11 +175,30 @@ def compute_race_predictions(df: pd.DataFrame, current_vdot: float = 40.0) -> Li
     return results
 
 
-def compute_vdot_analytics(df: pd.DataFrame) -> Dict[str, Any]:
-    """全走行データから VDOT スコアと 5大トレーニングペース（E / M / T / I / R）を算出"""
+def _filter_vdot_eligible_runs(df: pd.DataFrame) -> pd.DataFrame:
+    """VDOT算出に適した中〜高強度ランを抽出（意図的な低心拍LSDやウォーク混じりスロージョグを除外）"""
     valid_runs = df[df["distance_km"] >= 3.0].copy()
     if valid_runs.empty:
         valid_runs = df[df["distance_km"] >= 1.0].copy()
+    if valid_runs.empty:
+        return valid_runs
+
+    # 意図的な低心拍LSD（平均心拍150以下 または 平均ペース6:40/kmより遅い有酸素ベース走）は
+    # タイムのみから算出するダニエルズ式VDOTを不当に引き下げるため除外する
+    if "avg_hr" in valid_runs.columns and "avg_pace_sec" in valid_runs.columns:
+        quality_runs = valid_runs[
+            ~((valid_runs["avg_hr"] > 0) & (valid_runs["avg_hr"] <= 150))
+            & (valid_runs["avg_pace_sec"] <= 400.0)
+        ].copy()
+        if not quality_runs.empty:
+            return quality_runs
+
+    return valid_runs
+
+
+def compute_vdot_analytics(df: pd.DataFrame) -> Dict[str, Any]:
+    """全走行データから VDOT スコアと 5大トレーニングペース（E / M / T / I / R）を算出"""
+    valid_runs = _filter_vdot_eligible_runs(df)
     
     if valid_runs.empty:
         default_paces = get_training_paces(40.0)
@@ -305,10 +324,8 @@ def compute_sub50_forecast(
             "sample_runs": 0,
         }
 
-    # 3.0km 以上のラン（なければ 1.0km 以上）
-    valid_runs = df[df["distance_km"] >= 3.0].copy()
-    if valid_runs.empty:
-        valid_runs = df[df["distance_km"] >= 1.0].copy()
+    # 3.0km 以上の有効ラン（意図的な低心拍LSDは除外）
+    valid_runs = _filter_vdot_eligible_runs(df)
 
     if valid_runs.empty:
         return {
@@ -744,7 +761,7 @@ def prepare_full_analytics(
     hr_params = get_hr_params(data_dir=data_dir, df=df)
     overview = compute_overview_stats(df)
     monthly = compute_monthly_stats(df)
-    insights = calculate_activity_insights(df, fit_dict, hr_params=hr_params)
+    insights = calculate_activity_insights(df, fit_dict, hr_params=hr_params, data_dir=data_dir)
     personal_records = compute_personal_records(df)
 
     # VDOT & トレーニングゾーン分析

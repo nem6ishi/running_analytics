@@ -113,7 +113,7 @@ const {
             <div class="space-y-1">
               <div class="flex items-center space-x-2">
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border ${ws.badge_color}">${ws.badge}</span>
-                <span class="text-[11px] text-slate-400 font-medium">🎯 トレーニング意図の自動解析</span>
+                <span class="text-[11px] text-slate-400 font-medium">🤖 AI コーチング＆セッション解析</span>
               </div>
               <h4 class="text-base sm:text-lg font-black text-white tracking-tight">${ws.summary_title}</h4>
             </div>
@@ -231,9 +231,9 @@ const {
               <span class="text-xs text-slate-400 font-mono">/ ${act.max_hr} bpm</span>
             </div>
             <div>
-              <span class="text-[11px] text-slate-400 font-medium block">ピッチ / 歩幅</span>
-              <span class="text-2xl sm:text-3xl font-black text-teal-400 font-mono tracking-tight">${act.cadence}</span>
-              <span class="text-xs text-slate-400 font-mono">spm (${act.stride}m)</span>
+              <span class="text-[11px] text-slate-400 font-medium block">${act.running_cadence && Math.abs(act.running_cadence - act.cadence) >= 5 ? '実走ピッチ / 歩幅' : 'ピッチ / 歩幅'}</span>
+              <span class="text-2xl sm:text-3xl font-black text-teal-400 font-mono tracking-tight">${act.running_cadence && Math.abs(act.running_cadence - act.cadence) >= 5 ? act.running_cadence : act.cadence}</span>
+              <span class="text-xs text-slate-400 font-mono">spm (${act.running_cadence && Math.abs(act.running_cadence - act.cadence) >= 5 ? '全体' + act.cadence + ' / ' : ''}${act.stride}m)</span>
             </div>
           </div>
         </div>
@@ -374,16 +374,16 @@ const {
               </div>
             </div>
 
-            <!-- 3. ▲ 反省点・ボトルネック VS ◎ 収穫・強み -->
+            <!-- 3. ▲ 課題・留意点 VS ◎ 収穫・強み -->
             <div class="space-y-3">
-              <!-- ▲ 容赦ない反省点・ボトルネック -->
+              <!-- ▲ 課題・ボトルネック・ケア留意点 -->
               <div class="bg-slate-950/60 border border-rose-500/25 rounded-2xl p-4 space-y-2.5 shadow-sm">
                 <div class="flex items-center justify-between border-b border-rose-500/20 pb-2">
                   <div class="flex items-center space-x-1.5">
                     <span class="text-sm">⚠️</span>
-                    <h5 class="text-xs font-bold text-rose-400 tracking-tight">▲ シビアな反省点・ボトルネック</h5>
+                    <h5 class="text-xs font-bold text-rose-400 tracking-tight">▲ 課題・ボトルネック・ケア留意点</h5>
                   </div>
-                  <span class="text-[9px] text-rose-400 font-bold px-2 py-0.5 rounded bg-rose-500/10">改善必須</span>
+                  <span class="text-[9px] text-rose-400 font-bold px-2 py-0.5 rounded bg-rose-500/10">重点テーマ</span>
                 </div>
                 <ul class="space-y-2 text-xs text-slate-300">
                   ${(ev.critical_bottlenecks || []).map(p => `
@@ -415,12 +415,12 @@ const {
               </div>
             </div>
 
-            <!-- 4. 🔥 次回への是正アクション -->
+            <!-- 4. 🔥 次回へのアクションフォーカス -->
             ${ev.actionable_focus ? `
               <div class="bg-slate-950/70 border border-amber-500/30 rounded-2xl p-4 space-y-1.5 shadow-md">
                 <div class="flex items-center space-x-2">
                   <span class="text-base">🔥</span>
-                  <span class="text-[11px] font-black text-amber-300 uppercase tracking-wider">次回セッションでの是正アクション</span>
+                  <span class="text-[11px] font-black text-amber-300 uppercase tracking-wider">次回セッションへのフォーカス</span>
                 </div>
                 <p class="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">${ev.actionable_focus.replace(/【(.*?)】/g, '<strong class="text-amber-300 font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">【$1】</strong>')}</p>
               </div>
