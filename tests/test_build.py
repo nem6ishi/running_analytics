@@ -21,11 +21,14 @@ def test_build_output_verification():
     assert "trainingLoadChart" in content or "CTL / ATL / TSB" in content
     assert "80/20" in content
     assert "サブ50" in content
+    assert "ヨロンマラソン" in content
+    assert "NAHAマラソン" in content
+    assert "3km以降 本練習区間" in content
 
     # 4. 固定バージョンの Chart.js CDN が指定されていること
     assert "chart.js@" in content or "chart.umd.min.js" in content
 
-    # 5. Cockpit 内のサブタブパネルが存在すること
+    # 5. Cockpit 内の主要セクションが存在すること
     assert 'id="cockpit-panel-overview"' in content
     assert 'id="cockpit-panel-condition"' in content
     assert 'id="cockpit-panel-charts"' in content

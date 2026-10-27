@@ -1,9 +1,27 @@
 from typing import Dict, Any, List, Optional
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from pathlib import Path
 import pandas as pd
-from config import TARGET_DISTANCE_KM, TARGET_TIME_SEC, TARGET_PACE_SEC, TARGET_LABEL
+from config import (
+    TARGET_DISTANCE_KM,
+    TARGET_TIME_SEC,
+    TARGET_PACE_SEC,
+    TARGET_LABEL,
+    HALF_RACE_NAME,
+    HALF_RACE_DATE,
+    HALF_DISTANCE_KM,
+    HALF_TARGET_TIME_SEC,
+    HALF_TARGET_PACE_SEC,
+    HALF_TARGET_LABEL,
+    FULL_RACE_NAME,
+    FULL_RACE_DATE,
+    FULL_DISTANCE_KM,
+    FULL_TARGET_TIME_SEC,
+    FULL_TARGET_PACE_SEC,
+    FULL_TARGET_LABEL,
+    WARMUP_DISTANCE_KM,
+)
 from .parser import seconds_to_pace_str, seconds_to_time_str
 from .coach import calculate_activity_insights
 from .vdot import calculate_vdot, get_training_paces, predict_race_times_vdot
@@ -752,6 +770,371 @@ def compute_rolling_volume(df: pd.DataFrame, window_days: int = 30) -> Dict[str,
     }
 
 
+def _extract_post_warmup_summary(act: Optional[Dict[str, Any]], warmup_km: float = WARMUP_DISTANCE_KM) -> Dict[str, Any]:
+    """アクティビティの1〜3kmウォームアップ区間と3km以降の本練習区間（Quality Zone）を分離集計"""
+    if not act:
+        return {
+            "has_split": False,
+            "warmup_km": 0.0,
+            "warmup_pace_str": "--:--",
+            "warmup_hr": 0,
+            "main_km": 0.0,
+            "main_pace_str": "--:--",
+            "main_pace_sec": 0.0,
+            "main_hr": 0,
+            "fastest_lap_str": "--:--",
+            "fastest_lap_idx": 0,
+            "cooldown_km": 0.0,
+            "cooldown_pace_str": "--:--",
+            "laps_summary": [],
+        }
+
+    laps = (act.get("distance_series") or {}).get("laps") or []
+    valid_laps = [l for l in laps if l.get("distance_km", 0) >= 0.3]
+
+    if not valid_laps or act.get("distance_km", 0) <= warmup_km + 0.5:
+        return {
+            "has_split": False,
+            "warmup_km": round(float(act.get("distance_km", 0)), 2),
+            "warmup_pace_str": act.get("pace_str", "--:--"),
+            "warmup_hr": int(act.get("avg_hr", 0)),
+            "main_km": round(float(act.get("distance_km", 0)), 2),
+            "main_pace_str": act.get("pace_str", "--:--"),
+            "main_pace_sec": float(act.get("pace_sec", 0.0)),
+            "main_hr": int(act.get("avg_hr", 0)),
+            "fastest_lap_str": act.get("max_pace_str", "--:--"),
+            "fastest_lap_idx": 1,
+            "cooldown_km": 0.0,
+            "cooldown_pace_str": "--:--",
+            "laps_summary": valid_laps,
+        }
+
+    wu_laps = []
+    post_laps = []
+    acc_km = 0.0
+    for l in valid_laps:
+        if acc_km < warmup_km - 0.15:
+            wu_laps.append(l)
+            acc_km += float(l.get("distance_km", 0))
+        else:
+            post_laps.append(l)
+
+    if not post_laps:
+        post_laps = valid_laps[-1:]
+        wu_laps = valid_laps[:-1]
+
+    # 最終ラップが明確なクールダウン（直前より25秒以上遅い、またはrole_tagにクールダウンを含む）の場合は本練習集計から分離可能にする
+    cooldown_laps = []
+    main_laps = list(post_laps)
+    if len(post_laps) >= 2:
+        last_l = post_laps[-1]
+        prev_l = post_laps[-2]
+        role_tag = str(last_l.get("role_tag", ""))
+        if "クールダウン" in role_tag or (last_l.get("pace_sec", 0) - prev_l.get("pace_sec", 0) >= 25):
+            cooldown_laps = [last_l]
+            main_laps = post_laps[:-1]
+
+    def _agg_laps(lap_list: List[Dict[str, Any]]):
+        if not lap_list:
+            return 0.0, 0.0, "--:--", 0
+        tot_d = sum(float(x.get("distance_km", 0)) for x in lap_list)
+        if tot_d <= 0:
+            return 0.0, 0.0, "--:--", 0
+        # 距離加重平均ペース
+        tot_sec = sum(float(x.get("pace_sec", 0)) * float(x.get("distance_km", 0)) for x in lap_list)
+        avg_p = tot_sec / tot_d
+        hrs = [float(x.get("avg_hr", 0)) for x in lap_list if x.get("avg_hr", 0) > 0]
+        avg_h = int(round(sum(hrs) / len(hrs))) if hrs else 0
+        return round(tot_d, 2), round(avg_p, 1), seconds_to_pace_str(avg_p), avg_h
+
+    wu_km, _, wu_pace_str, wu_hr = _agg_laps(wu_laps)
+    main_km, main_pace_sec, main_pace_str, main_hr = _agg_laps(main_laps)
+    cd_km, _, cd_pace_str, _ = _agg_laps(cooldown_laps)
+
+    fastest_lap = min(valid_laps, key=lambda x: x.get("pace_sec", 9999))
+
+    return {
+        "has_split": True,
+        "warmup_km": wu_km,
+        "warmup_pace_str": wu_pace_str,
+        "warmup_hr": wu_hr,
+        "main_km": main_km,
+        "main_pace_str": main_pace_str,
+        "main_pace_sec": main_pace_sec,
+        "main_hr": main_hr,
+        "fastest_lap_str": fastest_lap.get("pace_str", "--:--"),
+        "fastest_lap_idx": fastest_lap.get("lap_index", 1),
+        "cooldown_km": cd_km,
+        "cooldown_pace_str": cd_pace_str,
+        "laps_summary": valid_laps,
+    }
+
+
+def compute_three_pillars(
+    df: pd.DataFrame,
+    insights: List[Dict[str, Any]],
+    current_vdot: float,
+    sub50_progress: Dict[str, Any],
+) -> Dict[str, Any]:
+    """トップページの核となる「3大種目目標（11/29ヨロンハーフ・12/6 NAHAフル・10kmサブ50）」の進捗・実戦KPIを算出"""
+    today = date.today()
+    latest_act_date = df["datetime"].max().date() if not df.empty else today
+    ref_date = max(today, latest_act_date)
+
+    half_dt = datetime.strptime(HALF_RACE_DATE, "%Y-%m-%d").date()
+    full_dt = datetime.strptime(FULL_RACE_DATE, "%Y-%m-%d").date()
+
+    days_to_half = max(0, (half_dt - ref_date).days)
+    days_to_full = max(0, (full_dt - ref_date).days)
+
+    # 関東遠征オフ日 (2026年10月〜11月)
+    kanto_off_dates = {
+        "2026-10-30", "2026-10-31", "2026-11-01", "2026-11-02",
+        "2026-11-06", "2026-11-07", "2026-11-08",
+        "2026-11-13",
+        "2026-11-20", "2026-11-21",
+    }
+
+    # ヨロンハーフまでに那覇で走れる実質日数と想定ポイント練習回数
+    available_days_to_half = 0
+    curr_d = ref_date + timedelta(days=1)
+    while curr_d < half_dt:
+        if curr_d.strftime("%Y-%m-%d") not in kanto_off_dates:
+            available_days_to_half += 1
+        curr_d += timedelta(days=1)
+    est_sessions_to_half = max(1, round(available_days_to_half * 0.42))  # 週3回ペース換算
+
+    vdot_preds = predict_race_times_vdot(current_vdot)
+    half_pred = vdot_preds.get("ハーフマラソン", {"time_sec": 6900, "time_str": "1:55:00", "pace_str": "5:27"})
+    full_pred = vdot_preds.get("フルマラソン", {"time_sec": 14400, "time_str": "4:00:00", "pace_str": "5:41"})
+
+    # 3km以降（または全体）での「ハーフ目標ペース (5:38/km = 338秒以内)」連続維持最長距離 ＆ ベスト本練習
+    max_half_pace_km = 0.0
+    best_half_session_str = "--"
+    for act in insights:
+        laps = (act.get("distance_series") or {}).get("laps") or []
+        cur_km = 0.0
+        for l in laps:
+            if l.get("pace_sec", 999) <= 340.0:  # 5:40/km 以内
+                cur_km += float(l.get("distance_km", 0))
+                if cur_km > max_half_pace_km:
+                    max_half_pace_km = round(cur_km, 1)
+                    best_half_session_str = f"{act['date']} ({l['pace_str']}/km)"
+            else:
+                cur_km = 0.0
+
+    # フルマラソン向け指標: 最長走破距離 ＆ 12km以上のロング走における有酸素安定度
+    max_dist_km = round(float(df["distance_km"].max()), 2) if not df.empty else 0.0
+    long_runs = [a for a in insights if a.get("distance_km", 0) >= 12.0]
+    if long_runs:
+        best_long = max(long_runs, key=lambda x: x.get("distance_km", 0))
+        long_run_summary = f"{best_long['distance_km']}km ({best_long['duration_str']} / 平均HR {best_long['avg_hr']}bpm)"
+    else:
+        long_run_summary = f"最長 {max_dist_km}km"
+
+    # ハーフ進捗率 (2時間20分=8400秒を0%、1時間58分=7080秒を100%としてスケーリング)
+    est_half_sec = float(half_pred.get("time_sec", 7000))
+    half_gap_sec = est_half_sec - HALF_TARGET_TIME_SEC
+    if half_gap_sec <= 0:
+        half_status = f"サブ2圏内 ({seconds_to_time_str(abs(int(half_gap_sec)))} 余裕)"
+        half_badge = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+    else:
+        half_status = f"サブ2まであと {seconds_to_time_str(int(half_gap_sec))}"
+        half_badge = "bg-amber-500/20 text-amber-300 border-amber-500/40"
+    half_reach_pct = min(100.0, max(15.0, round((max_dist_km / HALF_DISTANCE_KM) * 100.0, 1)))
+
+    # フル進捗率 (距離到達率 + VDOT持久力)
+    est_full_sec = float(full_pred.get("time_sec", 15000))
+    full_gap_sec = est_full_sec - FULL_TARGET_TIME_SEC
+    if full_gap_sec <= 0:
+        full_status = f"VDOT理論値クリア (脚作り {round((max_dist_km / 30.0) * 100)}%)"
+        full_badge = "bg-sky-500/20 text-sky-300 border-sky-500/40"
+    else:
+        full_status = f"あと {seconds_to_time_str(int(full_gap_sec))} 短縮"
+        full_badge = "bg-amber-500/20 text-amber-300 border-amber-500/40"
+    full_dist_pct = min(100.0, round((max_dist_km / FULL_DISTANCE_KM) * 100.0, 1))
+
+    return {
+        "ref_date": ref_date.strftime("%Y-%m-%d"),
+        "half_marathon": {
+            "race_name": HALF_RACE_NAME,
+            "race_date": "2026.11.29 (日)",
+            "days_left": days_to_half,
+            "available_days": available_days_to_half,
+            "est_sessions_left": est_sessions_to_half,
+            "target_label": HALF_TARGET_LABEL,
+            "target_time_str": "1:55:00〜1:59:59",
+            "target_pace_str": "5:27〜5:38 /km",
+            "est_time_str": half_pred.get("time_str", "--"),
+            "est_pace_str": half_pred.get("pace_str", "--"),
+            "sustained_pace_km": max_half_pace_km,
+            "longest_dist_km": max_dist_km,
+            "dist_reach_pct": half_reach_pct,
+            "status_label": half_status,
+            "status_badge": half_badge,
+            "strategy_note": "0-3km アップ(5:50) → 4-18km 巡航(5:30) → 19-21km スパート(5:15)",
+        },
+        "full_marathon": {
+            "race_name": FULL_RACE_NAME,
+            "race_date": "2026.12.06 (日)",
+            "days_left": days_to_full,
+            "target_label": FULL_TARGET_LABEL,
+            "target_time_str": "4:15:00〜4:29:59",
+            "target_pace_str": "6:00〜6:25 /km",
+            "est_time_str": full_pred.get("time_str", "--"),
+            "est_pace_str": full_pred.get("pace_str", "--"),
+            "longest_dist_km": max_dist_km,
+            "long_run_summary": long_run_summary,
+            "dist_reach_pct": full_dist_pct,
+            "status_label": full_status,
+            "status_badge": full_badge,
+            "strategy_note": "0-3km 省エネ(7:30) → 4-35km イーブン(6:05-6:20/HR155未満) → 終盤粘り",
+        },
+        "ten_k": {
+            "race_name": "10km スピードコア (Sub-50)",
+            "target_label": TARGET_LABEL,
+            "target_time_str": "50:00",
+            "target_pace_str": "5:00 /km",
+            "est_time_str": sub50_progress["est_10k_time_str"],
+            "est_pace_str": sub50_progress["est_10k_pace_str"],
+            "gap_time_str": sub50_progress["gap_time_str"],
+            "gap_pace_str": sub50_progress["gap_pace_str"],
+            "gap_status": sub50_progress["gap_status"],
+            "progress_pct": sub50_progress["progress_pct"],
+            "max_sustained_km": sub50_progress["max_sustained_km"],
+            "latest_sustained_km": sub50_progress["latest_sustained_km"],
+            "current_vdot": current_vdot,
+        },
+    }
+
+
+def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
+    """docs/TRAINING_PLAN_2026.md の6週間計画と実際の走行ログを照合し、現在週のアクションと全体進捗を返す"""
+    run_dates = set(df["date_str"].unique()) if not df.empty else set()
+    run_dist_map = df.groupby("date_str")["distance_km"].sum().to_dict() if not df.empty else {}
+
+    today = date.today()
+    latest_act_date = df["datetime"].max().date() if not df.empty else today
+    ref_date = max(today, latest_act_date)
+
+    weeks_plan = [
+        {
+            "week_num": 1,
+            "title": "Week 1: スピード刺激注入 ＆ 関東遠征①",
+            "period": "10/26 (月) 〜 11/01 (日)",
+            "start": "2026-10-26",
+            "end": "2026-11-01",
+            "theme": "8kmビルドアップ完遂 ＋ 遠征前ジョグ ＋ 週末関東アクティブレスト",
+            "days": [
+                {"date": "2026-10-26", "label": "10/26(月)", "type": "point", "menu": "🔥 8km ビルドアップ走 (3kmアップ+4km加速+1kmダウン)", "target": "Lap7 4:58/km達成"},
+                {"date": "2026-10-27", "label": "10/27(火)", "type": "rest", "menu": "完全休養（超回復・温冷ケア）", "target": "疲労抜き"},
+                {"date": "2026-10-28", "label": "10/28(水)", "type": "rest", "menu": "完全休養（那覇雨予報60%・与論フェリー手配）", "target": "休養"},
+                {"date": "2026-10-29", "label": "10/29(木)", "type": "easy", "menu": "🌱 6〜7km 有酸素イージージョグ (3kmアップ+Zone 2)", "target": "130〜145 bpm"},
+                {"date": "2026-10-30", "label": "10/30(金)〜11/01(日)", "type": "kanto", "menu": "✈️ 関東滞在（ラン完全オフ・積極的休養）", "target": "リフレッシュ"},
+            ],
+        },
+        {
+            "week_num": 2,
+            "title": "Week 2: LT閾値強化 ＆ 関東遠征②",
+            "period": "11/02 (月) 〜 11/08 (日)",
+            "start": "2026-11-02",
+            "end": "2026-11-08",
+            "theme": "帰沖リカバリー ＋ 木曜 5km LT走(5:20/km)でハーフ巡航エンジン構築",
+            "days": [
+                {"date": "2026-11-03", "label": "11/03(火・祝)", "type": "easy", "menu": "🌱 5〜6km 帰沖リカバリージョグ", "target": "Zone 2 ゆるジョグ"},
+                {"date": "2026-11-05", "label": "11/05(木)", "type": "point", "menu": "🔥 9km LT閾値走 (3kmアップ + 5km 5:15〜5:25/km + 1kmダウン)", "target": "LT巡航維持"},
+                {"date": "2026-11-06", "label": "11/06(金)〜11/08(日)", "type": "kanto", "menu": "✈️ 関東滞在（ラン完全オフ・ちゃんぷる〜フェス＆同窓会）", "target": "完全オフ"},
+            ],
+        },
+        {
+            "week_num": 3,
+            "title": "Week 3: 🔥 最重要強化週（心肺上限突破 ＆ 18kmプログレッシブ走）",
+            "period": "11/09 (月) 〜 11/15 (日)",
+            "start": "2026-11-09",
+            "end": "2026-11-15",
+            "theme": "関東遠征なしの勝負週！インターバルと16〜18km段階加速ロング走",
+            "days": [
+                {"date": "2026-11-10", "label": "11/10(火)", "type": "point", "menu": "⚡ 7km インターバル (3kmアップ + 1000m×3本 4:50/km + 1kmダウン)", "target": "VO2max刺激"},
+                {"date": "2026-11-12", "label": "11/12(木)", "type": "easy", "menu": "🌱 6km 有酸素イージージョグ (Zone 2)", "target": "つなぎ回復"},
+                {"date": "2026-11-15", "label": "11/15(日)", "type": "long", "menu": "🌟 16〜18km プログレッシブ走 (3kmアップ+8km Z2+後半5km 6:05/km)", "target": "Mペース耐性"},
+            ],
+        },
+        {
+            "week_num": 4,
+            "title": "Week 4: テーパリング開始 ＆ スピードキレ研ぎ",
+            "period": "11/16 (月) 〜 11/22 (日)",
+            "start": "2026-11-16",
+            "end": "2026-11-22",
+            "theme": "疲労を抜きながら木曜6kmビルドアップと日曜8km快調走で調子を上げる",
+            "days": [
+                {"date": "2026-11-17", "label": "11/17(火)", "type": "easy", "menu": "🌱 5〜6km 疲労抜きリカバリージョグ", "target": "超回復"},
+                {"date": "2026-11-19", "label": "11/19(木)", "type": "point", "menu": "🔥 10km ビルドアップ (3kmアップ + 6km 5:30→5:05/km + 1kmダウン)", "target": "レースキレ注入"},
+                {"date": "2026-11-22", "label": "11/22(日)", "type": "easy", "menu": "🏃 8km 快調走 (3kmアップ + 5km 5:45/km)", "target": "ハーフ1週前確認"},
+            ],
+        },
+        {
+            "week_num": 5,
+            "title": "Week 5: 🏁 ヨロンマラソン（ハーフ本番・サブ2奪取！）",
+            "period": "11/23 (月) 〜 11/29 (日)",
+            "start": "2026-11-23",
+            "end": "2026-11-29",
+            "theme": "完全ピーキング（TSB +5〜+15）で与論島へ！1時間55分〜59分でサブ2達成",
+            "days": [
+                {"date": "2026-11-24", "label": "11/24(火)", "type": "easy", "menu": "🌱 5km 調整ジョグ ＋ 流し3本", "target": "神経系刺激"},
+                {"date": "2026-11-26", "label": "11/26(木)", "type": "easy", "menu": "✨ 4km 最終確認 (3kmアップ + 1km 5:30/km)", "target": "本番リズム"},
+                {"date": "2026-11-29", "label": "11/29(日)", "type": "race", "menu": "🏁 【決戦】ヨロンマラソン ハーフ (21.0975km)", "target": "1:55:00〜1:59:59"},
+            ],
+        },
+        {
+            "week_num": 6,
+            "title": "Week 6: 👑 超回復 ＆ NAHAマラソン（フル本番・サブ4.5！）",
+            "period": "11/30 (月) 〜 12/06 (日)",
+            "start": "2026-11-30",
+            "end": "2026-12-06",
+            "theme": "ヨロン後の徹底アイシング・栄養補給で超回復し、奥武山公園へサブ4.5ゴール",
+            "days": [
+                {"date": "2026-12-02", "label": "12/02(水)", "type": "easy", "menu": "🌱 3km 超スロージョグ（脚の軽さ確認）", "target": "完全脱力"},
+                {"date": "2026-12-04", "label": "12/04(金)", "type": "easy", "menu": "✨ 2km ジョグ ＋ 100m流し1本", "target": "最終調整"},
+                {"date": "2026-12-06", "label": "12/06(日)", "type": "race", "menu": "👑 【決戦】NAHAマラソン フル (42.195km)", "target": "4:15:00〜4:30:00"},
+            ],
+        },
+    ]
+
+    current_week_idx = 0
+    for idx, w in enumerate(weeks_plan):
+        s_dt = datetime.strptime(w["start"], "%Y-%m-%d").date()
+        e_dt = datetime.strptime(w["end"], "%Y-%m-%d").date()
+        if s_dt <= ref_date <= e_dt:
+            current_week_idx = idx
+            break
+        elif ref_date > e_dt:
+            current_week_idx = idx
+
+    for idx, w in enumerate(weeks_plan):
+        w["is_current"] = (idx == current_week_idx)
+        w["is_past"] = (idx < current_week_idx)
+        for d in w["days"]:
+            d_str = d["date"]
+            d_dt = datetime.strptime(d_str, "%Y-%m-%d").date()
+            if d_str in run_dates:
+                d["status"] = "done"
+                d["actual_km"] = round(float(run_dist_map[d_str]), 2)
+            elif d_dt == ref_date:
+                d["status"] = "today"
+                d["actual_km"] = 0.0
+            elif d_dt < ref_date:
+                d["status"] = "past"
+                d["actual_km"] = 0.0
+            else:
+                d["status"] = "upcoming"
+                d["actual_km"] = 0.0
+
+    return {
+        "current_week": weeks_plan[current_week_idx],
+        "all_weeks": weeks_plan,
+    }
+
+
 def prepare_full_analytics(
     df: pd.DataFrame,
     fit_dict: Optional[Dict[str, Any]] = None,
@@ -799,8 +1182,11 @@ def prepare_full_analytics(
         for _, row in df.iterrows()
     ]
 
-    # 最新ラン（降順なので末尾）
+    # 最新ラン（降順なので末尾）および「3kmアップ vs 3km以降本練習」サマリー
     latest_insight = insights[-1] if insights else None
+    latest_quality_split = _extract_post_warmup_summary(latest_insight)
+    three_pillars = compute_three_pillars(df, insights, vdot_data["current_vdot"], sub50_progress)
+    training_roadmap = compute_training_roadmap(df)
 
     # アクティビティ履歴は新しい順（降順）で表示
     reversed_insights = list(reversed(insights))
@@ -811,6 +1197,9 @@ def prepare_full_analytics(
         "insights": insights,
         "reversed_insights": reversed_insights,
         "latest_insight": latest_insight,
+        "latest_quality_split": latest_quality_split,
+        "three_pillars": three_pillars,
+        "training_roadmap": training_roadmap,
         "personal_records": personal_records,
         "vdot_data": vdot_data,
         "race_predictions": race_predictions,

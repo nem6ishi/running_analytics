@@ -7,13 +7,34 @@
 from typing import Dict, Any
 
 # ==========================================
-# 🎯 メインターゲット目標設定 (Primary Goal)
+# 🎯 メインターゲット目標設定 (3 Pillars: 10km Sub-50 / Yoron Half Sub-2 / NAHA Full Sub-4.5)
 # ==========================================
-# 現在の目標: 10km 50分切り (サブ50)
+# 1. スピード目標: 10km 50分切り (サブ50)
 TARGET_DISTANCE_KM: float = 10.0
 TARGET_TIME_SEC: int = 3000          # 50分00秒 = 3000秒
 TARGET_PACE_SEC: float = 300.0       # 5:00/km = 300.0秒/km
 TARGET_LABEL: str = "10km 50分切り (サブ50)"
+
+# 2. ハーフマラソン目標: 2026/11/29 ヨロンマラソン (サブ2)
+HALF_RACE_NAME: str = "ヨロンマラソン (ハーフ)"
+HALF_RACE_DATE: str = "2026-11-29"
+HALF_DISTANCE_KM: float = 21.0975
+HALF_TARGET_TIME_SEC: int = 7199     # 1時間59分59秒 (サブ2 / 目安 1:55〜1:59)
+HALF_OPTIMAL_TIME_SEC: int = 6900    # 1時間55分00秒
+HALF_TARGET_PACE_SEC: float = 335.0  # 5:35/km (5:27〜5:38/km 巡航)
+HALF_TARGET_LABEL: str = "サブ2 (1:55:00〜1:59:59)"
+
+# 3. フルマラソン目標: 2026/12/06 NAHAマラソン (サブ4.5)
+FULL_RACE_NAME: str = "NAHAマラソン (フル)"
+FULL_RACE_DATE: str = "2026-12-06"
+FULL_DISTANCE_KM: float = 42.195
+FULL_TARGET_TIME_SEC: int = 16200    # 4時間30分00秒 (サブ4.5 / 目安 4:15〜4:30)
+FULL_OPTIMAL_TIME_SEC: int = 15300   # 4時間15分00秒
+FULL_TARGET_PACE_SEC: float = 375.0  # 6:15/km (6:00〜6:25/km 巡航)
+FULL_TARGET_LABEL: str = "サブ4.5 (4:15:00〜4:29:59)"
+
+# ランナー固有ルーティン: 最初の3kmはウォームアップ区間
+WARMUP_DISTANCE_KM: float = 3.0
 
 # ==========================================
 # 🫀 生理学的パラメータ (Physiological Parameters)
