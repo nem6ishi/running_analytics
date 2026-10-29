@@ -1732,55 +1732,171 @@ const {
       }
     });
 
-    // 3. 有酸素効率 散布図 (心拍数 vs ペース)
-    new Chart(document.getElementById('scatterChart'), {
-      type: 'scatter',
-      data: {
-        datasets: [{
-          label: '各アクティビティ',
-          data: chartData.scatter_hr_pace,
-          backgroundColor: '#818cf8',
-          pointRadius: 6,
-          pointHoverRadius: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            title: { display: true, text: 'ペース (分/km)', color: '#94a3b8' },
-            grid: { color: 'rgba(255, 255, 255, 0.06)' },
-            ticks: {
-              color: '#94a3b8',
-              callback: val => {
-                const min = Math.floor(val);
-                const sec = Math.round((val - min) * 60);
-                return `${min}:${sec < 10 ? '0' : ''}${sec}`;
-              }
+    // 3. 有酸素効率 (スピード対心肺機能スコア: AEI時系列推移 & 散布図)
+    let aeiTrendChartInstance = null;
+    let scatterChartInstance = null;
+
+    if (document.getElementById('aeiTrendChart') && chartData.aeis) {
+      aeiTrendChartInstance = new Chart(document.getElementById('aeiTrendChart'), {
+        type: 'line',
+        data: {
+          labels: chartData.dates,
+          datasets: [
+            {
+              label: '有酸素効率 (AEI)',
+              data: chartData.aeis,
+              borderColor: '#06b6d4',
+              backgroundColor: 'rgba(6, 182, 212, 0.1)',
+              borderWidth: 1.5,
+              pointBackgroundColor: '#22d3ee',
+              pointBorderColor: '#0891b2',
+              pointRadius: 3.5,
+              pointHoverRadius: 6,
+              tension: 0.2,
+              fill: true
+            },
+            {
+              label: '5走移動平均トレンド',
+              data: chartData.aei_rolling,
+              borderColor: '#f59e0b',
+              backgroundColor: 'transparent',
+              borderWidth: 2.5,
+              pointRadius: 0,
+              tension: 0.35
             }
-          },
-          y: {
-            title: { display: true, text: '平均心拍数 (bpm)', color: '#94a3b8' },
-            grid: { color: 'rgba(255, 255, 255, 0.06)' },
-            ticks: { color: '#94a3b8' }
-          }
+          ]
         },
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: ctx => {
-                const p = ctx.raw;
-                const min = Math.floor(p.x);
-                const sec = Math.round((p.x - min) * 60);
-                return `${p.date}: ${p.dist}km | ${min}:${sec < 10 ? '0' : ''}${sec}/km | ${p.y} bpm`;
-              }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 7 } },
+            y: {
+              title: { display: true, text: 'AEI スコア (速度÷心拍×100)', color: '#94a3b8', font: { size: 10 } },
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } }
             }
           },
-          legend: { display: false }
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { size: 11, family: 'Noto Sans JP' }, boxWidth: 12 }
+            },
+            tooltip: {
+              callbacks: {
+                title: items => items[0]?.label || '',
+                label: ctx => {
+                  const idx = ctx.dataIndex;
+                  if (ctx.datasetIndex === 0) {
+                    const dist = chartData.distances ? chartData.distances[idx] : '';
+                    const pace = chartData.pace_labels ? chartData.pace_labels[idx] : '';
+                    const hr = chartData.avg_hrs ? chartData.avg_hrs[idx] : '';
+                    return `AEI: ${ctx.raw} (${dist}km | ${pace}/km | ${hr} bpm)`;
+                  } else {
+                    return `5走移動平均: ${ctx.raw}`;
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    if (document.getElementById('scatterChart') && chartData.scatter_hr_pace) {
+      scatterChartInstance = new Chart(document.getElementById('scatterChart'), {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: '各アクティビティ',
+            data: chartData.scatter_hr_pace,
+            backgroundColor: '#818cf8',
+            pointRadius: 6,
+            pointHoverRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: { display: true, text: 'ペース (分/km)', color: '#94a3b8' },
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: {
+                color: '#94a3b8',
+                callback: val => {
+                  const min = Math.floor(val);
+                  const sec = Math.round((val - min) * 60);
+                  return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+                }
+              }
+            },
+            y: {
+              title: { display: true, text: '平均心拍数 (bpm)', color: '#94a3b8' },
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: { color: '#94a3b8' }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  const p = ctx.raw;
+                  const min = Math.floor(p.x);
+                  const sec = Math.round((p.x - min) * 60);
+                  return `${p.date}: ${p.dist}km | ${min}:${sec < 10 ? '0' : ''}${sec}/km | ${p.y} bpm`;
+                }
+              }
+            },
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    // 有酸素効率チャート表示モード切替
+    window.toggleAeiChartMode = function(mode) {
+      const btnTrend = document.getElementById('btn-aei-trend');
+      const btnScatter = document.getElementById('btn-aei-scatter');
+      const containerTrend = document.getElementById('aei-trend-container');
+      const containerScatter = document.getElementById('aei-scatter-container');
+      const title = document.getElementById('aei-chart-title');
+      const desc = document.getElementById('aei-chart-desc');
+      const badge = document.getElementById('aei-chart-badge');
+
+      if (mode === 'trend') {
+        if (btnTrend) btnTrend.className = 'px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 font-bold transition-all shadow-sm';
+        if (btnScatter) btnScatter.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        if (containerTrend) containerTrend.classList.remove('hidden');
+        if (containerScatter) containerScatter.classList.add('hidden');
+        if (title) title.textContent = '有酸素効率指数 AEI (心肺機能スコア)';
+        if (desc) desc.textContent = '速度(km/h) ÷ 心拍数 × 100。高いほど心肺に余裕を持って速く走れる指標（各走 ＆ 5走移動平均）';
+        if (badge && chartData.aei_stats) {
+          badge.textContent = `最新: ${chartData.aei_stats.latest}`;
+          badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-mono';
+        }
+        if (aeiTrendChartInstance) {
+          setTimeout(() => aeiTrendChartInstance.resize(), 50);
+        }
+      } else {
+        if (btnScatter) btnScatter.className = 'px-2.5 py-1 rounded-lg bg-indigo-500 text-white font-bold transition-all shadow-sm';
+        if (btnTrend) btnTrend.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        if (containerTrend) containerTrend.classList.add('hidden');
+        if (containerScatter) containerScatter.classList.remove('hidden');
+        if (title) title.textContent = '有酸素効率 (心拍数 vs ペース分布)';
+        if (desc) desc.textContent = '左下（低心拍かつ速いペース）にあるほど有酸素能力が高い状態';
+        if (badge) {
+          badge.textContent = 'Correlation Plot';
+          badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-mono';
+        }
+        if (scatterChartInstance) {
+          setTimeout(() => scatterChartInstance.resize(), 50);
         }
       }
-    });
+    };
 
     // 4. ピッチ vs 歩幅
     new Chart(document.getElementById('formChart'), {

@@ -80,3 +80,9 @@ def test_prepare_full_analytics():
     assert "hr_resting_source" in res["hr_params"]
     assert "zones" in res["hr_params"]
     assert len(res["insights"]) == len(df)
+    assert "aei_stats" in res
+    assert res["aei_stats"]["latest"] > 0
+    assert "aeis" in res["chart_data"]
+    assert len(res["chart_data"]["aeis"]) == len(df)
+    assert "aei_rolling" in res["chart_data"]
+    assert len(res["chart_data"]["aei_rolling"]) == len(df)

@@ -743,14 +743,39 @@
             </div>
           </div>
 
-          <!-- 4. 有酸素効率 (心拍数 vs ペース) ＆ フォーム推移切替 -->
+          <!-- 4. 有酸素効率指数 (スピード対心肺スコア推移 / 散布図切替) -->
           <div class="glass-card rounded-3xl p-5 shadow-xl flex flex-col justify-between">
             <div>
-              <h3 class="text-sm font-bold text-slate-200 mb-0.5">有酸素効率 (心拍数 vs ペース分布)</h3>
-              <p class="text-[11px] text-slate-400 mb-2.5">左下（低心拍かつ速いペース）にあるほど有酸素能力が高い状態</p>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-2.5 mb-2.5">
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <h3 class="text-sm font-bold text-slate-200" id="aei-chart-title">有酸素効率指数 AEI (心肺機能スコア)</h3>
+                    <span id="aei-chart-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-mono">
+                      最新: {{ aei_stats.latest }}
+                    </span>
+                    <span class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-bold {% if aei_stats.growth_pct >= 0 %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}bg-slate-800 text-slate-400 border border-slate-700{% endif %} font-mono">
+                      初期比 {% if aei_stats.growth_pct >= 0 %}+{% endif %}{{ aei_stats.growth_pct }}%
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-0.5" id="aei-chart-desc">速度(km/h) ÷ 心拍数 × 100。高いほど心肺に余裕を持って速く走れる指標（各走 ＆ 5走移動平均）</p>
+                </div>
+                <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-xl text-xs font-mono shrink-0">
+                  <button type="button" id="btn-aei-trend" onclick="toggleAeiChartMode('trend')" class="px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 font-bold transition-all shadow-sm">
+                    時系列推移
+                  </button>
+                  <button type="button" id="btn-aei-scatter" onclick="toggleAeiChartMode('scatter')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all">
+                    相関散布図
+                  </button>
+                </div>
+              </div>
             </div>
-            <div class="relative h-56">
-              <canvas id="scatterChart"></canvas>
+            <div>
+              <div id="aei-trend-container" class="relative h-56">
+                <canvas id="aeiTrendChart"></canvas>
+              </div>
+              <div id="aei-scatter-container" class="relative h-56 hidden">
+                <canvas id="scatterChart"></canvas>
+              </div>
             </div>
           </div>
         </div>

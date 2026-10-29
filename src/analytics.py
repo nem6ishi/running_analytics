@@ -1176,6 +1176,38 @@ def prepare_full_analytics(
     chart_cadences = [int(row["avg_cadence"]) for _, row in df.iterrows()]
     chart_strides = [round(float(row["stride_length_m"]), 2) for _, row in df.iterrows()]
 
+    # 有酸素効率 (AEI: スピード対心肺機能スコア = 速度km/h / 心拍数 * 100)
+    chart_aeis = []
+    for _, row in df.iterrows():
+        p_sec = row["avg_pace_sec"]
+        hr = row["avg_hr"]
+        if p_sec > 0 and hr > 0:
+            sp = 3600.0 / p_sec
+            val = round(float((sp / hr) * 100.0), 2)
+        else:
+            val = 0.0
+        chart_aeis.append(val)
+
+    # 5走ローリング移動平均
+    aei_series = pd.Series(chart_aeis)
+    aei_rolling = [round(float(v), 2) for v in aei_series.rolling(window=5, min_periods=1).mean().tolist()]
+
+    # AEI サマリー統計
+    valid_aeis = [v for v in chart_aeis if v > 0]
+    initial_5_avg = round(float(pd.Series(valid_aeis[:5]).mean()), 2) if len(valid_aeis) >= 5 else (valid_aeis[0] if valid_aeis else 0.0)
+    recent_5_avg = round(float(pd.Series(valid_aeis[-5:]).mean()), 2) if len(valid_aeis) >= 5 else (valid_aeis[-1] if valid_aeis else 0.0)
+    growth_pct = round(((recent_5_avg - initial_5_avg) / initial_5_avg) * 100.0, 1) if initial_5_avg > 0 else 0.0
+    latest_aei = valid_aeis[-1] if valid_aeis else 0.0
+    max_aei = max(valid_aeis) if valid_aeis else 0.0
+
+    aei_stats = {
+        "latest": latest_aei,
+        "max": max_aei,
+        "initial_5_avg": initial_5_avg,
+        "recent_5_avg": recent_5_avg,
+        "growth_pct": growth_pct,
+    }
+
     # ペース vs 心拍数 散布図データ
     scatter_hr_pace = [
         {"x": round(float(row["avg_pace_sec"] / 60.0), 2), "y": int(row["avg_hr"]), "date": row["date_str"], "dist": float(row["distance_km"])}
@@ -1213,6 +1245,7 @@ def prepare_full_analytics(
         "calendar_heatmap": calendar_heatmap,
         "rolling_volume": rolling_volume,
         "hr_params": hr_params,
+        "aei_stats": aei_stats,
         "chart_data": {
             "dates": chart_dates,
             "distances": chart_distances,
@@ -1222,6 +1255,9 @@ def prepare_full_analytics(
             "max_hrs": chart_max_hrs,
             "cadences": chart_cadences,
             "strides": chart_strides,
+            "aeis": chart_aeis,
+            "aei_rolling": aei_rolling,
+            "aei_stats": aei_stats,
             "scatter_hr_pace": scatter_hr_pace,
             "monthly_labels": [m["month"] for m in monthly],
             "monthly_distances": [m["distance_km"] for m in monthly],

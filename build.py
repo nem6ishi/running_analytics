@@ -103,6 +103,8 @@ def build():
         sub50_forecast_json=json.dumps(analytics_data["sub50_forecast"], ensure_ascii=False, default=json_default),
         gear_stats=analytics_data["gear_stats"],
         gear_stats_json=json.dumps(analytics_data["gear_stats"], ensure_ascii=False, default=json_default),
+        aei_stats=analytics_data["aei_stats"],
+        aei_stats_json=json.dumps(analytics_data["aei_stats"], ensure_ascii=False, default=json_default),
     )
 
     output_html_path = docs_dir / "index.html"
