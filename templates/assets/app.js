@@ -107,6 +107,65 @@ const {
         `;
       }
 
+      let windSprintsHtml = '';
+      const sprintSets = (ws.wind_sprints && (ws.wind_sprints.sprint_sets || ws.wind_sprints.items)) ? (ws.wind_sprints.sprint_sets || ws.wind_sprints.items) : [];
+      if (ws.wind_sprints && sprintSets.length > 0) {
+        windSprintsHtml = `
+          <div class="space-y-2.5 pt-2 border-t border-slate-800/80">
+            <div class="flex items-center justify-between">
+              <div class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                <span>⚡️</span>
+                <span>${ws.wind_sprints.title || 'ウィンドスプリント（流し）秒単位解析'}</span>
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono">Garmin 高解像度レコード解析</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-mono">
+              ${sprintSets.map((sp) => `
+                <div class="bg-slate-950/80 border border-slate-800/90 rounded-xl p-3 space-y-2 shadow-inner">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-white">${sp.set}</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded border ${sp.badge_color || 'bg-slate-800 text-slate-300 border-slate-700'}">${sp.badge || sp.tag || ''}</span>
+                  </div>
+                  <div class="flex items-baseline justify-between border-b border-slate-800/60 pb-1.5">
+                    <div>
+                      <span class="text-lg font-black text-rose-400 tracking-tight">${sp.avg_pace}</span>
+                      <span class="text-[10px] text-slate-400">/km</span>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xs font-bold text-white">${sp.distance_m}m</span>
+                      <span class="text-[10px] text-slate-400">(${sp.duration_sec}秒)</span>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-1.5 text-[10px] text-slate-300 pt-0.5">
+                    <div>
+                      <span class="text-slate-500 block text-[9px]">最高速度</span>
+                      <strong class="text-white">${sp.max_speed_kmh}km/h</strong> <span class="text-slate-400">(${sp.max_pace}/k)</span>
+                    </div>
+                    <div>
+                      <span class="text-slate-500 block text-[9px]">最高ピッチ</span>
+                      <strong class="text-amber-300">${sp.max_cadence}</strong> <span class="text-slate-400">spm</span>
+                    </div>
+                    <div>
+                      <span class="text-slate-500 block text-[9px]">心拍数</span>
+                      <strong class="text-rose-300">${sp.avg_hr}</strong> <span class="text-slate-400">/ max ${sp.max_hr}</span>
+                    </div>
+                    <div>
+                      <span class="text-slate-500 block text-[9px]">推定歩幅</span>
+                      <strong class="text-emerald-300">${sp.est_stride_m}m</strong>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            ${ws.wind_sprints.biomechanics_summary ? `
+              <p class="text-[11px] text-amber-200/90 bg-amber-950/30 border border-amber-500/20 rounded-xl p-2.5 leading-relaxed font-sans">
+                💡 <strong>バイオメカニクス解析:</strong> ${ws.wind_sprints.biomechanics_summary}
+              </p>
+            ` : ''}
+          </div>
+        `;
+      }
+
       const workoutBreakdownHtml = `
         <div class="bg-gradient-to-br from-slate-900 via-slate-900/95 to-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-md">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
@@ -120,6 +179,7 @@ const {
           </div>
           <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${ws.summary_desc.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')}</p>
           ${phasesTimelineHtml}
+          ${windSprintsHtml}
         </div>
       `;
 

@@ -284,6 +284,63 @@
               </div>
             </div>
 
+            <!-- ⚡️ ウィンドスプリント（流し 100m×2）高精度秒単位解析 -->
+            {% if latest_insight.analysis and latest_insight.analysis.workout_structure and latest_insight.analysis.workout_structure.wind_sprints %}
+            {% set ws_sprints = latest_insight.analysis.workout_structure.wind_sprints %}
+            <div class="bg-gradient-to-r from-amber-950/40 via-slate-950 to-slate-950 border border-amber-500/30 rounded-2xl p-3 space-y-2 shadow-inner">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-amber-300 flex items-center space-x-1.5">
+                  <span>⚡️</span>
+                  <span>{{ ws_sprints.title }}</span>
+                </span>
+                <span class="text-[10px] text-slate-400 font-mono">最速 3:20/km ｜ 歩幅 1.61m (+61%)</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 font-mono">
+                {% for sp in ws_sprints.sprint_sets %}
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-[11px] space-y-1.5 shadow-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-white">{{ sp.set }}</span>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded border {{ sp.badge_color }}">{{ sp.badge }}</span>
+                  </div>
+                  <div class="flex items-baseline justify-between border-b border-slate-800/80 pb-1">
+                    <div>
+                      <span class="text-base font-black text-rose-400">{{ sp.avg_pace }}</span>
+                      <span class="text-[9px] text-slate-400">/km</span>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-xs font-bold text-white">{{ sp.distance_m }}m</span>
+                      <span class="text-[10px] text-slate-400">({{ sp.duration_sec }}s)</span>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-1 text-[9px] text-slate-300 pt-0.5">
+                    <div>
+                      <span class="text-slate-500 block text-[8px]">最高速</span>
+                      <strong class="text-white">{{ sp.max_speed_kmh }}km/h</strong>
+                    </div>
+                    <div>
+                      <span class="text-slate-500 block text-[8px]">ピッチ</span>
+                      <strong class="text-amber-300">{{ sp.max_cadence }}spm</strong>
+                    </div>
+                    <div>
+                      <span class="text-slate-500 block text-[8px]">心拍</span>
+                      <strong class="text-rose-300">{{ sp.avg_hr }} / {{ sp.max_hr }}</strong>
+                    </div>
+                    <div>
+                      <span class="text-slate-500 block text-[8px]">歩幅</span>
+                      <strong class="text-emerald-300">{{ sp.est_stride_m }}m</strong>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% if ws_sprints.biomechanics_summary %}
+              <div class="text-[10px] text-amber-200/90 bg-amber-950/20 border border-amber-500/20 rounded-xl p-2 leading-relaxed font-sans">
+                💡 <strong>バイオメカニクス:</strong> {{ ws_sprints.biomechanics_summary }}
+              </div>
+              {% endif %}
+            </div>
+            {% endif %}
+
             <!-- ラップ推移ミニピルバー -->
             {% if latest_quality_split.laps_summary %}
             <div class="space-y-1.5">
