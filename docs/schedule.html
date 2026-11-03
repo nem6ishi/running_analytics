@@ -1,0 +1,2563 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>練習予定表（全42日間ロードマップ）| Running Analytics</title>
+  <!-- Google Fonts: Outfit, JetBrains Mono, Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+:root{--theme-primary:#a3e635;--theme-primary-rgb:163,230,53;--theme-glow:rgba(163,230,53,.25);--theme-surface:rgba(15,20,31,.72);--theme-border:hsla(0,0%,100%,.08);--theme-border-hover:rgba(163,230,53,.35)}[data-theme=cyan]{--theme-primary:#06b6d4;--theme-primary-rgb:6,182,212;--theme-glow:rgba(6,182,212,.25);--theme-border-hover:rgba(6,182,212,.35)}[data-theme=emerald]{--theme-primary:#10b981;--theme-primary-rgb:16,185,129;--theme-glow:rgba(16,185,129,.25);--theme-border-hover:rgba(16,185,129,.35)}[data-theme=orange]{--theme-primary:#f97316;--theme-primary-rgb:249,115,22;--theme-glow:rgba(249,115,22,.25);--theme-border-hover:rgba(249,115,22,.35)}body{background-color:#080c14;font-family:Outfit,Noto Sans JP,sans-serif}.font-mono-metric{font-family:JetBrains Mono,monospace}.glass-card{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:var(--theme-surface);border:1px solid var(--theme-border);transition:all .25s ease-out}.glass-card:hover{border-color:var(--theme-border-hover)}.text-theme-primary{color:var(--theme-primary)}.bg-theme-primary{background-color:var(--theme-primary)}.border-theme-primary{border-color:var(--theme-primary)}.tab-btn.active{background:var(--theme-primary);box-shadow:0 4px 16px 0 var(--theme-glow);color:#080c14;font-weight:800}.tab-btn:not(.active){color:#94a3b8}.tab-btn:not(.active):hover{background:hsla(0,0%,100%,.05);color:#f1f5f9}.theme-dot{border-radius:9999px;cursor:pointer;height:14px;transition:transform .2s,box-shadow .2s;width:14px}.theme-dot.active,.theme-dot:hover{box-shadow:0 0 8px currentColor;transform:scale(1.25)}.cockpit-subtab-btn.active{background:rgba(var(--theme-primary-rgb),.16);border-color:rgba(var(--theme-primary-rgb),.45);box-shadow:0 2px 10px 0 rgba(0,0,0,.25);color:var(--theme-primary);font-weight:800}.cockpit-subtab-btn:not(.active){border-color:transparent;color:#94a3b8}.cockpit-subtab-btn:not(.active):hover{background:hsla(0,0%,100%,.04);color:#f1f5f9}*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }
+/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{border:0 solid #e5e7eb;box-sizing:border-box}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:Outfit,Noto Sans JP,sans-serif;font-feature-settings:normal;font-variation-settings:normal;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-tap-highlight-color:transparent}body{line-height:inherit;margin:0}hr{border-top-width:1px;color:inherit;height:0}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:JetBrains Mono,ui-monospace,monospace;font-feature-settings:normal;font-size:1em;font-variation-settings:normal}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{border-collapse:collapse;border-color:inherit;text-indent:0}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-feature-settings:inherit;font-size:100%;font-variation-settings:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{color:#9ca3af;opacity:1}input::placeholder,textarea::placeholder{color:#9ca3af;opacity:1}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{height:auto;max-width:100%}[hidden]:where(:not([hidden=until-found])){display:none}.\!container{width:100%!important}.container{width:100%}@media (min-width:640px){.\!container{max-width:640px!important}.container{max-width:640px}}@media (min-width:768px){.\!container{max-width:768px!important}.container{max-width:768px}}@media (min-width:1024px){.\!container{max-width:1024px!important}.container{max-width:1024px}}@media (min-width:1280px){.\!container{max-width:1280px!important}.container{max-width:1280px}}@media (min-width:1536px){.\!container{max-width:1536px!important}.container{max-width:1536px}}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.bottom-0{bottom:0}.left-0{left:0}.left-1\/4{left:25%}.right-10{right:2.5rem}.top-0{top:0}.top-1\/2{top:50%}.top-1\/3{top:33.333333%}.top-16{top:4rem}.-z-10{z-index:-10}.z-10{z-index:10}.z-40{z-index:40}.z-50{z-index:50}.col-span-2{grid-column:span 2/span 2}.-mx-2{margin-left:-.5rem;margin-right:-.5rem}.mx-auto{margin-left:auto;margin-right:auto}.my-1{margin-bottom:.25rem;margin-top:.25rem}.my-3{margin-bottom:.75rem;margin-top:.75rem}.mb-0\.5{margin-bottom:.125rem}.mb-1{margin-bottom:.25rem}.mb-1\.5{margin-bottom:.375rem}.mb-2{margin-bottom:.5rem}.mb-2\.5{margin-bottom:.625rem}.ml-0\.5{margin-left:.125rem}.ml-1{margin-left:.25rem}.ml-2{margin-left:.5rem}.mr-1{margin-right:.25rem}.mr-1\.5{margin-right:.375rem}.mr-2{margin-right:.5rem}.mt-0{margin-top:0}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-16{margin-top:4rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-5{margin-top:1.25rem}.mt-6{margin-top:1.5rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-1\.5{height:.375rem}.h-10{height:2.5rem}.h-16{height:4rem}.h-2{height:.5rem}.h-2\.5{height:.625rem}.h-24{height:6rem}.h-3{height:.75rem}.h-4{height:1rem}.h-44{height:11rem}.h-56{height:14rem}.h-60{height:15rem}.h-72{height:18rem}.h-8{height:2rem}.h-9{height:2.25rem}.h-\[300px\]{height:300px}.h-full{height:100%}.max-h-60{max-height:15rem}.min-h-\[20px\]{min-height:20px}.min-h-screen{min-height:100vh}.w-0\.5{width:.125rem}.w-1{width:.25rem}.w-1\.5{width:.375rem}.w-10{width:2.5rem}.w-2{width:.5rem}.w-2\.5{width:.625rem}.w-3{width:.75rem}.w-44{width:11rem}.w-48{width:12rem}.w-5{width:1.25rem}.w-8{width:2rem}.w-9{width:2.25rem}.w-\[12\%\]{width:12%}.w-\[18\%\]{width:18%}.w-\[20\%\]{width:20%}.w-\[25\%\]{width:25%}.w-\[500px\]{width:500px}.w-\[600px\]{width:600px}.w-full{width:100%}.min-w-0{min-width:0}.min-w-\[100px\]{min-width:100px}.min-w-\[180px\]{min-width:180px}.min-w-\[200px\]{min-width:200px}.min-w-\[780px\]{min-width:780px}.max-w-7xl{max-width:80rem}.flex-1{flex:1 1 0%}.flex-shrink-0,.shrink-0{flex-shrink:0}.border-collapse{border-collapse:collapse}.-translate-x-1\/2{--tw-translate-x:-50%}.-translate-x-1\/2,.scale-110{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.scale-110{--tw-scale-x:1.1;--tw-scale-y:1.1}.scale-125{--tw-scale-x:1.25;--tw-scale-y:1.25}.scale-125,.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-default{cursor:default}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;-moz-user-select:none;user-select:none}.resize{resize:both}.scroll-mt-28{scroll-margin-top:7rem}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.items-baseline{align-items:baseline}.items-stretch{align-items:stretch}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-2\.5{gap:.625rem}.gap-3{gap:.75rem}.gap-3\.5{gap:.875rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}.space-x-1>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.25rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.25rem*var(--tw-space-x-reverse))}.space-x-1\.5>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.375rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.375rem*var(--tw-space-x-reverse))}.space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.5rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.5rem*var(--tw-space-x-reverse))}.space-x-2\.5>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.625rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.625rem*var(--tw-space-x-reverse))}.space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.75rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.75rem*var(--tw-space-x-reverse))}.space-x-3\.5>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.875rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.875rem*var(--tw-space-x-reverse))}.space-y-0\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.125rem*var(--tw-space-y-reverse));margin-top:calc(.125rem*(1 - var(--tw-space-y-reverse)))}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.25rem*var(--tw-space-y-reverse));margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)))}.space-y-1\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.375rem*var(--tw-space-y-reverse));margin-top:calc(.375rem*(1 - var(--tw-space-y-reverse)))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.5rem*var(--tw-space-y-reverse));margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)))}.space-y-2\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.625rem*var(--tw-space-y-reverse));margin-top:calc(.625rem*(1 - var(--tw-space-y-reverse)))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.75rem*var(--tw-space-y-reverse));margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)))}.space-y-3\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(.875rem*var(--tw-space-y-reverse));margin-top:calc(.875rem*(1 - var(--tw-space-y-reverse)))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(1rem*var(--tw-space-y-reverse));margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(1.25rem*var(--tw-space-y-reverse));margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)))}.space-y-6>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(1.5rem*var(--tw-space-y-reverse));margin-top:calc(1.5rem*(1 - var(--tw-space-y-reverse)))}.space-y-8>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-bottom:calc(2rem*var(--tw-space-y-reverse));margin-top:calc(2rem*(1 - var(--tw-space-y-reverse)))}.divide-y>:not([hidden])~:not([hidden]){--tw-divide-y-reverse:0;border-bottom-width:calc(1px*var(--tw-divide-y-reverse));border-top-width:calc(1px*(1 - var(--tw-divide-y-reverse)))}.divide-slate-800\/40>:not([hidden])~:not([hidden]){border-color:rgba(30,41,59,.4)}.divide-slate-800\/50>:not([hidden])~:not([hidden]){border-color:rgba(30,41,59,.5)}.divide-slate-800\/60>:not([hidden])~:not([hidden]){border-color:rgba(30,41,59,.6)}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.overflow-x-hidden{overflow-x:hidden}.scroll-smooth{scroll-behavior:smooth}.truncate{overflow:hidden;text-overflow:ellipsis}.truncate,.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-sm{border-radius:.125rem}.rounded-xl{border-radius:.75rem}.rounded-l-full{border-bottom-left-radius:9999px;border-top-left-radius:9999px}.rounded-r-full{border-bottom-right-radius:9999px;border-top-right-radius:9999px}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-l{border-left-width:1px}.border-t{border-top-width:1px}.border-t-2{border-top-width:2px}.border-dashed{border-style:dashed}.border-amber-500\/20{border-color:rgba(245,158,11,.2)}.border-amber-500\/30{border-color:rgba(245,158,11,.3)}.border-amber-500\/40{border-color:rgba(245,158,11,.4)}.border-cyan-500\/30{border-color:rgba(6,182,212,.3)}.border-emerald-400{--tw-border-opacity:1;border-color:rgb(52 211 153/var(--tw-border-opacity,1))}.border-emerald-500\/20{border-color:rgba(16,185,129,.2)}.border-emerald-500\/30{border-color:rgba(16,185,129,.3)}.border-emerald-500\/40{border-color:rgba(16,185,129,.4)}.border-emerald-800\/60{border-color:rgba(6,95,70,.6)}.border-indigo-500{--tw-border-opacity:1;border-color:rgb(99 102 241/var(--tw-border-opacity,1))}.border-indigo-500\/20{border-color:rgba(99,102,241,.2)}.border-indigo-500\/30{border-color:rgba(99,102,241,.3)}.border-indigo-500\/50{border-color:rgba(99,102,241,.5)}.border-purple-500\/30{border-color:rgba(168,85,247,.3)}.border-rose-500\/10{border-color:rgba(244,63,94,.1)}.border-rose-500\/20{border-color:rgba(244,63,94,.2)}.border-rose-500\/25{border-color:rgba(244,63,94,.25)}.border-rose-500\/30{border-color:rgba(244,63,94,.3)}.border-rose-500\/40{border-color:rgba(244,63,94,.4)}.border-sky-500\/30{border-color:rgba(14,165,233,.3)}.border-sky-500\/40{border-color:rgba(14,165,233,.4)}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85/var(--tw-border-opacity,1))}.border-slate-700\/70{border-color:rgba(51,65,85,.7)}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59/var(--tw-border-opacity,1))}.border-slate-800\/40{border-color:rgba(30,41,59,.4)}.border-slate-800\/60{border-color:rgba(30,41,59,.6)}.border-slate-800\/70{border-color:rgba(30,41,59,.7)}.border-slate-800\/80{border-color:rgba(30,41,59,.8)}.border-slate-800\/90{border-color:rgba(30,41,59,.9)}.border-teal-500\/30{border-color:rgba(20,184,166,.3)}.border-t-emerald-500\/70{border-top-color:rgba(16,185,129,.7)}.border-t-rose-500\/70{border-top-color:rgba(244,63,94,.7)}.border-t-sky-500\/70{border-top-color:rgba(14,165,233,.7)}.bg-\[\#080c14\]{--tw-bg-opacity:1;background-color:rgb(8 12 20/var(--tw-bg-opacity,1))}.bg-\[\#080c14\]\/85{background-color:rgba(8,12,20,.85)}.bg-\[\#080c14\]\/90{background-color:rgba(8,12,20,.9)}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.bg-amber-500\/10{background-color:rgba(245,158,11,.1)}.bg-amber-500\/15{background-color:rgba(245,158,11,.15)}.bg-amber-500\/20{background-color:rgba(245,158,11,.2)}.bg-amber-950\/20{background-color:rgba(69,26,3,.2)}.bg-amber-950\/30{background-color:rgba(69,26,3,.3)}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246/var(--tw-bg-opacity,1))}.bg-cyan-500{--tw-bg-opacity:1;background-color:rgb(6 182 212/var(--tw-bg-opacity,1))}.bg-cyan-500\/20{background-color:rgba(6,182,212,.2)}.bg-emerald-300{--tw-bg-opacity:1;background-color:rgb(110 231 183/var(--tw-bg-opacity,1))}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153/var(--tw-bg-opacity,1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.bg-emerald-500\/10{background-color:rgba(16,185,129,.1)}.bg-emerald-500\/15{background-color:rgba(16,185,129,.15)}.bg-emerald-500\/20{background-color:rgba(16,185,129,.2)}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105/var(--tw-bg-opacity,1))}.bg-emerald-700{--tw-bg-opacity:1;background-color:rgb(4 120 87/var(--tw-bg-opacity,1))}.bg-emerald-950{--tw-bg-opacity:1;background-color:rgb(2 44 34/var(--tw-bg-opacity,1))}.bg-emerald-950\/30{background-color:rgba(2,44,34,.3)}.bg-emerald-950\/80{background-color:rgba(2,44,34,.8)}.bg-indigo-400{--tw-bg-opacity:1;background-color:rgb(129 140 248/var(--tw-bg-opacity,1))}.bg-indigo-500{--tw-bg-opacity:1;background-color:rgb(99 102 241/var(--tw-bg-opacity,1))}.bg-indigo-500\/10{background-color:rgba(99,102,241,.1)}.bg-indigo-500\/20{background-color:rgba(99,102,241,.2)}.bg-indigo-500\/30{background-color:rgba(99,102,241,.3)}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229/var(--tw-bg-opacity,1))}.bg-indigo-950\/20{background-color:rgba(30,27,75,.2)}.bg-indigo-950\/30{background-color:rgba(30,27,75,.3)}.bg-indigo-950\/40{background-color:rgba(30,27,75,.4)}.bg-orange-500{--tw-bg-opacity:1;background-color:rgb(249 115 22/var(--tw-bg-opacity,1))}.bg-purple-400{--tw-bg-opacity:1;background-color:rgb(192 132 252/var(--tw-bg-opacity,1))}.bg-purple-500\/20{background-color:rgba(168,85,247,.2)}.bg-rose-400{--tw-bg-opacity:1;background-color:rgb(251 113 133/var(--tw-bg-opacity,1))}.bg-rose-500{--tw-bg-opacity:1;background-color:rgb(244 63 94/var(--tw-bg-opacity,1))}.bg-rose-500\/10{background-color:rgba(244,63,94,.1)}.bg-rose-500\/15{background-color:rgba(244,63,94,.15)}.bg-rose-500\/20{background-color:rgba(244,63,94,.2)}.bg-rose-600{--tw-bg-opacity:1;background-color:rgb(225 29 72/var(--tw-bg-opacity,1))}.bg-rose-950\/20{background-color:rgba(76,5,25,.2)}.bg-sky-400{--tw-bg-opacity:1;background-color:rgb(56 189 248/var(--tw-bg-opacity,1))}.bg-sky-500\/15{background-color:rgba(14,165,233,.15)}.bg-sky-500\/20{background-color:rgba(14,165,233,.2)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.bg-slate-800\/10{background-color:rgba(30,41,59,.1)}.bg-slate-800\/70{background-color:rgba(30,41,59,.7)}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42/var(--tw-bg-opacity,1))}.bg-slate-900\/40{background-color:rgba(15,23,42,.4)}.bg-slate-900\/50{background-color:rgba(15,23,42,.5)}.bg-slate-900\/60{background-color:rgba(15,23,42,.6)}.bg-slate-900\/80{background-color:rgba(15,23,42,.8)}.bg-slate-900\/90{background-color:rgba(15,23,42,.9)}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23/var(--tw-bg-opacity,1))}.bg-slate-950\/40{background-color:rgba(2,6,23,.4)}.bg-slate-950\/50{background-color:rgba(2,6,23,.5)}.bg-slate-950\/60{background-color:rgba(2,6,23,.6)}.bg-slate-950\/70{background-color:rgba(2,6,23,.7)}.bg-slate-950\/80{background-color:rgba(2,6,23,.8)}.bg-teal-400{--tw-bg-opacity:1;background-color:rgb(45 212 191/var(--tw-bg-opacity,1))}.bg-teal-500\/20{background-color:rgba(20,184,166,.2)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right,var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops))}.from-amber-500{--tw-gradient-from:#f59e0b var(--tw-gradient-from-position);--tw-gradient-to:rgba(245,158,11,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-amber-950\/30{--tw-gradient-from:rgba(69,26,3,.3) var(--tw-gradient-from-position);--tw-gradient-to:rgba(69,26,3,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-amber-950\/40{--tw-gradient-from:rgba(69,26,3,.4) var(--tw-gradient-from-position);--tw-gradient-to:rgba(69,26,3,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-emerald-500{--tw-gradient-from:#10b981 var(--tw-gradient-from-position);--tw-gradient-to:rgba(16,185,129,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-emerald-950\/30{--tw-gradient-from:rgba(2,44,34,.3) var(--tw-gradient-from-position);--tw-gradient-to:rgba(2,44,34,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-emerald-950\/50{--tw-gradient-from:rgba(2,44,34,.5) var(--tw-gradient-from-position);--tw-gradient-to:rgba(2,44,34,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-sky-950\/30{--tw-gradient-from:rgba(8,47,73,.3) var(--tw-gradient-from-position);--tw-gradient-to:rgba(8,47,73,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-slate-900{--tw-gradient-from:#0f172a var(--tw-gradient-from-position);--tw-gradient-to:rgba(15,23,42,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.via-slate-900\/95{--tw-gradient-to:rgba(15,23,42,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),rgba(15,23,42,.95) var(--tw-gradient-via-position),var(--tw-gradient-to)}.via-slate-950{--tw-gradient-to:rgba(2,6,23,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),#020617 var(--tw-gradient-via-position),var(--tw-gradient-to)}.to-indigo-950\/40{--tw-gradient-to:rgba(30,27,75,.4) var(--tw-gradient-to-position)}.to-rose-500{--tw-gradient-to:#f43f5e var(--tw-gradient-to-position)}.to-slate-950{--tw-gradient-to:#020617 var(--tw-gradient-to-position)}.to-teal-400{--tw-gradient-to:#2dd4bf var(--tw-gradient-to-position)}.p-0\.5{padding:.125rem}.p-1{padding:.25rem}.p-1\.5{padding:.375rem}.p-2{padding:.5rem}.p-2\.5{padding:.625rem}.p-3{padding:.75rem}.p-3\.5{padding:.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.px-1{padding-left:.25rem;padding-right:.25rem}.px-1\.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-2\.5{padding-left:.625rem;padding-right:.625rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-3\.5{padding-left:.875rem;padding-right:.875rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-bottom:.125rem;padding-top:.125rem}.py-1{padding-bottom:.25rem;padding-top:.25rem}.py-1\.5{padding-bottom:.375rem;padding-top:.375rem}.py-2{padding-bottom:.5rem;padding-top:.5rem}.py-2\.5{padding-bottom:.625rem;padding-top:.625rem}.py-3{padding-bottom:.75rem;padding-top:.75rem}.py-3\.5{padding-bottom:.875rem;padding-top:.875rem}.py-8{padding-bottom:2rem;padding-top:2rem}.pb-1{padding-bottom:.25rem}.pb-1\.5{padding-bottom:.375rem}.pb-2{padding-bottom:.5rem}.pb-2\.5{padding-bottom:.625rem}.pb-3{padding-bottom:.75rem}.pb-4{padding-bottom:1rem}.pb-6{padding-bottom:1.5rem}.pl-2{padding-left:.5rem}.pl-2\.5{padding-left:.625rem}.pr-1{padding-right:.25rem}.pt-0\.5{padding-top:.125rem}.pt-1{padding-top:.25rem}.pt-1\.5{padding-top:.375rem}.pt-2{padding-top:.5rem}.pt-2\.5{padding-top:.625rem}.pt-4{padding-top:1rem}.pt-5{padding-top:1.25rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:JetBrains Mono,ui-monospace,monospace}.font-sans{font-family:Outfit,Noto Sans JP,sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[8px\]{font-size:8px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.leading-tight{line-height:1.25}.tracking-tight{letter-spacing:-.025em}.tracking-wider{letter-spacing:.05em}.text-amber-200\/90{color:hsla(48,97%,77%,.9)}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-blue-400{--tw-text-opacity:1;color:rgb(96 165 250/var(--tw-text-opacity,1))}.text-cyan-400{--tw-text-opacity:1;color:rgb(34 211 238/var(--tw-text-opacity,1))}.text-emerald-200{--tw-text-opacity:1;color:rgb(167 243 208/var(--tw-text-opacity,1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183/var(--tw-text-opacity,1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.text-indigo-200{--tw-text-opacity:1;color:rgb(199 210 254/var(--tw-text-opacity,1))}.text-indigo-200\/90{color:rgba(199,210,254,.9)}.text-indigo-300{--tw-text-opacity:1;color:rgb(165 180 252/var(--tw-text-opacity,1))}.text-indigo-400{--tw-text-opacity:1;color:rgb(129 140 248/var(--tw-text-opacity,1))}.text-orange-400{--tw-text-opacity:1;color:rgb(251 146 60/var(--tw-text-opacity,1))}.text-purple-400{--tw-text-opacity:1;color:rgb(192 132 252/var(--tw-text-opacity,1))}.text-rose-200{--tw-text-opacity:1;color:rgb(254 205 211/var(--tw-text-opacity,1))}.text-rose-300{--tw-text-opacity:1;color:rgb(253 164 175/var(--tw-text-opacity,1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133/var(--tw-text-opacity,1))}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252/var(--tw-text-opacity,1))}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248/var(--tw-text-opacity,1))}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249/var(--tw-text-opacity,1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225/var(--tw-text-opacity,1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184/var(--tw-text-opacity,1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139/var(--tw-text-opacity,1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105/var(--tw-text-opacity,1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85/var(--tw-text-opacity,1))}.text-slate-950{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.text-teal-400{--tw-text-opacity:1;color:rgb(45 212 191/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-20{opacity:.2}.opacity-75{opacity:.75}.opacity-80{opacity:.8}.shadow{--tw-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color),0 1px 2px -1px var(--tw-shadow-color)}.shadow,.shadow-2xl{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgba(0,0,0,.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color)}.shadow-inner,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-md{--tw-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color),0 2px 4px -2px var(--tw-shadow-color)}.shadow-md,.shadow-sm{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgba(0,0,0,.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-emerald-400\/50{--tw-shadow-color:rgba(52,211,153,.5);--tw-shadow:var(--tw-shadow-colored)}.shadow-emerald-500\/30{--tw-shadow-color:rgba(16,185,129,.3);--tw-shadow:var(--tw-shadow-colored)}.ring-1{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.ring-1,.ring-2{box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.ring-2{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.ring-emerald-400{--tw-ring-opacity:1;--tw-ring-color:rgb(52 211 153/var(--tw-ring-opacity,1))}.ring-indigo-500\/30{--tw-ring-color:rgba(99,102,241,.3)}.ring-indigo-500\/50{--tw-ring-color:rgba(99,102,241,.5)}.ring-white\/10{--tw-ring-color:hsla(0,0%,100%,.1)}.ring-white\/70{--tw-ring-color:hsla(0,0%,100%,.7)}.ring-white\/80{--tw-ring-color:hsla(0,0%,100%,.8)}.blur-\[150px\]{--tw-blur:blur(150px)}.blur-\[150px\],.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-xl{--tw-backdrop-blur:blur(24px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-duration:.15s;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1)}.transition-all{transition-duration:.15s;transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1)}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(.4,0,.2,1)}.duration-150,.transition-transform{transition-duration:.15s}.duration-200{transition-duration:.2s}.duration-300{transition-duration:.3s}.duration-700{transition-duration:.7s}.selection\:bg-amber-400 ::-moz-selection{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.selection\:bg-amber-400 ::selection{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.selection\:bg-lime-400 ::-moz-selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:bg-lime-400 ::selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:text-slate-950 ::-moz-selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.selection\:text-slate-950 ::selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.selection\:bg-amber-400::-moz-selection{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.selection\:bg-amber-400::selection{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.selection\:bg-lime-400::-moz-selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:bg-lime-400::selection{--tw-bg-opacity:1;background-color:rgb(163 230 53/var(--tw-bg-opacity,1))}.selection\:text-slate-950::-moz-selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.selection\:text-slate-950::selection{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.hover\:z-20:hover{z-index:20}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05}.hover\:scale-105:hover,.hover\:scale-125:hover{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:scale-125:hover{--tw-scale-x:1.25;--tw-scale-y:1.25}.hover\:border-amber-500\/50:hover{border-color:rgba(245,158,11,.5)}.hover\:border-emerald-400:hover{--tw-border-opacity:1;border-color:rgb(52 211 153/var(--tw-border-opacity,1))}.hover\:border-emerald-500\/50:hover{border-color:rgba(16,185,129,.5)}.hover\:border-slate-600:hover{--tw-border-opacity:1;border-color:rgb(71 85 105/var(--tw-border-opacity,1))}.hover\:bg-amber-500:hover{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.hover\:bg-amber-500\/30:hover{background-color:rgba(245,158,11,.3)}.hover\:bg-emerald-100:hover{--tw-bg-opacity:1;background-color:rgb(209 250 229/var(--tw-bg-opacity,1))}.hover\:bg-emerald-400:hover{--tw-bg-opacity:1;background-color:rgb(52 211 153/var(--tw-bg-opacity,1))}.hover\:bg-emerald-500:hover{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85/var(--tw-bg-opacity,1))}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.hover\:bg-slate-800\/30:hover{background-color:rgba(30,41,59,.3)}.hover\:bg-slate-800\/50:hover{background-color:rgba(30,41,59,.5)}.hover\:bg-slate-900\/60:hover{background-color:rgba(15,23,42,.6)}.hover\:text-emerald-400:hover{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.hover\:text-slate-200:hover{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.hover\:text-slate-950:hover{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.hover\:underline:hover{text-decoration-line:underline}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.focus\:ring-emerald-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(16 185 129/var(--tw-ring-opacity,1))}.focus\:ring-indigo-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(99 102 241/var(--tw-ring-opacity,1))}.group[open] .group-open\:rotate-180{--tw-rotate:180deg;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.group:hover .group-hover\:text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}@media (min-width:640px){.sm\:col-span-1{grid-column:span 1/span 1}.sm\:col-span-3{grid-column:span 3/span 3}.sm\:col-span-4{grid-column:span 4/span 4}.sm\:col-span-5{grid-column:span 5/span 5}.sm\:mx-0{margin-left:0;margin-right:0}.sm\:ml-1{margin-left:.25rem}.sm\:mr-2{margin-right:.5rem}.sm\:inline-block{display:inline-block}.sm\:inline{display:inline}.sm\:h-3\.5{height:.875rem}.sm\:h-80{height:20rem}.sm\:w-3\.5{width:.875rem}.sm\:w-56{width:14rem}.sm\:w-6{width:1.5rem}.sm\:w-60{width:15rem}.sm\:grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.sm\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.sm\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.sm\:grid-cols-8{grid-template-columns:repeat(8,minmax(0,1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:gap-1\.5{gap:.375rem}.sm\:gap-3{gap:.75rem}.sm\:space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-left:calc(.5rem*(1 - var(--tw-space-x-reverse)));margin-right:calc(.5rem*var(--tw-space-x-reverse))}.sm\:p-5{padding:1.25rem}.sm\:p-6{padding:1.5rem}.sm\:p-7{padding:1.75rem}.sm\:px-3{padding-left:.75rem;padding-right:.75rem}.sm\:px-4{padding-left:1rem;padding-right:1rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:text-2xl{font-size:1.5rem;line-height:2rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}.sm\:text-\[10px\]{font-size:10px}.sm\:text-\[11px\]{font-size:11px}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:.875rem;line-height:1.25rem}.sm\:text-xl{font-size:1.25rem;line-height:1.75rem}}@media (min-width:768px){.md\:inline-flex{display:inline-flex}.md\:w-auto{width:auto}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.md\:flex-row{flex-direction:row}.md\:items-center{align-items:center}}@media (min-width:1024px){.lg\:sticky{position:sticky}.lg\:top-32{top:8rem}.lg\:col-span-5{grid-column:span 5/span 5}.lg\:col-span-6{grid-column:span 6/span 6}.lg\:col-span-7{grid-column:span 7/span 7}.lg\:flex{display:flex}.lg\:grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}.lg\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.lg\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.lg\:grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr))}.lg\:px-8{padding-left:2rem;padding-right:2rem}}
+  </style>
+</head>
+<body class="bg-[#080c14] text-slate-100 min-h-screen antialiased selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
+
+  <!-- Ambient Light Effects -->
+  <div class="fixed top-0 left-1/4 w-[600px] h-[300px] rounded-full blur-[150px] pointer-events-none -z-10 bg-amber-500/10"></div>
+  <div class="fixed top-1/2 right-10 w-[500px] h-[300px] rounded-full blur-[150px] pointer-events-none -z-10 bg-emerald-500/10"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-[#080c14]/90 border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3.5">
+        <a href="index.html" class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xl shadow-lg hover:scale-105 transition" title="ダッシュボードへ戻る">
+          <span>📅</span>
+        </a>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-base sm:text-lg font-black text-white tracking-tight leading-tight">全42日間トレーニング計画表</h1>
+            <span class="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono">ROADMAP</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium">ヨロンハーフ（サブ2）＆ NAHAフル（サブ4.5）完全攻略プログラム</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2.5">
+        <a href="index.html" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 transition flex items-center space-x-1.5 shadow-sm">
+          <span>←</span>
+          <span>ダッシュボードへ戻る</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- 🎯 SECTION 1: 3大ターゲット ＆ カウントダウン -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- ① ヨロンマラソン (ハーフ) -->
+      <div class="glass-card rounded-3xl p-5 border border-emerald-500/40 bg-gradient-to-br from-emerald-950/30 via-slate-950 to-slate-950 shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black uppercase tracking-wider text-emerald-400 font-mono">11/29(日) ハーフ本番</span>
+          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            あと 26 日
+          </span>
+        </div>
+        <div class="my-3">
+          <div class="text-xs text-slate-400 font-bold">🏁 ヨロンマラソン（ハーフ 21.1km）</div>
+          <div class="text-2xl font-black text-white tracking-tight font-mono mt-0.5">サブ2 達成！</div>
+          <div class="text-xs text-emerald-300 font-mono mt-1">目標: 1:55:00〜1:59:59 (5:27〜5:38/km)</div>
+        </div>
+        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
+          想定心拍: <strong class="text-white font-mono">166〜170 bpm</strong>（LTキャップ走で攻略）
+        </div>
+      </div>
+
+      <!-- ② NAHAマラソン (フル) -->
+      <div class="glass-card rounded-3xl p-5 border border-sky-500/40 bg-gradient-to-br from-sky-950/30 via-slate-950 to-slate-950 shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black uppercase tracking-wider text-sky-400 font-mono">12/06(日) フル本番</span>
+          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-sky-500/20 text-sky-300 border border-sky-500/30">
+            あと 33 日
+          </span>
+        </div>
+        <div class="my-3">
+          <div class="text-xs text-slate-400 font-bold">👑 NAHAマラソン（フル 42.195km）</div>
+          <div class="text-2xl font-black text-white tracking-tight font-mono mt-0.5">サブ4.5 達成！</div>
+          <div class="text-xs text-sky-300 font-mono mt-1">目標: 4:15:00〜4:30:00 (6:00〜6:25/km)</div>
+        </div>
+        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
+          想定心拍: <strong class="text-white font-mono">150〜156 bpm</strong>（18〜20km LSDスタックで完走）
+        </div>
+      </div>
+
+      <!-- ③ 主目標 10kmサブ50 -->
+      <div class="glass-card rounded-3xl p-5 border border-amber-500/40 bg-gradient-to-br from-amber-950/30 via-slate-950 to-slate-950 shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black uppercase tracking-wider text-amber-400 font-mono">PRIMARY GOAL</span>
+          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            SUB 50
+          </span>
+        </div>
+        <div class="my-3">
+          <div class="text-xs text-slate-400 font-bold">🎯 主目標 10km</div>
+          <div class="text-2xl font-black text-white tracking-tight font-mono mt-0.5">50分00秒 突破</div>
+          <div class="text-xs text-amber-300 font-mono mt-1">基準ペース: 5:00/km (秒速 3.33m)</div>
+        </div>
+        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
+          ポテンシャル最速: <strong class="text-white font-mono">4:08/km</strong>（心拍166bpm記録済）
+        </div>
+      </div>
+    </div>
+
+    <!-- 🧭 SECTION 2: 心拍数を下げる3大改善ルール & 生活ルーティン -->
+    <div class="glass-card rounded-3xl p-5 sm:p-6 border border-slate-800 space-y-4">
+      <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
+        <span class="text-lg">💡</span>
+        <h2 class="text-sm sm:text-base font-black text-white tracking-tight">心拍数を削り落とす3大改善ルール ＆ ライフスタイル制約</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs text-slate-300">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
+          <div class="font-bold text-amber-300 flex items-center space-x-1.5">
+            <span>⚡️</span>
+            <span>ジョグ後に「流し（100m×2〜3本）」</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            ジョグ後に大きなストライドと高回転（180spm超）で走ることで、筋腱のバネ（伸張反射）を目覚めさせ、巡航時の酸素消費量・心拍数を抑制。
+          </p>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
+          <div class="font-bold text-emerald-300 flex items-center space-x-1.5">
+            <span>🎯</span>
+            <span>平日のLT走は「心拍上限172bpmキャップ」</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            ペース（5:25〜5:35/km）に固執せず心拍172bpm以下を死守。乳酸を溜めずにエネルギーとして再利用する「乳酸クリアランス酵素」を最大化。
+          </p>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
+          <div class="font-bold text-sky-300 flex items-center space-x-1.5">
+            <span>💧</span>
+            <span>長距離LSDでの「給水・補給プロトコル」</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            脱水による血液濃縮（心拍ドリフト +5〜10bpm）を防ぐため、5kmごとの給水と10km地点のエナジージェル補給を練習時からルーティン化。
+          </p>
+        </div>
+      </div>
+
+      <!-- 生活制約バナー -->
+      <div class="bg-indigo-950/30 border border-indigo-500/30 rounded-2xl p-3.5 text-xs text-indigo-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="space-y-0.5">
+          <span class="font-bold text-white flex items-center space-x-1.5">
+            <span>🏠</span>
+            <span>平日の出走・生活ルーティン設計:</span>
+          </span>
+          <span class="text-[11px] text-slate-300">
+            平日在宅ワーク（9:00〜17:30）。夕方は最短18:00出走。<strong>平日夕方に15〜18km LSDを実施して帰宅20:30・翌朝05:00乾燥完了となるタイムラインも生活上問題なし！</strong>最初の3kmはウォームアップ。
+          </span>
+        </div>
+        <span class="text-[10px] font-mono px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0">
+          金曜羽田・関東滞在＝完全アクティブレスト
+        </span>
+      </div>
+    </div>
+
+    <!-- 📊 SECTION 3: 全42日間トレーニングスケジュール通し表 -->
+    <div class="glass-card rounded-3xl p-5 sm:p-6 border border-slate-800 space-y-4 shadow-2xl">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-black text-white tracking-tight flex items-center space-x-2">
+            <span>📋</span>
+            <span>全42日間トレーニングスケジュール通し表</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">10/26(月) 〜 12/06(日) NAHAマラソン本番まで週の区切りなしで一覧</p>
+        </div>
+
+        <!-- フィルターボタン群 -->
+        <div class="flex flex-wrap items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-2xl text-xs font-bold">
+          <button onclick="filterSchedule('all')" id="btn-all" class="sched-filter-btn active px-3 py-1.5 rounded-xl transition">
+            すべて (42)
+          </button>
+          <button onclick="filterSchedule('run')" id="btn-run" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
+            🏃 ランのみ
+          </button>
+          <button onclick="filterSchedule('point')" id="btn-point" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
+            🔥 ポイント/LSD
+          </button>
+          <button onclick="filterSchedule('rest')" id="btn-rest" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
+            🛌 休養・遠征
+          </button>
+          <button onclick="filterSchedule('upcoming')" id="btn-upcoming" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
+            🔜 今後の予定
+          </button>
+        </div>
+      </div>
+
+      <!-- テーブル / リスト -->
+      <div class="overflow-x-auto -mx-2 sm:mx-0">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-slate-800 text-[11px] font-mono text-slate-400 uppercase tracking-wider bg-slate-950/40">
+              <th class="py-3 px-3">日付・曜日</th>
+              <th class="py-3 px-2">状態</th>
+              <th class="py-3 px-2">種別</th>
+              <th class="py-3 px-3">メニュー・内容</th>
+              <th class="py-3 px-3">設定ペース / 目標心拍</th>
+              <th class="py-3 px-3">目的・戦術ポイント</th>
+              <th class="py-3 px-3">実走実績</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-sans" id="schedule-tbody">
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="point"
+                data-status="done"
+                data-hasrun="true">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    10/26 (月)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-amber-400">
+                  🔥 ポイント走
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">8km ビルドアップ走</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">3kmアップ ➔ 4km加速 (5:32→4:58/km) ➔ 1kmダウン</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">5:30 ➔ 4:58/km</div>
+                <div class="text-[10px] text-slate-400">HR 160 ➔ 186 bpm</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                スピード刺激注入。Lap7でサブ50（5:00/km）を突破するキレを確認
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-2 text-center shadow-inner">
+                  <div class="text-xs font-black text-emerald-400">8.0km (5:34)</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">HR 173bpm • 00:44:34</div>
+                </div>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="done"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    10/27 (火)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">超回復・温冷交代浴・下肢ストレッチ</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                ビルドアップ走の筋疲労抜き
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="swim"
+                data-status="done"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    10/28 (水)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-cyan-400">
+                  🏊 水泳・アクティブ
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養 / リカバリースイム</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">ジムプール 1,150m (アップ150m ＋ クロール20往復1,000m)</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                着地衝撃ゼロで肩甲骨・体幹・股関節をほぐすアクティブリフレッシュ
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="point"
+                data-status="done"
+                data-hasrun="true">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    10/29 (木)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-amber-400">
+                  🔥 ポイント走
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">8.32km LTテンポ巡航走 ＋ 流し2本</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">3kmアップ ➔ 5km LT巡航 (5:37/km) ➔ ラスト流し100m×2本 (最速3:20/km)</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">5:25〜5:35/km</div>
+                <div class="text-[10px] text-slate-400">心拍上限 172 bpm キャップ</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                心拍キャップ制の遵守。乳酸クリアランス向上＆フォームのバネ改善
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-2 text-center shadow-inner">
+                  <div class="text-xs font-black text-emerald-400">8.32km (5:40)</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">HR 166bpm • 00:47:06</div>
+                </div>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="done"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    10/30 (金)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">関東出社・移動（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">羽田オフィス出社・日常歩行のみ</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                ラン完全オフ。移動と日常歩行で心筋・毛細血管のリモデリング
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="done"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    10/31 (土)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">関東滞在（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">ラン完全オフ</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                積極的休養・リフレッシュ
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="done"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    11/1 (日)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">関東滞在（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">ラン完全オフ・入浴ストレッチ</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                積極的休養・リフレッシュ
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="done"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/2 (月)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東➔那覇</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">関東滞在 ➔ 那覇帰着（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">フライト移動・完全休養</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                移動疲れを残さず、翌日からの那覇練習に備える
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 bg-indigo-950/40 ring-1 ring-indigo-500/50 font-medium"
+                data-category="point"
+                data-status="today"
+                data-hasrun="true">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-indigo-300 font-black text-sm">
+                    11/3 (火)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-indigo-500/20 text-indigo-300 border-indigo-500/40">
+                  📍 本日
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-amber-400">
+                  🔥 ポイント走
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">8.32km LTテンポ巡航走 ＋ 流し2本</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">3kmアップ ➔ 5km LT巡航 (5:28/km) ➔ ラスト流し100m×2本 (最速3:32/km)</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">5:25〜5:35/km</div>
+                <div class="text-[10px] text-slate-400">心拍上限 172 bpm キャップ</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                4日休養明け。心拍171bpmでキロ9秒短縮し、ヨロンサブ2目標を完全手懐け
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-2 text-center shadow-inner">
+                  <div class="text-xs font-black text-emerald-400">8.32km (5:34)</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">HR 165bpm • 00:46:24</div>
+                </div>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/4 (水)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養 または リカバリースイム</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">ジムプール 1,000m 前後（任意）</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                LT走の疲労抜き＆翌日の長距離LSDに向けた脚の温存
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="long"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/5 (木)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-amber-500/20 text-amber-300 border-amber-500/30">
+                  🔥 ポイント
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-emerald-400">
+                  🌟 ロングLSD
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">平日夕方 長距離LSD（15〜18km）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">18:00出走 ➔ 20:30帰宅即入浴 ➔ 20:30〜浴室乾燥機 (翌朝05:00完了・問題なし)</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">7:30〜8:00/km</div>
+                <div class="text-[10px] text-slate-400">心拍 135〜145 bpm (Zone 2)</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                低心拍の維持・毛細血管拡張。週末の関東休養に向けてしっかり踏み切る
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/6 (金)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-400 border-slate-700">
+                  ✈️ 関東
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">羽田移動・出社（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">羽田オフィス出社・日常歩行のみ</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                LSDの疲労を超回復へ導く完全オフ
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    11/7 (土)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-400 border-slate-700">
+                  ✈️ 関東
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">関東滞在（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">ちゃんぷる〜フェス＆同窓会参加（ラン完全オフ）</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                リフレッシュ・完全休養
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    11/8 (日)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東➔那覇</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-400 border-slate-700">
+                  ✈️ 関東
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">関東滞在 ➔ 那覇帰着（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">フライト移動・完全休養</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                翌週の最重要強化週に向けてエネルギーを完全充填
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/9 (月)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">ストレッチ・睡眠</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                最重要週の立ち上げ準備
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="point"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/10 (火)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-amber-500/20 text-amber-300 border-amber-500/30">
+                  🔥 ポイント
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-amber-400">
+                  🔥 ポイント走
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">7km インターバル走 (1000m × 3本)</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">3kmアップ ➔ 1000m×3本 (4:50/km・間疾走ジョグ400m) ➔ 1kmダウン</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">4:45〜4:55/km</div>
+                <div class="text-[10px] text-slate-400">Zone 5 (VO2max刺激)</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                心肺の天井を押し上げ、巡航時の余裕度（酸素摂取能力）を高める
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/11 (水)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養 または リカバリースイム</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">プール 800〜1,000m（任意）</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                インターバルの強い筋疲労抜き
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="easy"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/12 (木)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-sky-400">
+                  🌱 ジョグ・調整
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">有酸素イージージョグ 6〜8km ＋ 流し2本</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">平日夕方18:00出走 ➔ 5:50〜6:10/km ➔ 流し100m×2本</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">5:50〜6:10/km</div>
+                <div class="text-[10px] text-slate-400">心拍 135〜145 bpm (Zone 2)</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                日曜の最長LSDに向けたフォーム・つなぎ調整
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/13 (金)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東日帰り</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-400 border-slate-700">
+                  ✈️ 関東
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">日帰り羽田出社（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">日帰り出社・新幹線/航空機移動</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                移動のみ。脚を使わず温存
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    11/14 (土)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">炭水化物・水分補給、早め就寝</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                翌日の本番前最長走に向けたグリコーゲン満タン化
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="long"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    11/15 (日)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-amber-500/20 text-amber-300 border-amber-500/30">
+                  🔥 ポイント
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-emerald-400">
+                  🌟 ロングLSD
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">🔥【最重要ピーク】プログレッシブLSD 18〜20km</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">3kmアップ ➔ 10〜12km Zone 2 ➔ 後半5km Mペース (6:05/km)</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">前半 7:30〜8:00 ➔ 後半 6:05/km</div>
+                <div class="text-[10px] text-slate-400">135〜145 ➔ 155 bpm</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                本番前最長走。NAHAフル後半（30km以降）のエネルギー枯渇耐性を完成させる
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/16 (月)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">超回復・テーパリング（疲労抜き期間）突入</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                20km LSDの筋損傷修復
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="easy"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/17 (火)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-sky-400">
+                  🌱 ジョグ・調整
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">疲労抜きジョグ 5〜6km ＋ 流し1本</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">平日夕方出走 ➔ 6:00/km 前後 ➔ 流し100m×1本</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">6:00/km 前後</div>
+                <div class="text-[10px] text-slate-400">心拍 130〜140 bpm</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                血流を促して疲労物質を除去
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/18 (水)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養 または リカバリースイム</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">完全休養</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                超回復
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="point"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/19 (木)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-amber-500/20 text-amber-300 border-amber-500/30">
+                  🔥 ポイント
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-amber-400">
+                  🔥 ポイント走
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">10km ビルドアップ走</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">3kmアップ ➔ 6km 段階加速 (5:30 ➔ 5:05/km) ➔ 1kmダウン</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">5:30 ➔ 5:05/km</div>
+                <div class="text-[10px] text-slate-400">165 ➔ 180 bpm</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                レース10日前のキレ研ぎ。サブ50ペースのスピード感を再確認
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/20 (金)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-400 border-slate-700">
+                  ✈️ 関東
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">羽田移動・出社（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">羽田オフィス出社・日常歩行のみ</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                完全休養
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 opacity-80"
+                data-category="kanto"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    11/21 (土)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">関東➔那覇</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-400 border-slate-700">
+                  ✈️ 関東
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-purple-400">
+                  ✈️ 関東遠征
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">関東滞在 ➔ 那覇帰着（完全アクティブレスト）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">フライト移動・完全休養</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                移動・休養
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="easy"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    11/22 (日)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-sky-400">
+                  🌱 ジョグ・調整
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">8km 快調走（レース1週前）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">3kmアップ ➔ 5km 5:45/km巡航</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">5:45/km 前後</div>
+                <div class="text-[10px] text-slate-400">心拍 160〜165 bpm</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                ヨロンハーフ1週間前。巡航リズムと接地感覚を最終確認
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/23 (月)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">祝日・脚の温存</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                レース週入り。エネルギー充填
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="easy"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/24 (火)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-sky-400">
+                  🌱 ジョグ・調整
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">5km 調整ジョグ ＋ 流し3本</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">平日夕方 ➔ 6:00/km 前後 ➔ 流し100m×3本</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">6:00/km</div>
+                <div class="text-[10px] text-slate-400">Zone 1〜2</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                脱力と神経筋の最終活性化（バネの目覚まし）
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/25 (水)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">与論島遠征の荷造り・水分補給</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                水分・電解質補給
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="easy"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/26 (木)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-sky-400">
+                  🌱 ジョグ・調整
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">4km 最終刺激確認</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">3kmアップ ➔ 1km 5:30/km（本番ペース体感）</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">5:30/km</div>
+                <div class="text-[10px] text-slate-400">心拍 166〜170 bpm</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                本番ペースの感覚を体にインプットして終了
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 bg-rose-950/20"
+                data-category="race"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/27 (金)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">那覇➔与論島</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-rose-500/20 text-rose-300 border-rose-500/40">
+                  🏁 決戦
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-rose-400">
+                  🏁 レース本番
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">🚢 与論島へフェリー移動</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">移動・完全休養</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                移動疲れ防止・リラックス
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 bg-rose-950/20"
+                data-category="race"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    11/28 (土)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">与論島</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-rose-500/20 text-rose-300 border-rose-500/40">
+                  🏁 決戦
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-rose-400">
+                  🏁 レース本番
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">与論島滞在（前日受付）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">コース下見・前日受付・カーボローディング・早め就寝</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                決戦準備完了
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 bg-rose-950/20"
+                data-category="race"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    11/29 (日)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">与論島</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-rose-500/20 text-rose-300 border-rose-500/40">
+                  🏁 決戦
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-rose-400">
+                  🏁 レース本番
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">🏁【決戦】ヨロンマラソン ハーフ (21.0975km)</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">目標：1:55:00〜1:59:59【サブ2達成！】(5:27〜5:38/km・HR 166〜170bpm)</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">5:27〜5:38/km</div>
+                <div class="text-[10px] text-slate-400">心拍 166〜170 bpm</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                LT走172bpmキャップの成果を爆発させ、イーブンペースでサブ2奪取！
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    11/30 (月)
+                  </span>
+                  
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">与論島➔那覇</span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">🚢 与論島 ➔ 那覇帰還</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">アイシング・抗炎症ケア・完全休養</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                ハーフの筋肉ダメージ修復
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    12/1 (火)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">睡眠・タンパク質補給</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                フル本番に向けた超回復
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="easy"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    12/2 (水)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-sky-400">
+                  🌱 ジョグ・調整
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">3km 超スロージョグ</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">6:30〜7:00/km（完全脱力）</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">6:30〜7:00/km</div>
+                <div class="text-[10px] text-slate-400">心拍 125〜135 bpm</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                ハーフの疲労抜け・脚の軽さ確認
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="rest"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    12/3 (木)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">カーボローディング（高炭水化物食）開始</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                肝臓・筋肉のグリコーゲン蓄積
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                data-category="easy"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-white">
+                    12/4 (金)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
+                  🌱 予定
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-sky-400">
+                  🌱 ジョグ・調整
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">2km 軽ジョグ ＋ 流し1本</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">ジョグ ➔ 100m流し1本（脱力）</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">イージー</div>
+                <div class="text-[10px] text-slate-400">心拍軽く上昇</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                最終刺激。心拍を軽く一度上げて呼吸筋を活性化
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 bg-rose-950/20"
+                data-category="race"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    12/5 (土)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-rose-500/20 text-rose-300 border-rose-500/40">
+                  🏁 決戦
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-rose-400">
+                  🏁 レース本番
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">完全休養・前日受付</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">奥武山公園で受付・ゼッケン装着・睡眠最優先</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                フルマラソン決戦準備
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+            <tr class="sched-row transition hover:bg-slate-900/60 bg-rose-950/20"
+                data-category="race"
+                data-status="upcoming"
+                data-hasrun="false">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-amber-300 font-semibold">
+                    12/6 (日)
+                  </span>
+                  
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-rose-500/20 text-rose-300 border-rose-500/40">
+                  🏁 決戦
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] text-rose-400">
+                  🏁 レース本番
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">👑【決戦】NAHAマラソン フル (42.195km)</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">目標：4:15:00〜4:30:00【サブ4.5達成！】(6:00〜6:25/km・HR 150〜156bpm)</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">6:00〜6:25/km</div>
+                <div class="text-[10px] text-slate-400">心拍 150〜156 bpm</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                20km LSDとヨロンハーフで鍛え上げた有酸素エンジンで完走＆サブ4.5！
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                
+                <span class="text-slate-600 text-center block">-</span>
+                
+              </td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500">
+    <p>Running Analytics Dashboard • Powered by Python & Tailwind CSS</p>
+    <p class="mt-1">Generated for GitHub Pages • <a href="index.html" class="text-amber-400 hover:underline">ダッシュボードへ戻る</a></p>
+  </footer>
+
+  <script>
+    function filterSchedule(mode) {
+      document.querySelectorAll('.sched-filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-amber-500/20', 'text-amber-300', 'border', 'border-amber-500/40');
+        btn.classList.add('text-slate-400');
+      });
+      const activeBtn = document.getElementById('btn-' + mode);
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-amber-500/20', 'text-amber-300', 'border', 'border-amber-500/40');
+        activeBtn.classList.remove('text-slate-400');
+      }
+
+      const rows = document.querySelectorAll('.sched-row');
+      rows.forEach(row => {
+        const cat = row.getAttribute('data-category');
+        const status = row.getAttribute('data-status');
+        const hasRun = row.getAttribute('data-hasrun') === 'true';
+
+        let show = true;
+        if (mode === 'run') {
+          show = ['point', 'long', 'easy', 'race'].includes(cat) || hasRun;
+        } else if (mode === 'point') {
+          show = ['point', 'long', 'race'].includes(cat);
+        } else if (mode === 'rest') {
+          show = ['rest', 'kanto', 'swim'].includes(cat);
+        } else if (mode === 'upcoming') {
+          show = status === 'upcoming' || status === 'today';
+        }
+        row.style.display = show ? '' : 'none';
+      });
+    }
+
+    // 初期化: 'all' をアクティブに
+    filterSchedule('all');
+  </script>
+</body>
+</html>

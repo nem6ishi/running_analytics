@@ -5,6 +5,7 @@ import pytailwindcss
 from src.parser import load_activities
 from src.analytics import prepare_full_analytics
 from src.fit_parser import load_all_fit_series
+from src.schedule_data import prepare_full_schedule
 
 
 def compile_css(root_dir: Path) -> str:
@@ -110,6 +111,18 @@ def build():
     output_html_path = docs_dir / "index.html"
     output_html_path.write_text(rendered_html, encoding="utf-8")
     print(f"Successfully generated: {output_html_path}")
+
+    # 📅 全42日間トレーニング計画ページ (schedule.html) の生成
+    schedule_data = prepare_full_schedule(df)
+    schedule_template = env.get_template("schedule.html")
+    rendered_schedule = schedule_template.render(
+        app_css=app_css,
+        schedule=schedule_data,
+        three_pillars=analytics_data["three_pillars"],
+    )
+    schedule_output_path = docs_dir / "schedule.html"
+    schedule_output_path.write_text(rendered_schedule, encoding="utf-8")
+    print(f"Successfully generated: {schedule_output_path}")
 
     # GitHub Pages用 .nojekyll ファイル作成
     nojekyll_path = docs_dir / ".nojekyll"

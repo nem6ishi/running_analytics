@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>練習予定表（全42日間ロードマップ）| Running Analytics</title>
+  <!-- Google Fonts: Outfit, JetBrains Mono, Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+{{ app_css | safe }}
+  </style>
+</head>
+<body class="bg-[#080c14] text-slate-100 min-h-screen antialiased selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
+
+  <!-- Ambient Light Effects -->
+  <div class="fixed top-0 left-1/4 w-[600px] h-[300px] rounded-full blur-[150px] pointer-events-none -z-10 bg-amber-500/10"></div>
+  <div class="fixed top-1/2 right-10 w-[500px] h-[300px] rounded-full blur-[150px] pointer-events-none -z-10 bg-emerald-500/10"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-[#080c14]/90 border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3.5">
+        <a href="index.html" class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xl shadow-lg hover:scale-105 transition" title="ダッシュボードへ戻る">
+          <span>📅</span>
+        </a>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-base sm:text-lg font-black text-white tracking-tight leading-tight">全42日間トレーニング計画表</h1>
+            <span class="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono">ROADMAP</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium">ヨロンハーフ（サブ2）＆ NAHAフル（サブ4.5）完全攻略プログラム</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2.5">
+        <a href="index.html" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 transition flex items-center space-x-1.5 shadow-sm">
+          <span>←</span>
+          <span>ダッシュボードへ戻る</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- 🎯 SECTION 1: 3大ターゲット ＆ カウントダウン -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- ① ヨロンマラソン (ハーフ) -->
+      <div class="glass-card rounded-3xl p-5 border border-emerald-500/40 bg-gradient-to-br from-emerald-950/30 via-slate-950 to-slate-950 shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black uppercase tracking-wider text-emerald-400 font-mono">11/29(日) ハーフ本番</span>
+          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            あと {{ three_pillars.half_marathon.days_left }} 日
+          </span>
+        </div>
+        <div class="my-3">
+          <div class="text-xs text-slate-400 font-bold">🏁 ヨロンマラソン（ハーフ 21.1km）</div>
+          <div class="text-2xl font-black text-white tracking-tight font-mono mt-0.5">サブ2 達成！</div>
+          <div class="text-xs text-emerald-300 font-mono mt-1">目標: 1:55:00〜1:59:59 (5:27〜5:38/km)</div>
+        </div>
+        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
+          想定心拍: <strong class="text-white font-mono">166〜170 bpm</strong>（LTキャップ走で攻略）
+        </div>
+      </div>
+
+      <!-- ② NAHAマラソン (フル) -->
+      <div class="glass-card rounded-3xl p-5 border border-sky-500/40 bg-gradient-to-br from-sky-950/30 via-slate-950 to-slate-950 shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black uppercase tracking-wider text-sky-400 font-mono">12/06(日) フル本番</span>
+          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-sky-500/20 text-sky-300 border border-sky-500/30">
+            あと {{ three_pillars.full_marathon.days_left }} 日
+          </span>
+        </div>
+        <div class="my-3">
+          <div class="text-xs text-slate-400 font-bold">👑 NAHAマラソン（フル 42.195km）</div>
+          <div class="text-2xl font-black text-white tracking-tight font-mono mt-0.5">サブ4.5 達成！</div>
+          <div class="text-xs text-sky-300 font-mono mt-1">目標: 4:15:00〜4:30:00 (6:00〜6:25/km)</div>
+        </div>
+        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
+          想定心拍: <strong class="text-white font-mono">150〜156 bpm</strong>（18〜20km LSDスタックで完走）
+        </div>
+      </div>
+
+      <!-- ③ 主目標 10kmサブ50 -->
+      <div class="glass-card rounded-3xl p-5 border border-amber-500/40 bg-gradient-to-br from-amber-950/30 via-slate-950 to-slate-950 shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black uppercase tracking-wider text-amber-400 font-mono">PRIMARY GOAL</span>
+          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            SUB 50
+          </span>
+        </div>
+        <div class="my-3">
+          <div class="text-xs text-slate-400 font-bold">🎯 主目標 10km</div>
+          <div class="text-2xl font-black text-white tracking-tight font-mono mt-0.5">50分00秒 突破</div>
+          <div class="text-xs text-amber-300 font-mono mt-1">基準ペース: 5:00/km (秒速 3.33m)</div>
+        </div>
+        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
+          ポテンシャル最速: <strong class="text-white font-mono">4:08/km</strong>（心拍166bpm記録済）
+        </div>
+      </div>
+    </div>
+
+    <!-- 🧭 SECTION 2: 心拍数を下げる3大改善ルール & 生活ルーティン -->
+    <div class="glass-card rounded-3xl p-5 sm:p-6 border border-slate-800 space-y-4">
+      <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
+        <span class="text-lg">💡</span>
+        <h2 class="text-sm sm:text-base font-black text-white tracking-tight">心拍数を削り落とす3大改善ルール ＆ ライフスタイル制約</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs text-slate-300">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
+          <div class="font-bold text-amber-300 flex items-center space-x-1.5">
+            <span>⚡️</span>
+            <span>ジョグ後に「流し（100m×2〜3本）」</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            ジョグ後に大きなストライドと高回転（180spm超）で走ることで、筋腱のバネ（伸張反射）を目覚めさせ、巡航時の酸素消費量・心拍数を抑制。
+          </p>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
+          <div class="font-bold text-emerald-300 flex items-center space-x-1.5">
+            <span>🎯</span>
+            <span>平日のLT走は「心拍上限172bpmキャップ」</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            ペース（5:25〜5:35/km）に固執せず心拍172bpm以下を死守。乳酸を溜めずにエネルギーとして再利用する「乳酸クリアランス酵素」を最大化。
+          </p>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
+          <div class="font-bold text-sky-300 flex items-center space-x-1.5">
+            <span>💧</span>
+            <span>長距離LSDでの「給水・補給プロトコル」</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            脱水による血液濃縮（心拍ドリフト +5〜10bpm）を防ぐため、5kmごとの給水と10km地点のエナジージェル補給を練習時からルーティン化。
+          </p>
+        </div>
+      </div>
+
+      <!-- 生活制約バナー -->
+      <div class="bg-indigo-950/30 border border-indigo-500/30 rounded-2xl p-3.5 text-xs text-indigo-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="space-y-0.5">
+          <span class="font-bold text-white flex items-center space-x-1.5">
+            <span>🏠</span>
+            <span>平日の出走・生活ルーティン設計:</span>
+          </span>
+          <span class="text-[11px] text-slate-300">
+            平日在宅ワーク（9:00〜17:30）。夕方は最短18:00出走。<strong>平日夕方に15〜18km LSDを実施して帰宅20:30・翌朝05:00乾燥完了となるタイムラインも生活上問題なし！</strong>最初の3kmはウォームアップ。
+          </span>
+        </div>
+        <span class="text-[10px] font-mono px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0">
+          金曜羽田・関東滞在＝完全アクティブレスト
+        </span>
+      </div>
+    </div>
+
+    <!-- 📊 SECTION 3: 全42日間トレーニングスケジュール通し表 -->
+    <div class="glass-card rounded-3xl p-5 sm:p-6 border border-slate-800 space-y-4 shadow-2xl">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-black text-white tracking-tight flex items-center space-x-2">
+            <span>📋</span>
+            <span>全42日間トレーニングスケジュール通し表</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">10/26(月) 〜 12/06(日) NAHAマラソン本番まで週の区切りなしで一覧</p>
+        </div>
+
+        <!-- フィルターボタン群 -->
+        <div class="flex flex-wrap items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-2xl text-xs font-bold">
+          <button onclick="filterSchedule('all')" id="btn-all" class="sched-filter-btn active px-3 py-1.5 rounded-xl transition">
+            すべて (42)
+          </button>
+          <button onclick="filterSchedule('run')" id="btn-run" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
+            🏃 ランのみ
+          </button>
+          <button onclick="filterSchedule('point')" id="btn-point" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
+            🔥 ポイント/LSD
+          </button>
+          <button onclick="filterSchedule('rest')" id="btn-rest" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
+            🛌 休養・遠征
+          </button>
+          <button onclick="filterSchedule('upcoming')" id="btn-upcoming" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
+            🔜 今後の予定
+          </button>
+        </div>
+      </div>
+
+      <!-- テーブル / リスト -->
+      <div class="overflow-x-auto -mx-2 sm:mx-0">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-slate-800 text-[11px] font-mono text-slate-400 uppercase tracking-wider bg-slate-950/40">
+              <th class="py-3 px-3">日付・曜日</th>
+              <th class="py-3 px-2">状態</th>
+              <th class="py-3 px-2">種別</th>
+              <th class="py-3 px-3">メニュー・内容</th>
+              <th class="py-3 px-3">設定ペース / 目標心拍</th>
+              <th class="py-3 px-3">目的・戦術ポイント</th>
+              <th class="py-3 px-3">実走実績</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-sans" id="schedule-tbody">
+            {% for s in schedule %}
+            <tr class="sched-row transition hover:bg-slate-900/60 {% if s.status == 'today' %}bg-indigo-950/40 ring-1 ring-indigo-500/50 font-medium{% elif s.category == 'race' %}bg-rose-950/20{% elif s.category == 'kanto' %}opacity-80{% endif %}"
+                data-category="{{ s.category }}"
+                data-status="{{ s.status }}"
+                data-hasrun="{{ 'true' if s.has_run else 'false' }}">
+              
+              <!-- 日付・曜日 -->
+              <td class="py-3 px-3 font-mono shrink-0">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold {% if s.status == 'today' %}text-indigo-300 font-black text-sm{% elif s.is_weekend %}text-amber-300 font-semibold{% else %}text-white{% endif %}">
+                    {{ s.date_display }}
+                  </span>
+                  {% if s.location != '那覇' %}
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">{{ s.location }}</span>
+                  {% endif %}
+                </div>
+              </td>
+
+              <!-- 状態 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border {{ s.badge_color }}">
+                  {{ s.status_badge }}
+                </span>
+              </td>
+
+              <!-- 種別 -->
+              <td class="py-3 px-2 whitespace-nowrap">
+                <span class="font-bold text-[11px] {{ s.category_color }}">
+                  {{ s.category_label }}
+                </span>
+              </td>
+
+              <!-- メニュー・内容 -->
+              <td class="py-3 px-3 min-w-[200px]">
+                <div class="font-bold text-white tracking-tight text-xs">{{ s.menu }}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">{{ s.detail }}</div>
+              </td>
+
+              <!-- 設定ペース / 心拍 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                <div class="text-emerald-400 font-bold">{{ s.target_pace }}</div>
+                <div class="text-[10px] text-slate-400">{{ s.target_hr }}</div>
+              </td>
+
+              <!-- 目的・ポイント -->
+              <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
+                {{ s.purpose }}
+              </td>
+
+              <!-- 実走実績 -->
+              <td class="py-3 px-3 font-mono whitespace-nowrap">
+                {% if s.has_run and s.actual %}
+                <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-2 text-center shadow-inner">
+                  <div class="text-xs font-black text-emerald-400">{{ s.actual.distance_km }}km ({{ s.actual.pace_str }})</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">HR {{ s.actual.avg_hr }}bpm • {{ s.actual.duration_str }}</div>
+                </div>
+                {% else %}
+                <span class="text-slate-600 text-center block">-</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500">
+    <p>Running Analytics Dashboard • Powered by Python & Tailwind CSS</p>
+    <p class="mt-1">Generated for GitHub Pages • <a href="index.html" class="text-amber-400 hover:underline">ダッシュボードへ戻る</a></p>
+  </footer>
+
+  <script>
+    function filterSchedule(mode) {
+      document.querySelectorAll('.sched-filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-amber-500/20', 'text-amber-300', 'border', 'border-amber-500/40');
+        btn.classList.add('text-slate-400');
+      });
+      const activeBtn = document.getElementById('btn-' + mode);
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-amber-500/20', 'text-amber-300', 'border', 'border-amber-500/40');
+        activeBtn.classList.remove('text-slate-400');
+      }
+
+      const rows = document.querySelectorAll('.sched-row');
+      rows.forEach(row => {
+        const cat = row.getAttribute('data-category');
+        const status = row.getAttribute('data-status');
+        const hasRun = row.getAttribute('data-hasrun') === 'true';
+
+        let show = true;
+        if (mode === 'run') {
+          show = ['point', 'long', 'easy', 'race'].includes(cat) || hasRun;
+        } else if (mode === 'point') {
+          show = ['point', 'long', 'race'].includes(cat);
+        } else if (mode === 'rest') {
+          show = ['rest', 'kanto', 'swim'].includes(cat);
+        } else if (mode === 'upcoming') {
+          show = status === 'upcoming' || status === 'today';
+        }
+        row.style.display = show ? '' : 'none';
+      });
+    }
+
+    // 初期化: 'all' をアクティブに
+    filterSchedule('all');
+  </script>
+</body>
+</html>
