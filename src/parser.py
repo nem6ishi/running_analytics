@@ -102,10 +102,16 @@ def load_activities(csv_path: Path) -> pd.DataFrame:
     df["duration_str"] = df["duration_sec"].apply(seconds_to_time_str)
 
     # ギア（シューズ）情報
+    # ゲルニンバス（GEL-NIMBUS）は 2026-06-18 注文・2026-06-29 初下ろしのため、
+    # 2026-06-29 以降でシューズ未入力のランは自動補完する
     if "シューズ" in df.columns:
         df["gear_name"] = df["シューズ"].fillna("").astype(str).str.strip()
     else:
         df["gear_name"] = ""
+
+    # 2026-06-29 以降の空欄補完
+    mask_nimbus = (df["datetime"] >= "2026-06-29") & (df["gear_name"].isin(["", "nan", "NaN"]))
+    df.loc[mask_nimbus, "gear_name"] = "ゲルニンバス"
     df["シューズ"] = df["gear_name"]
 
     # 時系列（古い順）にソートしてインデックスを振り直す
