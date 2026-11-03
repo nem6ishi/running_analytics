@@ -528,8 +528,8 @@ def compute_gear_stats(df: pd.DataFrame, lifespan_km: float = 600.0) -> List[Dic
             "status_badge": status_badge,
         })
 
-    # 累計距離降順でソート
-    results.sort(key=lambda x: x["total_distance_km"], reverse=True)
+    # 最終使用日の新しい順（現役シューズが先頭）でソート
+    results.sort(key=lambda x: str(x.get("last_used", "")), reverse=True)
     return results
 
 
