@@ -1081,7 +1081,7 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             "theme": "完全ピーキング（TSB +5〜+15）で与論島へ！1時間55分〜59分でサブ2達成",
             "days": [
                 {"date": "2026-11-24", "label": "11/24(火)", "type": "easy", "menu": "🌱 5km 調整ジョグ ＋ 流し3本", "target": "神経系刺激"},
-                {"date": "2026-11-27", "label": "11/27(金)", "type": "easy", "menu": "✨ 3km 最終調整ジョグ ＋ 流し2本", "target": "本番リズム"},
+                {"date": "2026-11-26", "label": "11/26(木)", "type": "easy", "menu": "✨ 4km 最終刺激入れ ＋ 流し2本", "target": "本番リズム"},
                 {"date": "2026-11-28", "label": "11/28(土)", "type": "kanto", "menu": "🚢 那覇 ➔ 与論島フェリー移動（07:00発）", "target": "移動・前日休養"},
                 {"date": "2026-11-29", "label": "11/29(日)", "type": "race", "menu": "🏁 【決戦】ヨロンマラソン ハーフ (21.0975km)", "target": "1:55:00〜1:59:59"},
             ],
