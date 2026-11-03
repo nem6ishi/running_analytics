@@ -14,9 +14,10 @@ venv/
 .ruff_cache/
 .mypy_cache/
 
-# Data / Uploads / Logs
+# Data / Uploads / Logs / Private
 data/
 logs/
+private/
 *.log
 
 # OS & IDE
