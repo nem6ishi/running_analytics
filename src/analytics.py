@@ -501,7 +501,15 @@ def compute_gear_stats(df: pd.DataFrame, lifespan_km: float = 600.0) -> List[Dic
         remaining_km = max(0.0, round(lifespan_km - total_dist, 1))
         needs_replacement = total_dist >= lifespan_km
 
-        if needs_replacement:
+        is_retired = shoe_name in ["ウエーブライダー GTX 2"]
+
+        if is_retired:
+            status_label = "廃棄済み (普段履き併用で寿命全う)"
+            status_color = "text-slate-400"
+            status_badge = "bg-slate-800 text-slate-400 border-slate-700"
+            lifespan_pct = 100.0
+            remaining_km = 0.0
+        elif needs_replacement:
             status_label = "交換推奨 (寿命到達)"
             status_color = "text-rose-400"
             status_badge = "bg-rose-500/20 text-rose-300 border-rose-500/40"
@@ -510,7 +518,7 @@ def compute_gear_stats(df: pd.DataFrame, lifespan_km: float = 600.0) -> List[Dic
             status_color = "text-amber-400"
             status_badge = "bg-amber-500/20 text-amber-300 border-amber-500/40"
         else:
-            status_label = "良好"
+            status_label = "良好 (現役)"
             status_color = "text-emerald-400"
             status_badge = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
 
@@ -523,6 +531,7 @@ def compute_gear_stats(df: pd.DataFrame, lifespan_km: float = 600.0) -> List[Dic
             "lifespan_pct": lifespan_pct,
             "remaining_km": remaining_km,
             "needs_replacement": needs_replacement,
+            "is_retired": is_retired,
             "status_label": status_label,
             "status_color": status_color,
             "status_badge": status_badge,

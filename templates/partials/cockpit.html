@@ -866,11 +866,15 @@
                       <span class="text-[10px] px-2 py-0.5 rounded-full border {{ gear.status_badge }} font-bold">{{ gear.status_label }}</span>
                     </div>
                     <div class="w-full bg-slate-900 rounded-full h-2 p-0.5 border border-slate-800 overflow-hidden">
-                      <div class="h-full rounded-full {% if gear.needs_replacement %}bg-rose-500{% elif gear.lifespan_pct >= 80 %}bg-amber-400{% else %}bg-emerald-400{% endif %}" style="width: {{ gear.lifespan_pct }}%;"></div>
+                      <div class="h-full rounded-full {% if gear.is_retired %}bg-slate-600{% elif gear.needs_replacement %}bg-rose-500{% elif gear.lifespan_pct >= 80 %}bg-amber-400{% else %}bg-emerald-400{% endif %}" style="width: {{ gear.lifespan_pct }}%;"></div>
                     </div>
                     <div class="flex justify-between text-[10px] font-mono text-slate-400">
                       <span class="text-white font-bold">{{ gear.total_distance_km }} km / {{ gear.lifespan_km }} km ({{ gear.lifespan_pct }}%)</span>
+                      {% if gear.is_retired %}
+                      <span class="text-slate-400">普段履き併用により寿命全う・廃棄</span>
+                      {% else %}
                       <span>残り {{ gear.remaining_km }} km</span>
+                      {% endif %}
                     </div>
                   </div>
                   {% endfor %}
