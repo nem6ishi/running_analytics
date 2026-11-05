@@ -1063,7 +1063,7 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             "end": "2026-11-15",
             "theme": "1kmインターバルでVO2max覚醒 ＆ フル本番巡航ペース（6:00〜6:15/km）完全定着＋補給テスト",
             "days": [
-                {"date": "2026-11-10", "label": "11/10(火)", "type": "point", "menu": "🔥 1kmインターバル × 3本 (4:50〜5:05/km ＋ つなぎ400m)", "target": "VO2max覚醒・スピード余裕度拡大"},
+                {"date": "2026-11-10", "label": "11/10(火)", "type": "point", "menu": "🔥 1km交代走 × 3本 (1km 4:55〜5:05/km ⇄ 1kmつなぎジョグ)", "target": "VO2max覚醒・乳酸クリアランス向上"},
                 {"date": "2026-11-12", "label": "11/12(木)", "type": "easy", "menu": "🌱 5〜6km 有酸素イージージョグ (Zone 2) ＋ 流し2本", "target": "つなぎ回復"},
                 {"date": "2026-11-15", "label": "11/15(日)", "type": "long", "menu": "🌟 16〜18km Mペース持続走 (3kmアップ+11〜13km 6:00〜6:15/km+ラスト2kmフリー)", "target": "フル本番巡航力＆補給検証"},
             ],
