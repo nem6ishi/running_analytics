@@ -39,7 +39,7 @@ WARMUP_DISTANCE_KM: float = 3.0
 # ==========================================
 # 🫀 生理学的パラメータ (Physiological Parameters)
 # ==========================================
-HR_MAX: int = 195                    # 最大心拍数 (bpm)
+HR_MAX: int = 196                    # 実測最大心拍数 (bpm: 2026-02-05に196bpm記録済)
 HR_RESTING: int = 55                 # 安静時心拍数 (bpm)
 
 # 心拍ゾーン定義 (% of HR_MAX)

@@ -61,7 +61,7 @@ def compute_training_load(
         }
 
     hr_resting = float(hr_params.get("hr_resting", 55))
-    hr_max = float(hr_params.get("hr_max", 195))
+    hr_max = float(hr_params.get("hr_max", 196))
 
     # 各アクティビティの TRIMP を計算
     df_load = df.copy()
@@ -185,7 +185,7 @@ def compute_zone_distribution(
     - 全期間および直近4週間の滞在時間（秒数・割合%）を算出
     - 低強度（Z1+Z2）vs 中・高強度（Z3+Z4+Z5）の比率とアドバイスを提示
     """
-    hr_max = float(hr_params.get("hr_max", 195))
+    hr_max = float(hr_params.get("hr_max", 196))
 
     empty_result = {
         "all_time": {

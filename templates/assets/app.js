@@ -254,7 +254,7 @@ const {
       // 心拍ゾーンメーターの位置計算 (120bpm〜HRmaxの範囲を0%〜100%にマッピング)
       const hrParams = (window.RUNNING_DATA && window.RUNNING_DATA.hrParams) || null;
       const hrMin = 120;
-      const effectiveHrMax = hrParams?.hr_max || 195;
+      const effectiveHrMax = hrParams?.hr_max || 196;
       const avgHrPct = Math.max(0, Math.min(100, ((act.avg_hr - hrMin) / (effectiveHrMax - hrMin)) * 100));
       const maxHrPct = Math.max(0, Math.min(100, ((act.max_hr - hrMin) / (effectiveHrMax - hrMin)) * 100));
 
