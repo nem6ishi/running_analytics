@@ -53,7 +53,7 @@
         <div class="flex items-center justify-between">
           <span class="text-xs font-black uppercase tracking-wider text-emerald-400 font-mono">11/29(日) ハーフ本番</span>
           <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            あと 26 日
+            あと 24 日
           </span>
         </div>
         <div class="my-3">
@@ -71,7 +71,7 @@
         <div class="flex items-center justify-between">
           <span class="text-xs font-black uppercase tracking-wider text-sky-400 font-mono">12/06(日) フル本番</span>
           <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-sky-500/20 text-sky-300 border border-sky-500/30">
-            あと 33 日
+            あと 31 日
           </span>
         </div>
         <div class="my-3">
@@ -652,15 +652,15 @@
               </td>
             </tr>
             
-            <tr class="sched-row transition hover:bg-slate-900/60 bg-indigo-950/40 ring-1 ring-indigo-500/50 font-medium"
+            <tr class="sched-row transition hover:bg-slate-900/60 "
                 data-category="point"
-                data-status="today"
+                data-status="done"
                 data-hasrun="true">
               
               <!-- 日付・曜日 -->
               <td class="py-3 px-3 font-mono shrink-0">
                 <div class="flex items-center space-x-1.5">
-                  <span class="font-bold text-indigo-300 font-black text-sm">
+                  <span class="font-bold text-white">
                     11/3 (火)
                   </span>
                   
@@ -669,8 +669,8 @@
 
               <!-- 状態 -->
               <td class="py-3 px-2 whitespace-nowrap">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-indigo-500/20 text-indigo-300 border-indigo-500/40">
-                  📍 本日
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
                 </span>
               </td>
 
@@ -711,7 +711,7 @@
             
             <tr class="sched-row transition hover:bg-slate-900/60 "
                 data-category="rest"
-                data-status="upcoming"
+                data-status="done"
                 data-hasrun="false">
               
               <!-- 日付・曜日 -->
@@ -726,8 +726,8 @@
 
               <!-- 状態 -->
               <td class="py-3 px-2 whitespace-nowrap">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-slate-800 text-slate-300 border-slate-700">
-                  🌱 予定
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
                 </span>
               </td>
 
@@ -763,15 +763,15 @@
               </td>
             </tr>
             
-            <tr class="sched-row transition hover:bg-slate-900/60 "
+            <tr class="sched-row transition hover:bg-slate-900/60 bg-indigo-950/40 ring-1 ring-indigo-500/50 font-medium"
                 data-category="long"
-                data-status="upcoming"
-                data-hasrun="false">
+                data-status="today"
+                data-hasrun="true">
               
               <!-- 日付・曜日 -->
               <td class="py-3 px-3 font-mono shrink-0">
                 <div class="flex items-center space-x-1.5">
-                  <span class="font-bold text-white">
+                  <span class="font-bold text-indigo-300 font-black text-sm">
                     11/5 (木)
                   </span>
                   
@@ -780,8 +780,8 @@
 
               <!-- 状態 -->
               <td class="py-3 px-2 whitespace-nowrap">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-amber-500/20 text-amber-300 border-amber-500/30">
-                  🔥 ポイント
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-indigo-500/20 text-indigo-300 border-indigo-500/40">
+                  📍 本日
                 </span>
               </td>
 
@@ -812,7 +812,10 @@
               <!-- 実走実績 -->
               <td class="py-3 px-3 font-mono whitespace-nowrap">
                 
-                <span class="text-slate-600 text-center block">-</span>
+                <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-2 text-center shadow-inner">
+                  <div class="text-xs font-black text-emerald-400">21.22km (7:36)</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">HR 145bpm • 02:41:21</div>
+                </div>
                 
               </td>
             </tr>
