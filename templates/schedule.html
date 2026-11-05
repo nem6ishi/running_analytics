@@ -35,6 +35,11 @@
       </div>
 
       <div class="flex items-center space-x-2.5">
+        <a href="#repertoire-guide" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition flex items-center space-x-1 shadow-sm">
+          <span>🏃‍♂️</span>
+          <span class="hidden sm:inline">練習レパートリー一覧</span>
+          <span class="sm:hidden">レパートリー</span>
+        </a>
         <a href="index.html" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 transition flex items-center space-x-1.5 shadow-sm">
           <span>←</span>
           <span>ダッシュボードへ戻る</span>
@@ -268,6 +273,378 @@
             {% endfor %}
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- 練習レパートリー完全ガイド -->
+    <div id="repertoire-guide" class="mt-12 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl backdrop-blur-xl">
+      <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-8 border-b border-slate-800 gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/30">
+              TRAINING REPERTOIRE
+            </span>
+            <span class="text-xs text-slate-500 font-mono">Purpose & Physiological Adaptations</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight mt-2 flex items-center gap-2">
+            <span>🏃‍♂️</span> 練習メニュー・レパートリー完全ガイド
+          </h2>
+          <p class="text-xs md:text-sm text-slate-400 mt-1">
+            目標レース（ヨロンハーフ：サブ2 / NAHAフル：サブ4.5）達成に向けた各メニューの目的・生理学的効果・設定目安一覧です。
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-400 font-mono bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+            全9バリエーション
+          </span>
+        </div>
+      </div>
+
+      <!-- レパートリーグリッド -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- 1. 1km交代走 -->
+        <div class="bg-slate-950/80 border border-rose-500/30 rounded-2xl p-5 hover:border-rose-500/60 transition-all shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                🔥 ポイント走 (スピード持久)
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">VO2max / 乳酸処理</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-rose-400 transition-colors">1km交代走（疾走⇄つなぎ）</h3>
+            <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+              1km疾走と1kmつなぎジョグを交互に繰り返す。Garminの1kmオートラップと完全連動し、時計操作不要で集中できる実践的インターバル。
+            </p>
+
+            <div class="space-y-2 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">疾走区間</span>
+                <span class="font-mono font-bold text-rose-400">4:55〜5:05/km (HR 166〜172)</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">つなぎ区間</span>
+                <span class="font-mono text-emerald-400">6:30〜7:00/km (HR 145〜155)</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-800/60 pt-1.5 mt-1.5">
+                <span class="text-slate-400">本数・構成</span>
+                <span class="font-mono text-slate-200">3kmアップ ➔ 3〜4本 ➔ 2kmダウン</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/50">
+              <div class="text-[11px] text-slate-400 font-semibold mb-1">🧬 生理学的効果:</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                疾走で発生した乳酸をつなぎジョグでエネルギーとして再利用する「乳酸シャトル機構」を劇的に強化。後半の粘り強さと最大酸素摂取量を高めます。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. LTテンポ走 -->
+        <div class="bg-slate-950/80 border border-amber-500/30 rounded-2xl p-5 hover:border-amber-500/60 transition-all shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                🌟 ポイント走 (LT向上)
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">乳酸閾値 (LT)</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">LTテンポ走（閾値ペース走）</h3>
+            <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+              乳酸が急増し始める直前のギリギリ「快適なキツさ」を保って巡航。ハーフマラソン巡航速度のベースを作る要のトレーニング。
+            </p>
+
+            <div class="space-y-2 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">巡航ペース</span>
+                <span class="font-mono font-bold text-amber-400">5:20〜5:35/km</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">心拍上限キャップ</span>
+                <span class="font-mono text-rose-400 font-bold">168〜172 bpm (超えたら緩める)</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-800/60 pt-1.5 mt-1.5">
+                <span class="text-slate-400">距離構成</span>
+                <span class="font-mono text-slate-200">3kmアップ ➔ 5〜7km巡航 ➔ 1kmダウン</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/50">
+              <div class="text-[11px] text-slate-400 font-semibold mb-1">🧬 生理学的効果:</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                乳酸が蓄積し始めるペースラインを引き上げ、5:25〜5:35/km前後の速度でも息が上がらず「楽に速く巡航できる体質」を獲得します。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Mペース持続走 -->
+        <div class="bg-slate-950/80 border border-blue-500/30 rounded-2xl p-5 hover:border-blue-500/60 transition-all shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                🌟 ポイント走 (フル本番特化)
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">Marathon Pace</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">Mペース持続走（本番ペース走）</h3>
+            <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+              NAHAマラソンの目標巡航ペース（サブ4.5）で12〜18kmを持続。リズムの自動化と補給（ジェル・給水）の実戦テストを行う。
+            </p>
+
+            <div class="space-y-2 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">目標ペース</span>
+                <span class="font-mono font-bold text-blue-400">6:00〜6:20/km</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">目標心拍</span>
+                <span class="font-mono text-emerald-400">148〜156 bpm</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-800/60 pt-1.5 mt-1.5">
+                <span class="text-slate-400">距離目安</span>
+                <span class="font-mono text-slate-200">12km 〜 18km (単一巡航)</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/50">
+              <div class="text-[11px] text-slate-400 font-semibold mb-1">🧬 生理学的効果:</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                レース本番のペース配分を身体に刻み込み、無駄な筋力消費を抑えるランニングエコノミーを確立。心拍ドリフトの抑制限界を検証します。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. 本格LSD -->
+        <div class="bg-slate-950/80 border border-purple-500/30 rounded-2xl p-5 hover:border-purple-500/60 transition-all shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                🐢 スタミナ土台 (最重要)
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">Long Slow Distance</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-purple-400 transition-colors">本格LSD（超長距離走）</h3>
+            <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+              心拍ゾーン2を厳格に維持し、2時間以上走り続ける。毎週スタックすることで心肺と筋肉の土台を作り上げる最重要メニュー。
+            </p>
+
+            <div class="space-y-2 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">ペース目安</span>
+                <span class="font-mono font-bold text-purple-400">7:15〜7:45/km (タイム無視)</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">心拍ゾーン</span>
+                <span class="font-mono text-emerald-400">138〜148 bpm (Zone 2)</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-800/60 pt-1.5 mt-1.5">
+                <span class="text-slate-400">走行距離・時間</span>
+                <span class="font-mono text-slate-200">15〜21.1km (100〜160分)</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/50">
+              <div class="text-[11px] text-slate-400 font-semibold mb-1">🧬 生理学的効果:</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                筋細胞の毛細血管拡張、ミトコンドリア密度の増大、心臓の拡張（スポーツ心臓化）、脂肪酸化利用効率の劇的な向上をもたらします。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. イージージョグ -->
+        <div class="bg-slate-950/80 border border-emerald-500/30 rounded-2xl p-5 hover:border-emerald-500/60 transition-all shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                🏃‍♂️ 基礎・リカバリー
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">Active Recovery</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">イージージョグ（回復走）</h3>
+            <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+              ポイント走や長距離走の合間に挟む軽めの有酸素走。血流を促して疲労物質を排出しつつ、週間走行距離（マイレージ）を安全に稼ぐ。
+            </p>
+
+            <div class="space-y-2 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">ペース目安</span>
+                <span class="font-mono font-bold text-emerald-400">6:30〜7:15/km</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">心拍ゾーン</span>
+                <span class="font-mono text-emerald-400">130〜142 bpm (Zone 1〜2)</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-800/60 pt-1.5 mt-1.5">
+                <span class="text-slate-400">距離目安</span>
+                <span class="font-mono text-slate-200">5km 〜 8km</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/50">
+              <div class="text-[11px] text-slate-400 font-semibold mb-1">🧬 生理学的効果:</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                筋肉の柔軟性維持、全身の血流促進（アクティブリカバリー）、関節・腱の衝撃耐性向上。心身のリフレッシュに最適です。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. ウィンドスプリント（流し） -->
+        <div class="bg-slate-950/80 border border-cyan-500/30 rounded-2xl p-5 hover:border-cyan-500/60 transition-all shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                ⚡️ フォーム・神経系強化
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">Strides / Economy</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">ウィンドスプリント（流し）</h3>
+            <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+              イージージョグの最後に行う100m程度の疾走。力まず大きなフォームで、85〜90%のスピードで気持ちよく駆け抜ける（2〜4本）。
+            </p>
+
+            <div class="space-y-2 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">疾走ペース</span>
+                <span class="font-mono font-bold text-cyan-400">4:00〜4:30/km (85〜90%)</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">本数・間隔</span>
+                <span class="font-mono text-cyan-400">100m × 2〜4本 (歩き完全回復)</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-800/60 pt-1.5 mt-1.5">
+                <span class="text-slate-400">意識ポイント</span>
+                <span class="font-mono text-slate-200">大きな股関節伸展・大臀筋のバネ</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/50">
+              <div class="text-[11px] text-slate-400 font-semibold mb-1">🧬 生理学的効果:</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                ジョグで縮こまりがちなフォームをリセットし、速筋線維と運動神経の伝達を刺激。ストライドを自然に広げランニングエコノミーを飛躍させます。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. ビルドアップ走 -->
+        <div class="bg-slate-950/80 border border-teal-500/30 rounded-2xl p-5 hover:border-teal-500/60 transition-all shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                📈 ペーシング・脚作り
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">Progressive Run</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-teal-400 transition-colors">ビルドアップ走（漸進加速走）</h3>
+            <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+              ゆったりしたジョグペースからスタートし、段階的にペースを上げて最後はLT〜レースペース以上でフィニッシュする実戦練習。
+            </p>
+
+            <div class="space-y-2 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">序盤 (1〜4km)</span>
+                <span class="font-mono text-slate-300">6:30〜6:45/km (HR 135〜142)</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">中盤 (5〜7km)</span>
+                <span class="font-mono text-emerald-400">6:00〜6:15/km (HR 145〜153)</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">終盤 (8〜10km)</span>
+                <span class="font-mono font-bold text-teal-400">5:25〜5:35/km (HR 160〜168)</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/50">
+              <div class="text-[11px] text-slate-400 font-semibold mb-1">🧬 生理学的効果:</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                疲労が蓄積した後半に速筋を動員する訓練となり、レース本番で後半に失速せず「ネガティブスプリット（後半型）」で走り切る能力を養います。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. 最終刺激入れ -->
+        <div class="bg-slate-950/80 border border-yellow-500/30 rounded-2xl p-5 hover:border-yellow-500/60 transition-all shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                🎯 レース直前調整
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">Tapering / Opener</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-yellow-400 transition-colors">最終刺激入れ（前々日ミニ刺激）</h3>
+            <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+              レース2〜3日前に実施。疲労を溜めずに神経伝達と心肺に短いカツを入れ、本番で序盤からスムーズに動ける身体状態を整える。
+            </p>
+
+            <div class="space-y-2 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">全体構成</span>
+                <span class="font-mono text-slate-200">2kmアップ ➔ 1km刺激 ➔ 1kmダウン</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">刺激区間ペース</span>
+                <span class="font-mono font-bold text-yellow-400">5:15〜5:25/km (ハーフ目標ペース)</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-800/60 pt-1.5 mt-1.5">
+                <span class="text-slate-400">総距離</span>
+                <span class="font-mono text-yellow-300">4km前後 (余力を残して終了)</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/50">
+              <div class="text-[11px] text-slate-400 font-semibold mb-1">🧬 生理学的効果:</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                テーパリング（疲労抜き）期間中の心肺・神経の鈍りを防ぎ、筋グリコーゲンの蓄積を邪魔せずに交感神経系を適度に覚醒させます。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 9. 完全休養・アクティブレスト -->
+        <div class="bg-slate-950/80 border border-slate-700/40 rounded-2xl p-5 hover:border-slate-600 transition-all shadow-lg flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                🛌 超回復・休養
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">Supercompensation</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-slate-300 transition-colors">完全休養 / アクティブレスト</h3>
+            <p class="text-xs text-slate-400 mt-1 mb-4 leading-relaxed">
+              走らないことも強くなるための不可欠なトレーニング。破壊された筋線維や枯渇したエネルギーを満たし、一段上の走力を定着させる。
+            </p>
+
+            <div class="space-y-2 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">休息種別</span>
+                <span class="font-mono text-slate-200">完全オフ or 軽い散歩・ストレッチ</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">栄養・睡眠</span>
+                <span class="font-mono text-emerald-400">高タンパク・炭水化物補給 / 7.5h睡眠</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-800/60 pt-1.5 mt-1.5">
+                <span class="text-slate-400">重要マインド</span>
+                <span class="font-mono text-amber-300">「休む勇気」が次の爆発力を生む</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/50">
+              <div class="text-[11px] text-slate-400 font-semibold mb-1">🧬 生理学的効果:</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                グリコーゲンの再充填、結合組織（腱・靭帯）の修復、慢性炎症の鎮静化、自律神経の回復をもたらし、トレーニング効果を定着させます。
+              </p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
