@@ -11,18 +11,27 @@
             <p class="text-xs sm:text-sm text-slate-400">行をクリックすると「個別分析」に切り替わり詳細を確認できます</p>
           </div>
 
-          <!-- 検索ボックス & 距離別フィルター -->
+          <!-- 検索ボックス & フィルター群 -->
           <div class="flex flex-wrap items-center gap-2">
             <!-- 検索入力 -->
             <div class="relative">
-              <input type="text" id="activity-search" oninput="handleTableSearch()" placeholder="🔍 検索 (日付・種別)..." class="bg-slate-900 border border-slate-700 text-white text-xs rounded-xl px-3 py-1.5 w-44 sm:w-56 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+              <input type="text" id="activity-search" oninput="handleTableSearch()" placeholder="🔍 検索 (日付・種別)..." class="bg-slate-900 border border-slate-700 text-white text-xs rounded-xl px-3 py-1.5 w-40 sm:w-48 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
             </div>
-            <!-- 距離別フィルターボタン -->
-            <div class="flex items-center space-x-1 bg-slate-900 border border-slate-800 p-1 rounded-xl text-xs">
-              <button onclick="filterActivities('all')" id="filter-all" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-medium transition">すべて</button>
-              <button onclick="filterActivities('short')" id="filter-short" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">&lt;5k</button>
-              <button onclick="filterActivities('mid')" id="filter-mid" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">5-10k</button>
-              <button onclick="filterActivities('long')" id="filter-long" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">10k+</button>
+
+            <!-- トレーニング種別フィルター -->
+            <div class="flex items-center space-x-1 bg-slate-900 border border-slate-800 p-1 rounded-xl text-xs font-bold">
+              <button onclick="filterActivities('all')" id="filter-all" class="act-filter-btn px-2.5 py-1 rounded-lg bg-emerald-500 text-white transition">すべて</button>
+              <button onclick="filterActivities('lsd')" id="filter-lsd" class="act-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">🐢 LSD</button>
+              <button onclick="filterActivities('point')" id="filter-point" class="act-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">🔥 交代/LT</button>
+              <button onclick="filterActivities('buildup')" id="filter-buildup" class="act-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">📈 BU</button>
+              <button onclick="filterActivities('jog')" id="filter-jog" class="act-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">🌱 ジョグ</button>
+            </div>
+
+            <!-- 距離別フィルター -->
+            <div class="flex items-center space-x-1 bg-slate-900 border border-slate-800 p-1 rounded-xl text-xs text-slate-400 font-mono">
+              <button onclick="filterActivities('short')" id="filter-short" class="act-filter-btn px-2 py-1 rounded-lg hover:text-white transition">&lt;5k</button>
+              <button onclick="filterActivities('mid')" id="filter-mid" class="act-filter-btn px-2 py-1 rounded-lg hover:text-white transition">5-10k</button>
+              <button onclick="filterActivities('long')" id="filter-long" class="act-filter-btn px-2 py-1 rounded-lg hover:text-white transition">10k+</button>
             </div>
           </div>
         </div>
@@ -51,6 +60,7 @@
                     data-pace-sec="{{ item.pace_sec }}"
                     data-hr="{{ item.avg_hr }}"
                     data-vdot="{{ item.evaluation.vdot or 0 }}"
+                    data-type="{{ item.analysis.workout_structure.type if item.analysis and item.analysis.workout_structure else '' }}"
                     data-search="{{ item.date }} {{ item.title }} {{ item.hr_zone.name }} {{ item.analysis.workout_structure.badge if item.analysis else '' }}"
                     onclick="selectActivityAndSwitch({{ item.id }})">
                   <td class="py-3 px-4 font-bold text-white whitespace-nowrap font-mono">

@@ -855,27 +855,45 @@ const {
       });
     }
 
-    // 距離別フィルター機能
+    // 履歴テーブルの種別・距離フィルター機能
     function filterActivities(type) {
       const rows = document.querySelectorAll('.activity-row');
-      const buttons = ['all', 'short', 'mid', 'long'];
-      buttons.forEach(b => {
+      const allButtons = ['all', 'lsd', 'point', 'buildup', 'jog', 'short', 'mid', 'long'];
+
+      allButtons.forEach(b => {
         const btn = document.getElementById('filter-' + b);
         if (btn) {
           if (b === type) {
-            btn.className = 'px-3 py-1.5 rounded-lg bg-emerald-500 text-white font-medium transition';
+            btn.className = 'act-filter-btn px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition shadow-sm';
           } else {
-            btn.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
+            btn.className = 'act-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition';
           }
         }
       });
 
       rows.forEach(row => {
         const d = parseFloat(row.getAttribute('data-dist') || '0');
+        const actType = (row.getAttribute('data-type') || '').toLowerCase();
         let show = true;
-        if (type === 'short') show = (d < 5.0);
-        else if (type === 'mid') show = (d >= 5.0 && d < 10.0);
-        else if (type === 'long') show = (d >= 10.0);
+
+        if (type === 'all') {
+          show = true;
+        } else if (type === 'lsd') {
+          show = actType.includes('lsd');
+        } else if (type === 'point') {
+          show = actType.includes('lt') || actType.includes('交代') || actType.includes('インターバル');
+        } else if (type === 'buildup') {
+          show = actType.includes('ビルドアップ') || actType.includes('加速');
+        } else if (type === 'jog') {
+          show = actType.includes('ジョグ') || actType.includes('持続走') || (!actType.includes('lsd') && !actType.includes('lt') && !actType.includes('ビルドアップ'));
+        } else if (type === 'short') {
+          show = (d < 5.0);
+        } else if (type === 'mid') {
+          show = (d >= 5.0 && d < 10.0);
+        } else if (type === 'long') {
+          show = (d >= 10.0);
+        }
+
         row.style.display = show ? '' : 'none';
       });
     }
@@ -1720,61 +1738,116 @@ const {
     // 初期化実行 (デフォルト: 過去30日ローリング合計)
     initVolumeChart('rolling');
 
-    // 2. ペース & 心拍数推移
-    new Chart(document.getElementById('paceHrChart'), {
-      type: 'line',
-      data: {
-        labels: chartData.dates,
-        datasets: [
-          {
-            label: '平均ペース (分/km)',
-            data: chartData.paces_min,
-            borderColor: '#34d399',
-            backgroundColor: 'rgba(52, 211, 153, 0.1)',
-            yAxisID: 'yPace',
-            tension: 0.2
-          },
-          {
-            label: '平均心拍 (bpm)',
-            data: chartData.avg_hrs,
-            borderColor: '#f43f5e',
-            backgroundColor: 'transparent',
-            borderDash: [4, 4],
-            yAxisID: 'yHr',
-            tension: 0.2
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 7 } },
-          yPace: {
-            reverse: true, // ペースは小さいほど速いので反転
-            title: { display: true, text: 'ペース (分/km)', color: '#94a3b8' },
-            grid: { color: 'rgba(255, 255, 255, 0.06)' },
-            ticks: {
-              color: '#94a3b8',
-              callback: val => {
-                const min = Math.floor(val);
-                const sec = Math.round((val - min) * 60);
-                return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    // 2. ペース & 心拍数推移 (全体平均 vs 本練習区間のみ 切替対応)
+    let paceHrChartInstance = null;
+    let currentPaceHrMode = 'overall';
+
+    function initPaceHrChart(mode = 'overall') {
+      const ctx = document.getElementById('paceHrChart');
+      if (!ctx || !chartData) return;
+
+      if (paceHrChartInstance) {
+        paceHrChartInstance.destroy();
+      }
+      currentPaceHrMode = mode;
+
+      const isQuality = (mode === 'quality' && chartData.quality_paces_min);
+      const paceData = isQuality ? chartData.quality_paces_min : chartData.paces_min;
+      const hrData = isQuality ? chartData.quality_hrs : chartData.avg_hrs;
+      const paceLabel = isQuality ? '本練習ペース (分/km)' : '平均ペース (分/km)';
+      const hrLabel = isQuality ? '本練習心拍 (bpm)' : '平均心拍 (bpm)';
+
+      paceHrChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: chartData.dates,
+          datasets: [
+            {
+              label: paceLabel,
+              data: paceData,
+              borderColor: isQuality ? '#a3e635' : '#34d399',
+              backgroundColor: isQuality ? 'rgba(163, 230, 53, 0.12)' : 'rgba(52, 211, 153, 0.1)',
+              yAxisID: 'yPace',
+              tension: 0.2,
+              borderWidth: 2
+            },
+            {
+              label: hrLabel,
+              data: hrData,
+              borderColor: '#f43f5e',
+              backgroundColor: 'transparent',
+              borderDash: [4, 4],
+              yAxisID: 'yHr',
+              tension: 0.2,
+              borderWidth: 1.8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 7 } },
+            yPace: {
+              reverse: true, // ペースは小さいほど速いので反転
+              title: { display: true, text: 'ペース (分/km)', color: '#94a3b8' },
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: {
+                color: '#94a3b8',
+                callback: val => {
+                  const min = Math.floor(val);
+                  const sec = Math.round((val - min) * 60);
+                  return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+                }
               }
+            },
+            yHr: {
+              position: 'right',
+              title: { display: true, text: '心拍数 (bpm)', color: '#94a3b8' },
+              grid: { display: false },
+              ticks: { color: '#94a3b8' }
             }
           },
-          yHr: {
-            position: 'right',
-            title: { display: true, text: '心拍数 (bpm)', color: '#94a3b8' },
-            grid: { display: false },
-            ticks: { color: '#94a3b8' }
+          plugins: {
+            legend: { labels: { color: '#cbd5e1', font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  if (ctx.dataset.yAxisID === 'yPace') {
+                    const val = ctx.raw;
+                    const min = Math.floor(val);
+                    const sec = Math.round((val - min) * 60);
+                    return `${ctx.dataset.label}: ${min}:${sec < 10 ? '0' : ''}${sec}/km`;
+                  }
+                  return `${ctx.dataset.label}: ${ctx.raw} bpm`;
+                }
+              }
+            }
           }
-        },
-        plugins: {
-          legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
         }
+      });
+    }
+
+    function togglePaceHrMode(mode) {
+      const btnOverall = document.getElementById('btn-pace-overall');
+      const btnQuality = document.getElementById('btn-pace-quality');
+      const desc = document.getElementById('pace-hr-chart-desc');
+
+      if (mode === 'overall') {
+        if (btnOverall) btnOverall.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm';
+        if (btnQuality) btnQuality.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        if (desc) desc.textContent = 'ペース（分/km）は上にいくほど高速（全区間平均）';
+        initPaceHrChart('overall');
+      } else {
+        if (btnQuality) btnQuality.className = 'px-2.5 py-1 rounded-lg bg-lime-400 text-slate-950 font-bold transition-all shadow-sm';
+        if (btnOverall) btnOverall.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        if (desc) desc.textContent = '⚡ 本練習区間のみ（LSD・ジョグは全区間、交代走・LT走等は3kmアップ除外）';
+        initPaceHrChart('quality');
       }
-    });
+    }
+
+    // 初期化実行 (デフォルト: 全体平均)
+    initPaceHrChart('overall');
 
     // 3. 有酸素効率 (スピード対心肺機能スコア: AEI時系列推移 & 散布図)
     let aeiTrendChartInstance = null;

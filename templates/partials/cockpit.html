@@ -205,6 +205,109 @@
       </section>
 
       <!-- ====================================================================== -->
+      <!-- 📈 SECTION 1.5: 1年間の進化ハイライト（Before / After インフォグラフィック） -->
+      <!-- ====================================================================== -->
+      <section class="glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl border border-slate-800/90 relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="text-base">🚀</span>
+            <h2 class="text-sm sm:text-base font-black text-white tracking-tight">1年間のフィジカル進化ストーリー（成長実績 Before / After）</h2>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono font-bold">2025/09 ➔ 2026/11 実績</span>
+          </div>
+          <span class="text-[11px] text-slate-400 font-mono">客観ログ実証済みの成長データ</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <!-- ① 最長走破距離 -->
+          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400 font-bold flex items-center gap-1"><span>🏃</span> 最長走破スタミナ</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">+112% 倍増</span>
+            </div>
+            <div class="my-1 flex items-baseline justify-between font-mono">
+              <div>
+                <span class="text-[10px] text-slate-500 block">初期 (2025秋)</span>
+                <span class="text-base font-bold text-slate-400">10.0<span class="text-xs font-normal">km</span></span>
+              </div>
+              <span class="text-slate-600 text-lg">➔</span>
+              <div class="text-right">
+                <span class="text-[10px] text-emerald-400 block font-bold">現在 (11/05 LSD)</span>
+                <span class="text-2xl font-black text-emerald-400">21.22<span class="text-xs font-normal">km</span></span>
+              </div>
+            </div>
+            <div class="text-[11px] text-slate-400 border-t border-slate-800/70 pt-1.5 leading-snug">
+              10km天井を完全突破。平均心拍145bpmでハーフ距離を安定制圧！
+            </div>
+          </div>
+
+          <!-- ② 10km走破タイム -->
+          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400 font-bold flex items-center gap-1"><span>⏱️</span> 10km実走タイム</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">-19分17秒 短縮</span>
+            </div>
+            <div class="my-1 flex items-baseline justify-between font-mono">
+              <div>
+                <span class="text-[10px] text-slate-500 block">2025/10/01</span>
+                <span class="text-base font-bold text-slate-400">1:12:42</span>
+              </div>
+              <span class="text-slate-600 text-lg">➔</span>
+              <div class="text-right">
+                <span class="text-[10px] text-rose-400 block font-bold">2026/11/10</span>
+                <span class="text-2xl font-black text-white">53:25</span>
+              </div>
+            </div>
+            <div class="text-[11px] text-slate-400 border-t border-slate-800/70 pt-1.5 leading-snug">
+              7:13/km ➔ 5:20/kmへ大幅加速。キロ1分53秒の巡航スピード進化！
+            </div>
+          </div>
+
+          <!-- ③ 有酸素効率 (AEI: スピード対心拍) -->
+          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400 font-bold flex items-center gap-1"><span>💎</span> 心肺効率 (AEIスコア)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">+{{ aei_stats.growth_pct }}% 向上</span>
+            </div>
+            <div class="my-1 flex items-baseline justify-between font-mono">
+              <div>
+                <span class="text-[10px] text-slate-500 block">初期5走平均</span>
+                <span class="text-base font-bold text-slate-400">{{ aei_stats.initial_5_avg }}</span>
+              </div>
+              <span class="text-slate-600 text-lg">➔</span>
+              <div class="text-right">
+                <span class="text-[10px] text-cyan-300 block font-bold">直近5走平均</span>
+                <span class="text-2xl font-black text-cyan-400">{{ aei_stats.recent_5_avg }}</span>
+              </div>
+            </div>
+            <div class="text-[11px] text-slate-400 border-t border-slate-800/70 pt-1.5 leading-snug">
+              同じ心拍数でもより速い速度を出せる「強靭なスポーツ心臓」を獲得！
+            </div>
+          </div>
+
+          <!-- ④ 最高速スプリント / インターバル -->
+          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400 font-bold flex items-center gap-1"><span>⚡</span> スピード爆発力・キレ</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">1km 4:20 突破</span>
+            </div>
+            <div class="my-1 flex items-baseline justify-between font-mono">
+              <div>
+                <span class="text-[10px] text-slate-500 block">1km疾走最速</span>
+                <span class="text-2xl font-black text-amber-300">4:20<span class="text-xs font-normal">/km</span></span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-slate-500 block">流し100m最速</span>
+                <span class="text-xl font-black text-rose-400">3:20<span class="text-xs font-normal">/km</span></span>
+              </div>
+            </div>
+            <div class="text-[11px] text-slate-400 border-t border-slate-800/70 pt-1.5 leading-snug">
+              ピッチ186spm・歩幅1.61m。サブ50（5:00/km）を余裕で凌駕するバネ！
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================== -->
       <!-- 🔥 SECTION 2: 直近ラン「3kmアップ vs 3km以降(本練習)」ハイライト ＆ 今週の6週間計画 -->
       <!-- ====================================================================== -->
       <section class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
@@ -233,7 +336,8 @@
               </button>
             </div>
 
-            <!-- ルーティン別 3ブロック比較: [全体] vs [1〜3km アップ区間] vs [3km以降 本練習区間] -->
+            <!-- ルーティン別 実績ブロック: ポイント走は [全体 vs 1〜3kmアップ vs 3km以降本練習] / LSD・ジョグは [全区間単一巡航] -->
+            {% if latest_quality_split.has_split %}
             <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
               <!-- ① 全体実績 (3列) -->
               <div class="sm:col-span-3 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-between">
@@ -285,6 +389,38 @@
                 </div>
               </div>
             </div>
+            {% else %}
+            <!-- LSD または 単一有酸素走（3kmアップなし・全区間が本練習） -->
+            <div class="bg-gradient-to-br from-emerald-950/40 via-slate-950 to-slate-950 border border-emerald-500/40 rounded-2xl p-4 space-y-2.5 shadow-inner">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
+                <div class="flex items-center space-x-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
+                    🐢 ALL-ZONE SINGLE WORKOUT
+                  </span>
+                  <span class="text-xs font-bold text-white">{{ latest_quality_split.session_type_label }}</span>
+                </div>
+                <span class="text-[11px] text-slate-400 font-mono">※アップ区間なし・全行程（{{ latest_insight.distance_km }}km）が有酸素スタミナ本練習</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
+                <div>
+                  <span class="text-[10px] text-slate-500 font-sans block">走破距離</span>
+                  <span class="text-2xl font-black text-white">{{ latest_insight.distance_km }}<span class="text-xs font-normal text-slate-400 ml-0.5">km</span></span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 font-sans block">平均ペース</span>
+                  <span class="text-2xl font-black text-emerald-400">{{ latest_insight.pace_str }}<span class="text-xs font-normal text-slate-400 ml-0.5">/km</span></span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 font-sans block">平均心拍数</span>
+                  <span class="text-2xl font-black text-rose-400">{{ latest_insight.avg_hr }}<span class="text-xs font-normal text-slate-400 ml-0.5">bpm</span></span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 font-sans block">平均ピッチ</span>
+                  <span class="text-2xl font-black text-teal-400">{{ latest_insight.running_cadence or latest_insight.cadence }}<span class="text-xs font-normal text-slate-400 ml-0.5">spm</span></span>
+                </div>
+              </div>
+            </div>
+            {% endif %}
 
             <!-- ⚡️ ウィンドスプリント（流し 100m×2）高精度秒単位解析 -->
             {% if latest_insight.analysis and latest_insight.analysis.workout_structure and latest_insight.analysis.workout_structure.wind_sprints %}
@@ -741,8 +877,20 @@
           <!-- 3. ペース & 心拍数推移 -->
           <div class="glass-card rounded-3xl p-5 shadow-xl flex flex-col justify-between">
             <div>
-              <h3 class="text-sm font-bold text-slate-200 mb-0.5">ペース & 平均心拍数の推移</h3>
-              <p class="text-[11px] text-slate-400 mb-2.5">ペース（分/km）は上にいくほど高速</p>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-2.5 mb-2.5">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-200" id="pace-hr-chart-title">ペース & 平均心拍数の推移</h3>
+                  <p class="text-[11px] text-slate-400 mt-0.5" id="pace-hr-chart-desc">ペース（分/km）は上にいくほど高速</p>
+                </div>
+                <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-xl text-xs font-mono shrink-0">
+                  <button type="button" id="btn-pace-overall" onclick="togglePaceHrMode('overall')" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm">
+                    全体平均
+                  </button>
+                  <button type="button" id="btn-pace-quality" onclick="togglePaceHrMode('quality')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all" title="ポイント走の3kmアップを除外、LSD・ジョグは全区間">
+                    ⚡ 本練習のみ
+                  </button>
+                </div>
+              </div>
             </div>
             <div class="relative h-56">
               <canvas id="paceHrChart"></canvas>

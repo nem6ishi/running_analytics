@@ -787,7 +787,9 @@ def compute_rolling_volume(df: pd.DataFrame, window_days: int = 30) -> Dict[str,
 
 
 def _extract_post_warmup_summary(act: Optional[Dict[str, Any]], warmup_km: float = WARMUP_DISTANCE_KM) -> Dict[str, Any]:
-    """アクティビティの1〜3kmウォームアップ区間と3km以降の本練習区間（Quality Zone）を分離集計"""
+    """アクティビティの1〜3kmウォームアップ区間と3km以降の本練習区間（Quality Zone）を分離集計
+    ※LSD走や単一巡航イージージョグなど、全行程が1つの有酸素目的の練習はアップ分割せず全区間を本練習として集計
+    """
     if not act:
         return {
             "has_split": False,
@@ -803,23 +805,35 @@ def _extract_post_warmup_summary(act: Optional[Dict[str, Any]], warmup_km: float
             "cooldown_km": 0.0,
             "cooldown_pace_str": "--:--",
             "laps_summary": [],
+            "is_lsd_or_single": False,
+            "session_type_label": "通常走",
         }
 
     laps = (act.get("distance_series") or {}).get("laps") or []
     valid_laps = [l for l in laps if l.get("distance_km", 0) >= 0.3]
 
-    if not valid_laps or act.get("distance_km", 0) <= warmup_km + 0.5:
+    ws = (act.get("analysis") or {}).get("workout_structure") or {}
+    ws_type = str(ws.get("type", ""))
+    is_lsd = ("LSD" in ws_type) or ws.get("is_lsd", False) or ("LSD" in str(act.get("title", "")))
+    is_easy_jog = ("持続走" in ws_type or "ジョグ" in ws_type) and (int(act.get("avg_hr", 0)) <= 145)
+
+    # LSD または 単一低強度イージージョグの場合: アップ区間は存在せず全行程が本練習
+    if is_lsd or is_easy_jog or not valid_laps or act.get("distance_km", 0) <= warmup_km + 0.5:
+        fastest_lap = min(valid_laps, key=lambda x: x.get("pace_sec", 9999)) if valid_laps else {}
+        session_label = "本格LSD（全区間 有酸素土台構築）" if is_lsd else ("イージージョグ（全区間 有酸素巡航）" if is_easy_jog else "単一巡航走")
         return {
             "has_split": False,
-            "warmup_km": round(float(act.get("distance_km", 0)), 2),
-            "warmup_pace_str": act.get("pace_str", "--:--"),
-            "warmup_hr": int(act.get("avg_hr", 0)),
+            "is_lsd_or_single": True,
+            "session_type_label": session_label,
+            "warmup_km": 0.0,
+            "warmup_pace_str": "--:--",
+            "warmup_hr": 0,
             "main_km": round(float(act.get("distance_km", 0)), 2),
             "main_pace_str": act.get("pace_str", "--:--"),
             "main_pace_sec": float(act.get("pace_sec", 0.0)),
             "main_hr": int(act.get("avg_hr", 0)),
-            "fastest_lap_str": act.get("max_pace_str", "--:--"),
-            "fastest_lap_idx": 1,
+            "fastest_lap_str": fastest_lap.get("pace_str", act.get("max_pace_str", "--:--")),
+            "fastest_lap_idx": fastest_lap.get("lap_index", 1),
             "cooldown_km": 0.0,
             "cooldown_pace_str": "--:--",
             "laps_summary": valid_laps,
@@ -871,6 +885,8 @@ def _extract_post_warmup_summary(act: Optional[Dict[str, Any]], warmup_km: float
 
     return {
         "has_split": True,
+        "is_lsd_or_single": False,
+        "session_type_label": ws_type or "ポイント走",
         "warmup_km": wu_km,
         "warmup_pace_str": wu_pace_str,
         "warmup_hr": wu_hr,
@@ -1205,9 +1221,30 @@ def prepare_full_analytics(
             val = 0.0
         chart_aeis.append(val)
 
+    # ⚡ 本練習区間（Quality Zone: LSDは全区間、ポイント走は3kmアップ除外）のデータ系列
+    chart_quality_paces = []
+    chart_quality_hrs = []
+    chart_quality_aeis = []
+    for i, (_, row) in enumerate(df.iterrows()):
+        act = insights[i] if i < len(insights) else {}
+        split = _extract_post_warmup_summary(act)
+        if split["has_split"]:
+            q_p_sec = split["main_pace_sec"]
+            q_hr = split["main_hr"]
+        else:
+            q_p_sec = row["avg_pace_sec"]
+            q_hr = row["avg_hr"]
+        q_p_min = round(float(q_p_sec / 60.0), 2) if q_p_sec > 0 else 0.0
+        q_aei = round(float((3600.0 / q_p_sec / q_hr) * 100.0), 2) if (q_p_sec > 0 and q_hr > 0) else 0.0
+        chart_quality_paces.append(q_p_min)
+        chart_quality_hrs.append(q_hr)
+        chart_quality_aeis.append(q_aei)
+
     # 5走ローリング移動平均
     aei_series = pd.Series(chart_aeis)
     aei_rolling = [round(float(v), 2) for v in aei_series.rolling(window=5, min_periods=1).mean().tolist()]
+    q_aei_series = pd.Series(chart_quality_aeis)
+    quality_aei_rolling = [round(float(v), 2) for v in q_aei_series.rolling(window=5, min_periods=1).mean().tolist()]
 
     # AEI サマリー統計
     valid_aeis = [v for v in chart_aeis if v > 0]
@@ -1275,6 +1312,10 @@ def prepare_full_analytics(
             "aeis": chart_aeis,
             "aei_rolling": aei_rolling,
             "aei_stats": aei_stats,
+            "quality_paces_min": chart_quality_paces,
+            "quality_hrs": chart_quality_hrs,
+            "quality_aeis": chart_quality_aeis,
+            "quality_aei_rolling": quality_aei_rolling,
             "scatter_hr_pace": scatter_hr_pace,
             "monthly_labels": [m["month"] for m in monthly],
             "monthly_distances": [m["distance_km"] for m in monthly],
