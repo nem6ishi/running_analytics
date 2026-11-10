@@ -547,7 +547,7 @@ def compute_calendar_heatmap(df: pd.DataFrame) -> List[Dict[str, Any]]:
     if df.empty:
         return []
 
-    # 日付ごとの集計
+    # 日付ごとの集計（最新のactivity_idも取得）
     daily = (
         df.groupby("date_str")
         .agg(
@@ -559,8 +559,14 @@ def compute_calendar_heatmap(df: pd.DataFrame) -> List[Dict[str, Any]]:
         .reset_index()
     )
 
+    # 各日付の最新アクティビティID（インデックス）を取得
+    date_to_id = {}
+    for i, row in df.iterrows():
+        date_to_id[row["date_str"]] = int(i)
+
     daily_map = {
         row["date_str"]: {
+            "activity_id": date_to_id.get(row["date_str"]),
             "distance_km": round(float(row["distance_km"]), 2),
             "runs": int(row["runs"]),
             "pace_str": seconds_to_pace_str(row["avg_pace_sec"]),
@@ -611,6 +617,7 @@ def compute_calendar_heatmap(df: pd.DataFrame) -> List[Dict[str, Any]]:
                 "is_future": False,
                 "is_first_day": curr.day == 1,
                 "distance_km": info["distance_km"],
+                "activity_id": info.get("activity_id"),
                 "runs": info["runs"],
                 "pace_str": info["pace_str"],
                 "avg_hr": info["avg_hr"],

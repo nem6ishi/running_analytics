@@ -444,10 +444,11 @@ def prepare_full_schedule(df: pd.DataFrame) -> List[Dict[str, Any]]:
     # 日付ごとのアクティビティ集計
     act_map = {}
     if not df.empty:
-        for _, row in df.iterrows():
+        for i, row in df.iterrows():
             d_str = row["日付"][:10]
-            # ランニングのサマリー
+            # ランニングのサマリー（activity_id を付与）
             act_map[d_str] = {
+                "activity_id": int(i),
                 "distance_km": row["距離"],
                 "duration_str": row["タイム"],
                 "pace_str": row["平均ペース"],

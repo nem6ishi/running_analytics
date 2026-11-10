@@ -925,14 +925,51 @@ const {
     }
 
     function selectActivity(id) {
-      document.getElementById('activity-select').value = id;
+      const selectEl = document.getElementById('activity-select');
+      if (selectEl) selectEl.value = id;
+      updateActivityNavButtons();
       if (isCompareMode) {
         renderCompareActivities();
       } else {
         renderActivity(id);
       }
       const coachSection = document.getElementById('coach-section');
-      coachSection.scrollIntoView({ behavior: 'smooth' });
+      if (coachSection) coachSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 前後のアクティビティへ移動 (direction: -1 = 過去/前, 1 = 未来/次)
+    function navigateActivity(direction) {
+      const selectEl = document.getElementById('activity-select');
+      if (!selectEl) return;
+      const currentIdx = selectEl.selectedIndex;
+      // <select> 内は reversed_insights なので、インデックス 0 が最新、末尾が最古
+      // direction: -1（過去へ）なら selectIndex を +1、direction: 1（未来へ）なら selectIndex を -1
+      const newIdx = currentIdx - direction;
+      if (newIdx >= 0 && newIdx < selectEl.options.length) {
+        selectEl.selectedIndex = newIdx;
+        const newId = parseInt(selectEl.value);
+        selectActivity(newId);
+      }
+    }
+
+    function updateActivityNavButtons() {
+      const selectEl = document.getElementById('activity-select');
+      const btnPrev = document.getElementById('btn-prev-act');
+      const btnNext = document.getElementById('btn-next-act');
+      if (!selectEl) return;
+      const idx = selectEl.selectedIndex;
+      // idx === 0 (最新) -> 次（未来）へは行けない
+      if (btnNext) {
+        btnNext.disabled = (idx <= 0);
+        btnNext.classList.toggle('opacity-30', idx <= 0);
+        btnNext.classList.toggle('cursor-not-allowed', idx <= 0);
+      }
+      // idx === options.length - 1 (最古) -> 前（過去）へは行けない
+      if (btnPrev) {
+        btnPrev.disabled = (idx >= selectEl.options.length - 1);
+        btnPrev.classList.toggle('opacity-30', idx >= selectEl.options.length - 1);
+        btnPrev.classList.toggle('cursor-not-allowed', idx >= selectEl.options.length - 1);
+      }
     }
 
     // ==========================================
@@ -1237,6 +1274,10 @@ const {
             ? `${day.date_jp}: ${d} km (${day.pace_str}/km, 心拍 ${day.avg_hr} bpm)` 
             : `${day.date_jp}: 休息日 (0 km)`;
 
+          const clickHandler = (d > 0 && day.activity_id !== undefined && day.activity_id !== null)
+            ? `onclick="selectActivityAndSwitch(${day.activity_id})"`
+            : '';
+
           return `
             <div class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm ${bgClass} ${firstDayRing} cursor-pointer transition-all duration-150 hover:scale-125 hover:z-20 heatmap-cell"
                  data-info="${infoStr}"
@@ -1245,8 +1286,9 @@ const {
                  data-pace="${day.pace_str}"
                  data-hr="${day.avg_hr}"
                  data-month-key="${monthKey}"
+                 ${clickHandler}
                  onmouseenter="showHeatmapInfo(this)"
-                 title="${infoStr}">
+                 title="${infoStr}${d > 0 ? ' (クリックで個別分析へ)' : ''}">
             </div>
           `;
         }).join('');
@@ -1475,11 +1517,13 @@ const {
     const latestId = activities[activities.length - 1].id;
     document.getElementById('activity-select').value = latestId;
     renderActivity(latestId);
+    updateActivityNavButtons();
     initWeeklyWorkloadChart(weeklyWorkload);
     initCalendarHeatmap();
 
     // セレクター変更監視
     document.getElementById('activity-select').addEventListener('change', (e) => {
+      updateActivityNavButtons();
       if (isCompareMode) {
         renderCompareActivities();
       } else {
@@ -2216,11 +2260,23 @@ const {
       }
     }
 
-    // ページ初期ロード時のハッシュチェック
+    // ページ初期ロード時のハッシュチェック & クエリパラメータチェック (?act=ID)
     window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const actParam = urlParams.get('act') || urlParams.get('id');
       const hash = window.location.hash.replace('#', '');
+
+      if (actParam) {
+        const actId = parseInt(actParam);
+        if (!isNaN(actId)) {
+          selectActivity(actId);
+        }
+      }
+
       if (['cockpit', 'activity', 'trends', 'all'].includes(hash)) {
         switchView(hash);
+      } else if (actParam) {
+        switchView('activity');
       } else {
         switchView('cockpit');
       }

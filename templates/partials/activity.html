@@ -23,13 +23,21 @@
                 <span id="compare-btn-text">ラン比較モード</span>
               </button>
 
-              <div class="flex items-center space-x-2">
-                <label for="activity-select" class="text-xs text-slate-400 whitespace-nowrap" id="select-a-label">ラン:</label>
-                <select id="activity-select" class="bg-slate-900 border border-slate-700 text-white text-xs sm:text-sm rounded-xl px-3 py-2 w-48 sm:w-60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition cursor-pointer font-mono">
-                  {% for item in reversed_insights %}
-                  <option value="{{ item.id }}">{{ item.date }} - {{ item.distance_km }}km ({{ item.pace_str }})</option>
-                  {% endfor %}
-                </select>
+              <div class="flex items-center space-x-1.5">
+                <button type="button" onclick="navigateActivity(-1)" id="btn-prev-act" class="px-2.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 transition flex items-center shadow-sm" title="前のランへ (過去)">
+                  <span>◀</span>
+                </button>
+                <div class="flex items-center space-x-2">
+                  <label for="activity-select" class="text-xs text-slate-400 whitespace-nowrap hidden sm:inline" id="select-a-label">ラン:</label>
+                  <select id="activity-select" class="bg-slate-900 border border-slate-700 text-white text-xs sm:text-sm rounded-xl px-3 py-2 w-48 sm:w-60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition cursor-pointer font-mono">
+                    {% for item in reversed_insights %}
+                    <option value="{{ item.id }}">{{ item.date }} - {{ item.distance_km }}km ({{ item.pace_str }})</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <button type="button" onclick="navigateActivity(1)" id="btn-next-act" class="px-2.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 transition flex items-center shadow-sm" title="次のランへ (未来)">
+                  <span>▶</span>
+                </button>
               </div>
 
               <!-- Compare Run B Selector (初期非表示) -->
