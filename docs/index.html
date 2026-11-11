@@ -6072,11 +6072,11 @@ const {
         } else if (type === 'lsd') {
           show = actType.includes('lsd');
         } else if (type === 'point') {
-          show = actType.includes('lt') || actType.includes('交代') || actType.includes('インターバル');
+          show = actType.includes('lt') || actType.includes('交代') || actType.includes('インターバル') || actType.includes('ファルトレク') || actType.includes('タイムトライアル') || actType.includes('スパート') || actType.includes('ペース走');
         } else if (type === 'buildup') {
           show = actType.includes('ビルドアップ') || actType.includes('加速');
         } else if (type === 'jog') {
-          show = actType.includes('ジョグ') || actType.includes('持続走') || (!actType.includes('lsd') && !actType.includes('lt') && !actType.includes('ビルドアップ'));
+          show = actType.includes('ジョグ') || actType.includes('持続走') || actType.includes('原点') || actType.includes('記念');
         } else if (type === 'short') {
           show = (d < 5.0);
         } else if (type === 'mid') {
