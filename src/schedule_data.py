@@ -346,7 +346,7 @@ RAW_SCHEDULE_PLAN = [
     },
     {
         "date": "2026-11-28",
-        "category": "race",
+        "category": "kanto",
         "menu": "🚢 那覇 ➔ 与論島フェリー移動（07:00発 ➔ 11:50着）",
         "detail": "マリックスライン乗船 ➔ 与論島到着・前日受付・コース下見・早め就寝",
         "target_pace": "-",
@@ -418,7 +418,7 @@ RAW_SCHEDULE_PLAN = [
     },
     {
         "date": "2026-12-05",
-        "category": "race",
+        "category": "rest",
         "menu": "完全休養・前日受付",
         "detail": "奥武山公園で受付・ゼッケン装着・睡眠最優先",
         "target_pace": "-",
