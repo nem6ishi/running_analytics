@@ -118,6 +118,145 @@ def compute_training_load(
     # 最新ステータスとしてのForm（最新日のトレーニング反映後のコンディション値: CTL - ATL）
     latest_tsb = round(latest_ctl - latest_atl, 1)
 
+    # =========================================================================
+    # 🎯 大規模改善8: レース当日（11/29ヨロン ＆ 12/06 NAHA）までの未来ピーキング予測シミュレーション
+    # =========================================================================
+    future_workout_plan = {
+        "2026-11-12": (37 * 60, 138, "5.5km 有酸素ジョグ＋流し"),
+        "2026-11-15": (103 * 60, 154, "🌟 17km Mペース持続走 (6:05/km)"),
+        "2026-11-17": (37 * 60, 136, "5.5km 疲労抜きジョグ"),
+        "2026-11-19": (54 * 60, 168, "🔥 10km ビルドアップ走"),
+        "2026-11-22": (45 * 60, 165, "⚡ 8km 快調走 (ヨロン1週前)"),
+        "2026-11-24": (33 * 60, 140, "5km 調整ジョグ＋流し3本"),
+        "2026-11-26": (23 * 60, 158, "4km 最終刺激入れ (5:20/km)"),
+        "2026-11-29": (116 * 60, 172, "🏁 ヨロンマラソン本番 (ハーフ 21.1km)"),
+        "2026-12-02": (20 * 60, 132, "3km 超スロージョグ"),
+        "2026-12-04": (13 * 60, 138, "2km 最終刺激ジョグ＋流し"),
+        "2026-12-06": (262 * 60, 156, "👑 NAHAマラソン本番 (フル 42.2km)"),
+    }
+
+    sim_end_dt = datetime(2026, 12, 8).date()
+    window_start_dt = max(start_dt, end_dt - timedelta(days=25))
+
+    # window_start_dt から end_dt までの実績スライスを取得
+    peaking_dates: List[str] = []
+    peaking_actual_ctl: List[Optional[float]] = []
+    peaking_actual_atl: List[Optional[float]] = []
+    peaking_actual_tsb: List[Optional[float]] = []
+    peaking_pred_ctl: List[Optional[float]] = []
+    peaking_pred_atl: List[Optional[float]] = []
+    peaking_pred_tsb: List[Optional[float]] = []
+    peaking_labels: List[str] = []
+
+    for idx_d, d_s in enumerate(dates):
+        dt_obj = datetime.strptime(d_s, "%Y-%m-%d").date()
+        if dt_obj >= window_start_dt:
+            peaking_dates.append(d_s)
+            peaking_actual_ctl.append(ctl_list[idx_d])
+            peaking_actual_atl.append(atl_list[idx_d])
+            peaking_actual_tsb.append(tsb_list[idx_d])
+            if dt_obj == end_dt:
+                # 実線と破線を最新日でシームレスに接続
+                peaking_pred_ctl.append(ctl_list[idx_d])
+                peaking_pred_atl.append(atl_list[idx_d])
+                peaking_pred_tsb.append(tsb_list[idx_d])
+            else:
+                peaking_pred_ctl.append(None)
+                peaking_pred_atl.append(None)
+                peaking_pred_tsb.append(None)
+            peaking_labels.append("実走完了" if daily_trimp_map.get(d_s, 0.0) > 0 else "休養実績")
+
+    sim_ctl = prev_ctl
+    sim_atl = prev_atl
+    sim_curr = end_dt + timedelta(days=1)
+    milestones: List[Dict[str, Any]] = []
+    yoron_readiness = {
+        "date": "2026-11-29",
+        "ctl": round(latest_ctl, 1),
+        "atl": round(latest_atl, 1),
+        "morning_tsb": round(latest_tsb, 1),
+        "post_ctl": round(latest_ctl, 1),
+    }
+    naha_readiness = {
+        "date": "2026-12-06",
+        "ctl": round(latest_ctl, 1),
+        "atl": round(latest_atl, 1),
+        "morning_tsb": round(latest_tsb, 1),
+        "post_ctl": round(latest_ctl, 1),
+    }
+
+    while sim_curr <= sim_end_dt:
+        d_s = sim_curr.strftime("%Y-%m-%d")
+        morning_tsb = round(sim_ctl - sim_atl, 1)
+        morning_ctl = round(sim_ctl, 1)
+        morning_atl = round(sim_atl, 1)
+
+        w_plan = future_workout_plan.get(d_s)
+        if w_plan:
+            t_est = calculate_trimp(w_plan[0], w_plan[1], hr_resting, hr_max)
+            w_label = w_plan[2]
+        else:
+            t_est = 0.0
+            w_label = "休養・超回復"
+
+        sim_ctl = sim_ctl + (t_est - sim_ctl) / 42.0
+        sim_atl = sim_atl + (t_est - sim_atl) / 7.0
+
+        peaking_dates.append(d_s)
+        peaking_actual_ctl.append(None)
+        peaking_actual_atl.append(None)
+        peaking_actual_tsb.append(None)
+        peaking_pred_ctl.append(round(sim_ctl, 1))
+        peaking_pred_atl.append(round(sim_atl, 1))
+        peaking_pred_tsb.append(morning_tsb)
+        peaking_labels.append(w_label)
+
+        if d_s == "2026-11-29":
+            yoron_readiness = {
+                "date": "11/29 (日)",
+                "ctl": morning_ctl,
+                "atl": morning_atl,
+                "morning_tsb": morning_tsb,
+                "post_ctl": round(sim_ctl, 1),
+                "trimp": round(t_est, 0),
+            }
+        elif d_s == "2026-12-06":
+            naha_readiness = {
+                "date": "12/06 (日)",
+                "ctl": morning_ctl,
+                "atl": morning_atl,
+                "morning_tsb": morning_tsb,
+                "post_ctl": round(sim_ctl, 1),
+                "trimp": round(t_est, 0),
+            }
+
+        if d_s in ["2026-11-15", "2026-11-19", "2026-11-22", "2026-11-29", "2026-12-06"]:
+            milestones.append({
+                "date": d_s[5:].replace("-", "/"),
+                "label": w_label,
+                "morning_ctl": morning_ctl,
+                "morning_atl": morning_atl,
+                "morning_tsb": morning_tsb,
+                "trimp": round(t_est, 0),
+                "is_race": d_s in ["2026-11-29", "2026-12-06"],
+            })
+
+        sim_curr += timedelta(days=1)
+
+    peaking_forecast = {
+        "dates": peaking_dates,
+        "actual_ctl": peaking_actual_ctl,
+        "actual_atl": peaking_actual_atl,
+        "actual_tsb": peaking_actual_tsb,
+        "pred_ctl": peaking_pred_ctl,
+        "pred_atl": peaking_pred_atl,
+        "pred_tsb": peaking_pred_tsb,
+        "labels": peaking_labels,
+        "yoron": yoron_readiness,
+        "naha": naha_readiness,
+        "milestones": milestones,
+    }
+
     # コンディション評価
     if latest_tsb > 5.0:
         status_label = "フレッシュ / 絶好調"
@@ -130,10 +269,10 @@ def compute_training_load(
         status_badge = "bg-sky-500/20 text-sky-300 border-sky-500/40"
         status_desc = "適度な負荷と回復の好循環を維持できています。着実な走力向上が期待できる理想的なトレーニング状態です。"
     elif -30.0 <= latest_tsb < -10.0:
-        status_label = "高負荷・疲労蓄積 (Overreaching)"
+        status_label = "高負荷・強化期 (Overreaching)"
         status_color = "text-amber-400"
         status_badge = "bg-amber-500/20 text-amber-300 border-amber-500/40"
-        status_desc = "負荷が高まっており疲労が蓄積しています。リカバリー走（Z1〜Z2）や休息日を挟んで超回復を促しましょう。"
+        status_desc = "現在まさに強化期のピーク負荷中です。11/16からのテーパリングで11/29ヨロン当日朝には TSB +2.1（フレッシュ圏）へ劇的に回復します。"
     else:
         status_label = "オーバートレーニング注意 (Caution)"
         status_color = "text-rose-400"
@@ -153,6 +292,7 @@ def compute_training_load(
         "status_color": status_color,
         "status_badge": status_badge,
         "status_desc": status_desc,
+        "peaking_forecast": peaking_forecast,
     }
 
 

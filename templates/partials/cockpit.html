@@ -789,6 +789,28 @@
               <p class="text-xs text-slate-300 bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60 leading-relaxed">
                 {{ training_load.status_desc }}
               </p>
+
+              <!-- 🎯 2大レース当日朝のピーキング着地予測（大規模改善8） -->
+              {% if training_load.peaking_forecast %}
+              <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
+                <div class="bg-amber-950/20 border border-amber-500/30 rounded-xl p-2.5 flex items-center justify-between">
+                  <div>
+                    <span class="text-[10px] text-amber-300 font-sans font-bold block">🏁 11/29 ヨロン当日朝予測</span>
+                    <span class="text-xs text-white font-black">TSB <strong class="text-emerald-400">{% if training_load.peaking_forecast.yoron.morning_tsb > 0 %}+{% endif %}{{ training_load.peaking_forecast.yoron.morning_tsb }}</strong></span>
+                    <span class="text-[9px] text-slate-400 block">CTL {{ training_load.peaking_forecast.yoron.ctl }} / ATL {{ training_load.peaking_forecast.yoron.atl }}</span>
+                  </div>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-sans font-bold">ピーク圏</span>
+                </div>
+                <div class="bg-sky-950/20 border border-sky-500/30 rounded-xl p-2.5 flex items-center justify-between">
+                  <div>
+                    <span class="text-[10px] text-sky-300 font-sans font-bold block">👑 12/06 NAHA当日朝予測</span>
+                    <span class="text-xs text-white font-black">TSB <strong class="text-emerald-400">{% if training_load.peaking_forecast.naha.morning_tsb > 0 %}+{% endif %}{{ training_load.peaking_forecast.naha.morning_tsb }}</strong></span>
+                    <span class="text-[9px] text-slate-400 block">CTL {{ training_load.peaking_forecast.naha.ctl }} / ATL {{ training_load.peaking_forecast.naha.atl }}</span>
+                  </div>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 font-sans font-bold">V字回復</span>
+                </div>
+              </div>
+              {% endif %}
             </div>
 
             <!-- 直近8週間の週間走行距離ミニチャート -->
@@ -980,22 +1002,41 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <!-- 1. CTL / ATL / TSB チャート -->
+          <!-- 1. CTL / ATL / TSB ピーキング＆未来予測シミュレーター（大規模改善8） -->
           <div class="glass-card rounded-3xl p-5 space-y-3 shadow-xl flex flex-col justify-between">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-2.5">
               <div>
-                <h3 class="text-sm font-bold text-slate-200">トレーニング負荷 ＆ ピーキング推移 (CTL / ATL / TSB)</h3>
-                <p class="text-[11px] text-slate-400 mt-0.5">11/29 ヨロン・12/6 NAHA に向けて CTL を高めつつ当日 TSB +5〜+15 を狙う</p>
+                <div class="flex items-center space-x-2">
+                  <h3 class="text-sm font-bold text-slate-200" id="load-chart-title">レース当日までの CTL / ATL / TSB 未来予測シミュレーション</h3>
+                  <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">実線=実績 / 破線=予定消化予測</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-0.5" id="load-chart-desc">今後の予定メニュー消化時：11/29ヨロン当日朝 TSB +{{ training_load.peaking_forecast.yoron.morning_tsb }} ➔ 12/06 NAHA当日朝 TSB +{{ training_load.peaking_forecast.naha.morning_tsb }} に着地</p>
               </div>
-              <div class="flex items-center space-x-2.5 text-[11px] font-mono shrink-0">
-                <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span><span class="text-slate-300">CTL</span></span>
-                <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span><span class="text-slate-300">ATL</span></span>
-                <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-sky-400 inline-block"></span><span class="text-slate-300">TSB</span></span>
+              <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-xl text-xs font-mono shrink-0">
+                <button type="button" id="btn-load-peaking" onclick="toggleTrainingLoadMode('peaking')" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm">
+                  🎯 未来予測 (〜12/6)
+                </button>
+                <button type="button" id="btn-load-all" onclick="toggleTrainingLoadMode('all')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all">
+                  📅 全期間実績
+                </button>
               </div>
             </div>
             <div class="relative h-60">
               <canvas id="trainingLoadChart"></canvas>
             </div>
+            {% if training_load.peaking_forecast and training_load.peaking_forecast.milestones %}
+            <div class="grid grid-cols-5 gap-1.5 pt-1 font-mono text-[10px]">
+              {% for m in training_load.peaking_forecast.milestones %}
+              <div class="p-1.5 rounded-xl border {% if m.is_race %}bg-indigo-950/40 border-indigo-500/40{% else %}bg-slate-950/60 border-slate-800/70{% endif %}">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold {% if m.is_race %}text-amber-300{% else %}text-slate-300{% endif %}">{{ m.date }}</span>
+                  <span class="text-[9px] {% if m.morning_tsb >= 0 %}text-emerald-400 font-bold{% else %}text-amber-400{% endif %}">TSB {% if m.morning_tsb > 0 %}+{% endif %}{{ m.morning_tsb }}</span>
+                </div>
+                <div class="text-[9px] text-slate-400 font-sans truncate" title="{{ m.label }}">{{ m.label }}</div>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
           </div>
 
           <!-- 2. 過去30日移動走行距離 / 月別切り替え -->
@@ -1149,49 +1190,152 @@
               </div>
             </div>
 
-            <!-- シューズ寿命管理 & ピッチ歩幅チャート -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
-              <div class="lg:col-span-6 space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold text-slate-300">👟 シューズ別走行距離 (寿命目安 600km)</span>
-                  <span class="text-[11px] text-slate-400 font-mono">通算 {{ overview.total_distance_km }}km ({{ overview.total_runs }}回)</span>
+            <!-- 👟 シューズ寿命・レース当日残量予測トラッカー & 🔬 ピッチ×歩幅バイオメカニクス解析（大規模改善7） -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+              <!-- 左カラム (5列): 現役シューズ寿命＆2大レース投入シミュレーション -->
+              <div class="lg:col-span-5 space-y-3.5">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                  <div>
+                    <span class="text-xs font-black text-white flex items-center gap-1.5"><span>👟</span> 現役ギア寿命 ＆ 2大レース残量予測トラッカー</span>
+                    <span class="text-[10px] text-slate-400">寿命上限 600km に対する現在地とヨロン・NAHA完走時点の余力</span>
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-mono">通算 {{ overview.total_distance_km }}km</span>
                 </div>
                 {% if gear_stats %}
-                <div class="space-y-2.5">
+                <div class="space-y-3">
                   {% for gear in gear_stats %}
-                  <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2">
+                  <div class="bg-slate-950/80 border {% if not gear.is_retired %}border-emerald-500/40 shadow-md{% else %}border-slate-800/80 opacity-85{% endif %} rounded-2xl p-4 space-y-3">
                     <div class="flex items-center justify-between">
                       <div>
-                        <span class="text-xs font-black text-white">{{ gear.name }}</span>
-                        <span class="text-[10px] text-slate-400 font-mono ml-2">{{ gear.runs }}回 • 最終 {{ gear.last_used }}</span>
+                        <div class="flex items-center gap-2">
+                          <span class="text-sm font-black text-white">{{ gear.name }}</span>
+                          <span class="text-[10px] px-2 py-0.5 rounded-full border {{ gear.status_badge }} font-bold">{{ gear.status_label }}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono block mt-0.5">期間: {{ gear.first_used }} 〜 {{ gear.last_used }} ({{ gear.runs }}ラン • 平均 {{ gear.avg_dist_per_run }}km/回)</span>
                       </div>
-                      <span class="text-[10px] px-2 py-0.5 rounded-full border {{ gear.status_badge }} font-bold">{{ gear.status_label }}</span>
                     </div>
+
+                    <!-- シューズ別バイオメカニクス指標 -->
+                    <div class="grid grid-cols-3 gap-2 bg-slate-900/80 rounded-xl p-2 text-center font-mono text-[11px] border border-slate-800/70">
+                      <div>
+                        <span class="text-[9px] text-slate-500 font-sans block">平均ペース</span>
+                        <span class="text-slate-200 font-bold">{{ gear.avg_pace_str }}/km</span>
+                      </div>
+                      <div>
+                        <span class="text-[9px] text-slate-500 font-sans block">平均ピッチ×歩幅</span>
+                        <span class="text-teal-300 font-bold">{{ gear.avg_cadence }}spm × {{ gear.avg_stride_m }}m</span>
+                      </div>
+                      <div>
+                        <span class="text-[9px] text-slate-500 font-sans block">平均心拍</span>
+                        <span class="text-rose-300 font-bold">{{ gear.avg_hr }} bpm</span>
+                      </div>
+                    </div>
+
+                    {% if not gear.is_retired %}
+                    <!-- 現役シューズ: 2大レース投入マイルストーン予測ゲージ -->
+                    <div class="space-y-1.5 pt-1">
+                      <div class="flex justify-between text-[11px] font-mono">
+                        <span class="text-emerald-400 font-black">現在: {{ gear.total_distance_km }}km ({{ gear.lifespan_pct }}%)</span>
+                        <span class="text-slate-300">残り寿命 <strong class="text-white">{{ gear.remaining_km }}km</strong> / {{ gear.lifespan_km }}km</span>
+                      </div>
+                      <!-- マルチセグメントバー: 現在(29.2%) + ヨロンまで(+9.1%) + NAHA完走まで(+11.4%) -->
+                      <div class="w-full bg-slate-900 rounded-full h-3 p-0.5 border border-slate-800 overflow-hidden flex relative" title="緑:現在({{ gear.total_distance_km }}km) / 黄:ヨロン出走時({{ gear.yoron_proj_km }}km) / 青:NAHA完走後({{ gear.naha_finish_km }}km)">
+                        <div class="h-full bg-emerald-400 rounded-l-full" style="width: {{ gear.lifespan_pct }}%;"></div>
+                        <div class="h-full bg-amber-400/85" style="width: 9.1%;"></div>
+                        <div class="h-full bg-sky-400/85 rounded-r-full" style="width: 11.4%;"></div>
+                      </div>
+                      <div class="grid grid-cols-2 gap-2 pt-1 font-mono text-[10px]">
+                        <div class="bg-amber-950/25 border border-amber-500/30 rounded-xl p-2">
+                          <span class="text-amber-300 font-sans font-bold block">🏁 11/29 ヨロン出走時</span>
+                          <span class="text-white font-bold">推定 {{ gear.yoron_proj_km }} km <span class="text-amber-300">({{ gear.yoron_proj_pct }}%)</span></span>
+                          <span class="text-[9px] text-slate-400 font-sans block">反発・衝撃吸収の最高潮スイートスポット</span>
+                        </div>
+                        <div class="bg-sky-950/25 border border-sky-500/30 rounded-xl p-2">
+                          <span class="text-sky-300 font-sans font-bold block">👑 12/06 NAHA完走後</span>
+                          <span class="text-white font-bold">推定 {{ gear.naha_finish_km }} km <span class="text-sky-300">({{ gear.naha_finish_pct }}%)</span></span>
+                          <span class="text-[9px] text-slate-400 font-sans block">2大会完走後も残り {{ gear.post_naha_remaining_km }}km (寿命{{ gear.est_retire_period }})</span>
+                        </div>
+                      </div>
+                    </div>
+                    {% else %}
                     <div class="w-full bg-slate-900 rounded-full h-2 p-0.5 border border-slate-800 overflow-hidden">
-                      <div class="h-full rounded-full {% if gear.is_retired %}bg-slate-600{% elif gear.needs_replacement %}bg-rose-500{% elif gear.lifespan_pct >= 80 %}bg-amber-400{% else %}bg-emerald-400{% endif %}" style="width: {{ gear.lifespan_pct }}%;"></div>
+                      <div class="h-full rounded-full bg-slate-600" style="width: 100%;"></div>
                     </div>
                     <div class="flex justify-between text-[10px] font-mono text-slate-400">
-                      <span class="text-white font-bold">{{ gear.total_distance_km }} km / {{ gear.lifespan_km }} km ({{ gear.lifespan_pct }}%)</span>
-                      {% if gear.is_retired %}
-                      <span class="text-slate-400">普段履き併用により寿命全う・廃棄</span>
-                      {% else %}
-                      <span>残り {{ gear.remaining_km }} km</span>
-                      {% endif %}
+                      <span class="text-slate-300 font-bold">ラン実走 {{ gear.total_distance_km }} km ({{ gear.runs }}回)</span>
+                      <span>普段履き併用により寿命全う・退役済み</span>
                     </div>
+                    {% endif %}
                   </div>
                   {% endfor %}
                 </div>
                 {% endif %}
               </div>
 
-              <div class="lg:col-span-6 bg-slate-950/50 border border-slate-800/80 rounded-2xl p-4">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs font-bold text-slate-300">ピッチ ({{ overview.avg_cadence }}spm) ＆ 歩幅 ({{ overview.avg_stride_m }}m) の推移</span>
-                  <span class="text-[10px] text-slate-500 font-mono">理想ピッチ 172-180 spm</span>
+              <!-- 右カラム (7列): ピッチ×歩幅バイオメカニクス解析 ＆ 目標達成マトリクス -->
+              <div class="lg:col-span-7 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 sm:p-5 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+                  <div>
+                    <span class="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
+                      <span>🔬</span>
+                      <span id="form-chart-title">ペース帯別「ピッチ × 歩幅（ストライド）」エコノミー解析</span>
+                    </span>
+                    <span class="text-[10px] text-slate-400 block mt-0.5" id="form-chart-desc">全{{ overview.total_runs }}ラン平均：{{ overview.avg_cadence }} spm × {{ overview.avg_stride_m }} m（バブルクリックで該当ランへ移動）</span>
+                  </div>
+                  <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-xl text-xs font-mono shrink-0">
+                    <button type="button" id="btn-form-scatter" onclick="toggleFormChartMode('scatter')" class="px-2.5 py-1 rounded-lg bg-teal-500 text-slate-950 font-bold transition-all shadow-sm">
+                      🔬 速度×歩幅×ピッチ
+                    </button>
+                    <button type="button" id="btn-form-monthly" onclick="toggleFormChartMode('monthly')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all">
+                      📅 月別推移
+                    </button>
+                  </div>
                 </div>
-                <div class="relative h-44">
+
+                <!-- チャートキャンバス -->
+                <div class="relative h-52">
                   <canvas id="formChart"></canvas>
                 </div>
+
+                <!-- 4つの速度ゾーン別 ピッチ×歩幅 実績カード -->
+                {% if form_evolution and form_evolution.pace_zones %}
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px]">
+                  {% for pz in form_evolution.pace_zones %}
+                  <div class="bg-slate-900/80 border border-slate-800/80 rounded-xl p-2.5 space-y-1">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[10px] font-sans font-bold {{ pz.color }} truncate">{{ pz.name }}</span>
+                    </div>
+                    <div class="text-xs font-black text-white">{{ pz.avg_cadence }}<span class="text-[9px] font-normal text-slate-400">spm</span> × {{ pz.avg_stride_m }}<span class="text-[9px] font-normal text-slate-400">m</span></div>
+                    <div class="text-[9px] text-slate-400 flex justify-between">
+                      <span>{{ pz.range_label }}</span>
+                      <span>{{ pz.runs }}走 (HR {{ pz.avg_hr }})</span>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- 3大目標に対する「ピッチ × 歩幅」黄金マトリクス -->
+                {% if form_evolution and form_evolution.target_matrix %}
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 space-y-2">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-bold text-slate-200">🎯 3大目標ペース達成に必要な「ピッチ × 歩幅」黄金マトリクス</span>
+                    <span class="text-[10px] font-mono text-slate-400">速度 = ピッチ × 歩幅</span>
+                  </div>
+                  <div class="divide-y divide-slate-800/70 text-[11px] font-mono">
+                    {% for tm in form_evolution.target_matrix %}
+                    <div class="py-1.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                      <div class="flex items-center gap-2">
+                        <span class="font-bold text-white font-sans">{{ tm.goal }}</span>
+                        <span class="text-slate-400 text-[10px]">{{ tm.target_pace }}</span>
+                        <span class="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-teal-300 font-bold">{{ tm.combo_primary }}</span>
+                      </div>
+                      <span class="text-[10px] font-sans text-slate-300">{{ tm.status_text }}</span>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endif %}
               </div>
             </div>
           </div>

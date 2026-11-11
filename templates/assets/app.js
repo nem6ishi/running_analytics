@@ -2324,164 +2324,417 @@ const {
       }
     };
 
-    // 4. ピッチ vs 歩幅
-    new Chart(document.getElementById('formChart'), {
-      type: 'line',
-      data: {
-        labels: chartData.dates,
-        datasets: [
-          {
-            label: '平均ピッチ (spm)',
-            data: chartData.cadences,
-            borderColor: '#2dd4bf',
-            backgroundColor: 'transparent',
-            yAxisID: 'yCadence',
-            tension: 0.2
+    // ==========================================
+    // 🔬 4. ピッチ vs 歩幅 バイオメカニクスチャート (散布図 ⇄ 月別推移 切替・大規模改善7)
+    // ==========================================
+    let formChartInstance = null;
+
+    function renderFormChart(mode) {
+      const formCtx = document.getElementById('formChart');
+      if (!formCtx) return;
+      if (formChartInstance) {
+        formChartInstance.destroy();
+      }
+
+      if (mode === 'scatter' && formEvolution && formEvolution.scatter_points && formEvolution.scatter_points.length > 0) {
+        const pts = formEvolution.scatter_points;
+        const highCadencePts = pts.filter(p => p.cadence >= 175).map(p => ({ x: p.speed_kmh, y: p.stride_m, raw: p }));
+        const midCadencePts = pts.filter(p => p.cadence >= 170 && p.cadence < 175).map(p => ({ x: p.speed_kmh, y: p.stride_m, raw: p }));
+        const lowCadencePts = pts.filter(p => p.cadence < 170).map(p => ({ x: p.speed_kmh, y: p.stride_m, raw: p }));
+
+        formChartInstance = new Chart(formCtx, {
+          type: 'scatter',
+          data: {
+            datasets: [
+              {
+                label: '高ピッチ域 (175+ spm)',
+                data: highCadencePts,
+                backgroundColor: 'rgba(244, 63, 94, 0.85)',
+                borderColor: '#fb7185',
+                pointRadius: 5.5,
+                pointHoverRadius: 8
+              },
+              {
+                label: '標準ピッチ域 (170-174 spm)',
+                data: midCadencePts,
+                backgroundColor: 'rgba(45, 212, 191, 0.85)',
+                borderColor: '#5eead4',
+                pointRadius: 5,
+                pointHoverRadius: 7.5
+              },
+              {
+                label: 'イージーピッチ域 (<170 spm)',
+                data: lowCadencePts,
+                backgroundColor: 'rgba(56, 189, 248, 0.75)',
+                borderColor: '#7dd3fc',
+                pointRadius: 4.5,
+                pointHoverRadius: 7
+              }
+            ]
           },
-          {
-            label: '平均歩幅 (m)',
-            data: chartData.strides,
-            borderColor: '#c084fc',
-            backgroundColor: 'transparent',
-            yAxisID: 'yStride',
-            tension: 0.2
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: function(evt, elements) {
+              if (elements && elements.length > 0) {
+                const el = elements[0];
+                const pt = this.data.datasets[el.datasetIndex].data[el.index];
+                if (pt && pt.raw && typeof pt.raw.id === 'number') {
+                  selectActivityAndSwitch(pt.raw.id);
+                }
+              }
+            },
+            scales: {
+              x: {
+                title: { display: true, text: '巡航速度 (km/h) ※右ほど高速 (12.0km/h = 5:00/km)', color: '#94a3b8', font: { size: 10 } },
+                grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                ticks: { color: '#94a3b8' }
+              },
+              y: {
+                title: { display: true, text: '平均歩幅 (m)', color: '#94a3b8', font: { size: 10 } },
+                grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                ticks: { color: '#94a3b8' }
+              }
+            },
+            plugins: {
+              legend: { labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 10 } },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                titleColor: '#f8fafc',
+                bodyColor: '#cbd5e1',
+                padding: 10,
+                callbacks: {
+                  title: function(items) {
+                    const r = items[0]?.raw?.raw;
+                    return r ? `${r.date} (${r.distance_km}km • ${r.shoe || 'ラン'})` : '';
+                  },
+                  label: function(ctx) {
+                    const r = ctx.raw?.raw;
+                    if (!r) return '';
+                    return `ペース ${r.pace_str}/km (${r.speed_kmh}km/h) ｜ ピッチ ${r.cadence}spm × 歩幅 ${r.stride_m}m (HR ${r.avg_hr})`;
+                  }
+                }
+              }
+            }
           }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 7 } },
-          yCadence: {
-            title: { display: true, text: 'ピッチ (spm)', color: '#94a3b8' },
-            grid: { color: 'rgba(255, 255, 255, 0.06)' },
-            ticks: { color: '#94a3b8' }
+        });
+      } else {
+        formChartInstance = new Chart(formCtx, {
+          type: 'line',
+          data: {
+            labels: (formEvolution && formEvolution.months) ? formEvolution.months : chartData.dates,
+            datasets: [
+              {
+                label: '月平均ピッチ (spm)',
+                data: (formEvolution && formEvolution.cadences) ? formEvolution.cadences : chartData.cadences,
+                borderColor: '#2dd4bf',
+                backgroundColor: 'rgba(45, 212, 191, 0.1)',
+                yAxisID: 'yCadence',
+                tension: 0.25,
+                pointRadius: 3
+              },
+              {
+                label: '月平均歩幅 (m)',
+                data: (formEvolution && formEvolution.strides) ? formEvolution.strides : chartData.strides,
+                borderColor: '#c084fc',
+                backgroundColor: 'rgba(192, 132, 252, 0.1)',
+                yAxisID: 'yStride',
+                tension: 0.25,
+                pointRadius: 3
+              }
+            ]
           },
-          yStride: {
-            position: 'right',
-            title: { display: true, text: '歩幅 (m)', color: '#94a3b8' },
-            grid: { display: false },
-            ticks: { color: '#94a3b8' }
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 8 } },
+              yCadence: {
+                title: { display: true, text: 'ピッチ (spm)', color: '#2dd4bf' },
+                grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                ticks: { color: '#2dd4bf' }
+              },
+              yStride: {
+                position: 'right',
+                title: { display: true, text: '歩幅 (m)', color: '#c084fc' },
+                grid: { display: false },
+                ticks: { color: '#c084fc' }
+              }
+            },
+            plugins: {
+              legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+            }
           }
-        },
-        plugins: {
-          legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+        });
+      }
+    }
+
+    window.toggleFormChartMode = function(mode) {
+      const btnScatter = document.getElementById('btn-form-scatter');
+      const btnMonthly = document.getElementById('btn-form-monthly');
+      if (btnScatter && btnMonthly) {
+        if (mode === 'scatter') {
+          btnScatter.className = 'px-2.5 py-1 rounded-lg bg-teal-500 text-slate-950 font-bold transition-all shadow-sm';
+          btnMonthly.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        } else {
+          btnMonthly.className = 'px-2.5 py-1 rounded-lg bg-teal-500 text-slate-950 font-bold transition-all shadow-sm';
+          btnScatter.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
         }
       }
-    });
+      renderFormChart(mode);
+    };
+
+    renderFormChart('scatter');
 
     // ==========================================
-    // 🫀 トレーニング負荷 (CTL / ATL / TSB) チャート初期化
+    // 🫀 トレーニング負荷 (CTL / ATL / TSB) ピーキング＆未来予測シミュレーター（大規模改善8）
     // ==========================================
-    const trainingLoadCtx = document.getElementById('trainingLoadChart');
-    if (trainingLoadCtx && trainingLoad && trainingLoad.dates && trainingLoad.dates.length > 0) {
-      new Chart(trainingLoadCtx, {
-        data: {
-          labels: trainingLoad.dates,
-          datasets: [
-            {
-              type: 'line',
-              label: 'CTL (体力・42日適応)',
-              data: trainingLoad.ctl,
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.05)',
-              borderWidth: 2.5,
-              fill: false,
-              tension: 0.3,
-              pointRadius: 0,
-              pointHoverRadius: 4,
-              yAxisID: 'y'
-            },
-            {
-              type: 'line',
-              label: 'ATL (疲労・7日負荷)',
-              data: trainingLoad.atl,
-              borderColor: '#f59e0b',
-              backgroundColor: 'rgba(245, 158, 11, 0.05)',
-              borderWidth: 2,
-              fill: false,
-              tension: 0.3,
-              pointRadius: 0,
-              pointHoverRadius: 4,
-              yAxisID: 'y'
-            },
-            {
-              type: 'line',
-              label: 'TSB (調子・Form)',
-              data: trainingLoad.tsb,
-              borderColor: '#38bdf8',
-              backgroundColor: 'rgba(56, 189, 248, 0.1)',
-              borderWidth: 1.5,
-              borderDash: [3, 3],
-              fill: true,
-              tension: 0.3,
-              pointRadius: 0,
-              pointHoverRadius: 4,
-              yAxisID: 'yTsb'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
-            mode: 'index',
-            intersect: false
+    let trainingLoadChartInstance = null;
+
+    function renderTrainingLoadChart(mode) {
+      const trainingLoadCtx = document.getElementById('trainingLoadChart');
+      if (!trainingLoadCtx || !trainingLoad || !trainingLoad.dates || trainingLoad.dates.length === 0) return;
+
+      if (trainingLoadChartInstance) {
+        trainingLoadChartInstance.destroy();
+      }
+
+      const pf = trainingLoad.peaking_forecast;
+      if (mode === 'peaking' && pf && pf.dates && pf.dates.length > 0) {
+        trainingLoadChartInstance = new Chart(trainingLoadCtx, {
+          data: {
+            labels: pf.dates.map(d => d.slice(5).replace('-', '/')),
+            datasets: [
+              {
+                type: 'line',
+                label: 'CTL 実績 (体力)',
+                data: pf.actual_ctl,
+                borderColor: '#10b981',
+                borderWidth: 2.5,
+                tension: 0.3,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                yAxisID: 'y'
+              },
+              {
+                type: 'line',
+                label: 'CTL 予測 (〜12/6)',
+                data: pf.pred_ctl,
+                borderColor: '#10b981',
+                borderWidth: 2.5,
+                borderDash: [5, 4],
+                tension: 0.3,
+                pointRadius: function(ctx) {
+                  const d = pf.dates[ctx.dataIndex];
+                  return (d === '2026-11-29' || d === '2026-12-06') ? 5 : 0;
+                },
+                pointBackgroundColor: '#10b981',
+                yAxisID: 'y'
+              },
+              {
+                type: 'line',
+                label: 'ATL 実績 (疲労)',
+                data: pf.actual_atl,
+                borderColor: '#f59e0b',
+                borderWidth: 2,
+                tension: 0.3,
+                pointRadius: 0,
+                yAxisID: 'y'
+              },
+              {
+                type: 'line',
+                label: 'ATL 予測',
+                data: pf.pred_atl,
+                borderColor: '#f59e0b',
+                borderWidth: 2,
+                borderDash: [4, 4],
+                tension: 0.3,
+                pointRadius: 0,
+                yAxisID: 'y'
+              },
+              {
+                type: 'line',
+                label: 'TSB 実績 (調子)',
+                data: pf.actual_tsb,
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+                pointRadius: 0,
+                yAxisID: 'yTsb'
+              },
+              {
+                type: 'line',
+                label: 'TSB ピーキング予測',
+                data: pf.pred_tsb,
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.14)',
+                borderWidth: 2,
+                borderDash: [3, 3],
+                fill: true,
+                tension: 0.3,
+                pointRadius: function(ctx) {
+                  const d = pf.dates[ctx.dataIndex];
+                  return (d === '2026-11-29' || d === '2026-12-06') ? 6 : 0;
+                },
+                pointBackgroundColor: '#f43f5e',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 1.5,
+                yAxisID: 'yTsb'
+              }
+            ]
           },
-          scales: {
-            x: {
-              grid: { display: false },
-              ticks: { color: '#94a3b8', maxTicksLimit: 8 }
-            },
-            y: {
-              title: { display: true, text: 'CTL / ATL (負荷スコア)', color: '#94a3b8' },
-              grid: { color: 'rgba(255, 255, 255, 0.06)' },
-              ticks: { color: '#94a3b8' }
-            },
-            yTsb: {
-              position: 'right',
-              title: { display: true, text: 'TSB (調子)', color: '#38bdf8' },
-              grid: { display: false },
-              ticks: {
-                color: '#38bdf8',
-                callback: function(val) {
-                  return (val > 0 ? '+' : '') + val;
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 9, font: { size: 10 } } },
+              y: {
+                title: { display: true, text: 'CTL / ATL', color: '#94a3b8', font: { size: 10 } },
+                grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                ticks: { color: '#94a3b8' }
+              },
+              yTsb: {
+                position: 'right',
+                title: { display: true, text: 'TSB (調子)', color: '#38bdf8', font: { size: 10 } },
+                grid: { display: false },
+                ticks: {
+                  color: '#38bdf8',
+                  callback: function(val) { return (val > 0 ? '+' : '') + val; }
                 }
               }
-            }
-          },
-          plugins: {
-            legend: {
-              labels: { color: '#cbd5e1', font: { size: 11 } }
             },
-            tooltip: {
-              backgroundColor: 'rgba(15, 23, 42, 0.95)',
-              titleColor: '#f8fafc',
-              bodyColor: '#cbd5e1',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
-              borderWidth: 1,
-              padding: 10,
-              callbacks: {
-                label: function(context) {
-                  let label = context.dataset.label || '';
-                  if (label) label += ': ';
-                  if (context.parsed.y !== null) {
-                    const val = context.parsed.y;
-                    if (context.dataset.yAxisID === 'yTsb') {
-                      label += (val > 0 ? '+' : '') + val + ' (調子)';
-                    } else {
-                      label += val;
-                    }
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#cbd5e1',
+                  font: { size: 10 },
+                  boxWidth: 10,
+                  filter: function(item) {
+                    return !item.text.includes('ATL 予測') && !item.text.includes('TSB 実績');
                   }
-                  return label;
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                titleColor: '#f8fafc',
+                bodyColor: '#cbd5e1',
+                padding: 10,
+                callbacks: {
+                  title: function(items) {
+                    const idx = items[0]?.dataIndex;
+                    const d = pf.dates[idx] || '';
+                    const lbl = pf.labels[idx] || '';
+                    return `${d} (${lbl})`;
+                  },
+                  label: function(context) {
+                    if (context.parsed.y === null || context.parsed.y === undefined) return null;
+                    const val = context.parsed.y;
+                    const name = context.dataset.label;
+                    if (context.dataset.yAxisID === 'yTsb') {
+                      return `${name}: ${val > 0 ? '+' : ''}${val} (当日朝コンディション)`;
+                    }
+                    return `${name}: ${val}`;
+                  }
                 }
               }
             }
           }
-        }
-      });
+        });
+      } else {
+        trainingLoadChartInstance = new Chart(trainingLoadCtx, {
+          data: {
+            labels: trainingLoad.dates,
+            datasets: [
+              {
+                type: 'line',
+                label: 'CTL (体力・42日適応)',
+                data: trainingLoad.ctl,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                borderWidth: 2.5,
+                fill: false,
+                tension: 0.3,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                yAxisID: 'y'
+              },
+              {
+                type: 'line',
+                label: 'ATL (疲労・7日負荷)',
+                data: trainingLoad.atl,
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245, 158, 11, 0.05)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.3,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                yAxisID: 'y'
+              },
+              {
+                type: 'line',
+                label: 'TSB (調子・Form)',
+                data: trainingLoad.tsb,
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                borderWidth: 1.5,
+                borderDash: [3, 3],
+                fill: true,
+                tension: 0.3,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                yAxisID: 'yTsb'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 8 } },
+              y: {
+                title: { display: true, text: 'CTL / ATL (負荷スコア)', color: '#94a3b8' },
+                grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                ticks: { color: '#94a3b8' }
+              },
+              yTsb: {
+                position: 'right',
+                title: { display: true, text: 'TSB (調子)', color: '#38bdf8' },
+                grid: { display: false },
+                ticks: {
+                  color: '#38bdf8',
+                  callback: function(val) { return (val > 0 ? '+' : '') + val; }
+                }
+              }
+            },
+            plugins: {
+              legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+            }
+          }
+        });
+      }
     }
+
+    window.toggleTrainingLoadMode = function(mode) {
+      const btnPeaking = document.getElementById('btn-load-peaking');
+      const btnAll = document.getElementById('btn-load-all');
+      if (btnPeaking && btnAll) {
+        if (mode === 'peaking') {
+          btnPeaking.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm';
+          btnAll.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        } else {
+          btnAll.className = 'px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-bold transition-all shadow-sm';
+          btnPeaking.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+        }
+      }
+      renderTrainingLoadChart(mode);
+    };
+
+    renderTrainingLoadChart('peaking');
 
     // ==========================================
     // 🧭 Cockpit サブタブ切り替えロジック

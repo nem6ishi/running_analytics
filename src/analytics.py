@@ -495,7 +495,14 @@ def compute_gear_stats(df: pd.DataFrame, lifespan_km: float = 600.0) -> List[Dic
         sub_df = pd.DataFrame(rows)
         total_dist = round(float(sub_df["distance_km"].sum()), 1)
         runs_count = len(sub_df)
+        first_used = str(sub_df["date_str"].min())
         last_used = str(sub_df["date_str"].max())
+        avg_dist_per_run = round(total_dist / runs_count, 1) if runs_count > 0 else 0.0
+        avg_pace_sec = float(sub_df["avg_pace_sec"].mean()) if "avg_pace_sec" in sub_df.columns else 0.0
+        avg_pace_str = seconds_to_pace_str(avg_pace_sec) if avg_pace_sec > 0 else "--:--"
+        avg_cadence = round(float(sub_df["avg_cadence"].mean()), 1) if "avg_cadence" in sub_df.columns else 0.0
+        avg_stride_m = round(float(sub_df["stride_length_m"].mean()), 2) if "stride_length_m" in sub_df.columns else 0.0
+        avg_hr = int(round(float(sub_df["avg_hr"].mean()))) if "avg_hr" in sub_df.columns else 0
 
         lifespan_pct = min(100.0, round((total_dist / lifespan_km) * 100.0, 1))
         remaining_km = max(0.0, round(lifespan_km - total_dist, 1))
@@ -518,15 +525,28 @@ def compute_gear_stats(df: pd.DataFrame, lifespan_km: float = 600.0) -> List[Dic
             status_color = "text-amber-400"
             status_badge = "bg-amber-500/20 text-amber-300 border-amber-500/40"
         else:
-            status_label = "良好 (現役)"
+            status_label = "良好 (現役エース)"
             status_color = "text-emerald-400"
             status_badge = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+
+        # 現役シューズに対するレース当日残量シミュレーション (大規模改善7)
+        yoron_proj_km = round(total_dist + 55.0, 1) if not is_retired else total_dist
+        yoron_proj_pct = min(100.0, round((yoron_proj_km / lifespan_km) * 100.0, 1))
+        naha_finish_km = round(total_dist + 55.0 + 21.1 + 5.0 + 42.2, 1) if not is_retired else total_dist
+        naha_finish_pct = min(100.0, round((naha_finish_km / lifespan_km) * 100.0, 1))
+        post_naha_remaining_km = max(0.0, round(lifespan_km - naha_finish_km, 1))
 
         results.append({
             "name": shoe_name,
             "total_distance_km": total_dist,
             "runs": runs_count,
+            "first_used": first_used,
             "last_used": last_used,
+            "avg_dist_per_run": avg_dist_per_run,
+            "avg_pace_str": avg_pace_str,
+            "avg_cadence": avg_cadence,
+            "avg_stride_m": avg_stride_m,
+            "avg_hr": avg_hr,
             "lifespan_km": lifespan_km,
             "lifespan_pct": lifespan_pct,
             "remaining_km": remaining_km,
@@ -535,6 +555,12 @@ def compute_gear_stats(df: pd.DataFrame, lifespan_km: float = 600.0) -> List[Dic
             "status_label": status_label,
             "status_color": status_color,
             "status_badge": status_badge,
+            "yoron_proj_km": yoron_proj_km,
+            "yoron_proj_pct": yoron_proj_pct,
+            "naha_finish_km": naha_finish_km,
+            "naha_finish_pct": naha_finish_pct,
+            "post_naha_remaining_km": post_naha_remaining_km,
+            "est_retire_period": "2027年2月〜3月頃",
         })
 
     # 最終使用日の新しい順（現役シューズが先頭）でソート
@@ -707,7 +733,7 @@ def compute_weekly_workload(df: pd.DataFrame) -> Dict[str, Any]:
 
 
 def compute_form_evolution(df: pd.DataFrame) -> Dict[str, Any]:
-    """月別の平均ピッチ（spm）と平均歩幅（m）の推移"""
+    """月別の平均ピッチ（spm）と平均歩幅（m）の推移 ＋ ペース帯別バイオメカニクス分析（大規模改善7）"""
     monthly_form = (
         df.groupby("year_month")
         .agg(
@@ -717,11 +743,96 @@ def compute_form_evolution(df: pd.DataFrame) -> Dict[str, Any]:
         )
         .reset_index()
     )
+
+    # 全ランの速度×ピッチ×歩幅 散布図データ
+    scatter_points: List[Dict[str, Any]] = []
+    shoe_col = "シューズ" if "シューズ" in df.columns else ("gear_name" if "gear_name" in df.columns else None)
+    for i, row in df.iterrows():
+        p_sec = float(row.get("avg_pace_sec", 0.0))
+        cad = float(row.get("avg_cadence", 0.0))
+        st_m = float(row.get("stride_length_m", 0.0))
+        if p_sec <= 0 or cad <= 120 or st_m <= 0.5:
+            continue
+        sp_kmh = round(3600.0 / p_sec, 2)
+        shoe_name = str(row.get(shoe_col, "")).strip() if shoe_col else ""
+        scatter_points.append({
+            "id": int(i),
+            "date": str(row.get("date_str", "")),
+            "distance_km": round(float(row.get("distance_km", 0.0)), 2),
+            "pace_sec": round(p_sec, 1),
+            "pace_str": seconds_to_pace_str(p_sec),
+            "speed_kmh": sp_kmh,
+            "cadence": round(cad, 1),
+            "stride_m": round(st_m, 2),
+            "avg_hr": int(round(float(row.get("avg_hr", 0)))),
+            "shoe": shoe_name,
+        })
+
+    # 4つの速度ゾーン別バイオメカニクス集計
+    zone_defs = [
+        ("🚀 Sub-50 / 高速巡航域", "< 5:20/km", 0.0, 320.0, "text-rose-400", "bg-rose-500/15 border-rose-500/30 text-rose-300"),
+        ("🔥 ハーフ目標 / LT巡航域", "5:20〜5:39/km", 320.0, 340.0, "text-amber-400", "bg-amber-500/15 border-amber-500/30 text-amber-300"),
+        ("🏃 フルMペース / 中強度域", "5:40〜6:14/km", 340.0, 375.0, "text-sky-400", "bg-sky-500/15 border-sky-500/30 text-sky-300"),
+        ("🐢 有酸素E / LSD域", "6:15/km〜", 375.0, 9999.0, "text-emerald-400", "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"),
+    ]
+    pace_zones: List[Dict[str, Any]] = []
+    for z_name, z_range, p_min, p_max, z_color, z_badge in zone_defs:
+        sub = df[(df["avg_pace_sec"] >= p_min) & (df["avg_pace_sec"] < p_max) & (df["avg_cadence"] > 120)]
+        if len(sub) > 0:
+            avg_c = round(float(sub["avg_cadence"].mean()), 1)
+            avg_s = round(float(sub["stride_length_m"].mean()), 2)
+            avg_p = seconds_to_pace_str(float(sub["avg_pace_sec"].mean()))
+            avg_h = int(round(float(sub["avg_hr"].mean())))
+        else:
+            avg_c, avg_s, avg_p, avg_h = 0.0, 0.0, "--:--", 0
+        pace_zones.append({
+            "name": z_name,
+            "range_label": z_range,
+            "runs": int(len(sub)),
+            "avg_pace_str": avg_p,
+            "avg_cadence": avg_c,
+            "avg_stride_m": avg_s,
+            "avg_hr": avg_h,
+            "color": z_color,
+            "badge": z_badge,
+        })
+
+    # 3大目標に対する「ピッチ × 歩幅」黄金マトリクス
+    target_matrix = [
+        {
+            "goal": "🎯 10km サブ50",
+            "target_pace": "4:58/km (201.3m/分)",
+            "combo_primary": "176 spm × 1.14 m",
+            "combo_alt": "178 spm × 1.13 m",
+            "status_badge": "bg-rose-500/20 text-rose-300 border-rose-500/40",
+            "status_text": "⚡ 歩幅あと+8cmで完全到達（流し＆交代走で拡大中）",
+        },
+        {
+            "goal": "🏁 ヨロンハーフ サブ2",
+            "target_pace": "5:32/km (180.7m/分)",
+            "combo_primary": "174 spm × 1.04 m",
+            "combo_alt": "176 spm × 1.03 m",
+            "status_badge": "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+            "status_text": "✅ 現在のLT巡航フォーム（175.7spm × 1.04m）で100%完全習得済み！",
+        },
+        {
+            "goal": "👑 NAHAフル サブ4.5",
+            "target_pace": "6:10/km (162.2m/分)",
+            "combo_primary": "170 spm × 0.96 m",
+            "combo_alt": "172 spm × 0.94 m",
+            "status_badge": "bg-sky-500/20 text-sky-300 border-sky-500/40",
+            "status_text": "✅ 現在のMペースフォーム（172.4spm × 0.98m）で余裕巡航可能！",
+        },
+    ]
+
     return {
         "months": monthly_form["year_month"].tolist(),
         "cadences": [round(float(c), 1) for c in monthly_form["cadence"]],
         "strides": [round(float(s), 2) for s in monthly_form["stride"]],
         "speeds_kmh": [round(float(sp), 2) for sp in monthly_form["speed"]],
+        "scatter_points": scatter_points,
+        "pace_zones": pace_zones,
+        "target_matrix": target_matrix,
     }
 
 
