@@ -205,109 +205,6 @@
       </section>
 
       <!-- ====================================================================== -->
-      <!-- 📈 SECTION 1.5: 1年間の進化ハイライト（Before / After インフォグラフィック） -->
-      <!-- ====================================================================== -->
-      <section class="glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl border border-slate-800/90 relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
-          <div class="flex items-center space-x-2">
-            <span class="text-base">🚀</span>
-            <h2 class="text-sm sm:text-base font-black text-white tracking-tight">1年間のフィジカル進化ストーリー（成長実績 Before / After）</h2>
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono font-bold">2025/09 ➔ 2026/11 実績</span>
-          </div>
-          <span class="text-[11px] text-slate-400 font-mono">客観ログ実証済みの成長データ</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <!-- ① 最長走破距離 -->
-          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 relative overflow-hidden flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-slate-400 font-bold flex items-center gap-1"><span>🏃</span> 最長走破スタミナ</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">+112% 倍増</span>
-            </div>
-            <div class="my-1 flex items-baseline justify-between font-mono">
-              <div>
-                <span class="text-[10px] text-slate-500 block">初期 (2025秋)</span>
-                <span class="text-base font-bold text-slate-400">10.0<span class="text-xs font-normal">km</span></span>
-              </div>
-              <span class="text-slate-600 text-lg">➔</span>
-              <div class="text-right">
-                <span class="text-[10px] text-emerald-400 block font-bold">現在 (11/05 LSD)</span>
-                <span class="text-2xl font-black text-emerald-400">21.22<span class="text-xs font-normal">km</span></span>
-              </div>
-            </div>
-            <div class="text-[11px] text-slate-400 border-t border-slate-800/70 pt-1.5 leading-snug">
-              10km天井を完全突破。平均心拍145bpmでハーフ距離を安定制圧！
-            </div>
-          </div>
-
-          <!-- ② 10km走破タイム -->
-          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 relative overflow-hidden flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-slate-400 font-bold flex items-center gap-1"><span>⏱️</span> 10km実走タイム</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">-19分17秒 短縮</span>
-            </div>
-            <div class="my-1 flex items-baseline justify-between font-mono">
-              <div>
-                <span class="text-[10px] text-slate-500 block">2025/10/01</span>
-                <span class="text-base font-bold text-slate-400">1:12:42</span>
-              </div>
-              <span class="text-slate-600 text-lg">➔</span>
-              <div class="text-right">
-                <span class="text-[10px] text-rose-400 block font-bold">2026/11/10</span>
-                <span class="text-2xl font-black text-white">53:25</span>
-              </div>
-            </div>
-            <div class="text-[11px] text-slate-400 border-t border-slate-800/70 pt-1.5 leading-snug">
-              7:13/km ➔ 5:20/kmへ大幅加速。キロ1分53秒の巡航スピード進化！
-            </div>
-          </div>
-
-          <!-- ③ 有酸素効率 (AEI: スピード対心拍) -->
-          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 relative overflow-hidden flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-slate-400 font-bold flex items-center gap-1"><span>💎</span> 心肺効率 (AEIスコア)</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">+{{ aei_stats.growth_pct }}% 向上</span>
-            </div>
-            <div class="my-1 flex items-baseline justify-between font-mono">
-              <div>
-                <span class="text-[10px] text-slate-500 block">初期5走平均</span>
-                <span class="text-base font-bold text-slate-400">{{ aei_stats.initial_5_avg }}</span>
-              </div>
-              <span class="text-slate-600 text-lg">➔</span>
-              <div class="text-right">
-                <span class="text-[10px] text-cyan-300 block font-bold">直近5走平均</span>
-                <span class="text-2xl font-black text-cyan-400">{{ aei_stats.recent_5_avg }}</span>
-              </div>
-            </div>
-            <div class="text-[11px] text-slate-400 border-t border-slate-800/70 pt-1.5 leading-snug">
-              同じ心拍数でもより速い速度を出せる「強靭なスポーツ心臓」を獲得！
-            </div>
-          </div>
-
-          <!-- ④ 最高速スプリント / インターバル -->
-          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 relative overflow-hidden flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-slate-400 font-bold flex items-center gap-1"><span>⚡</span> スピード爆発力・キレ</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">1km 4:20 突破</span>
-            </div>
-            <div class="my-1 flex items-baseline justify-between font-mono">
-              <div>
-                <span class="text-[10px] text-slate-500 block">1km疾走最速</span>
-                <span class="text-2xl font-black text-amber-300">4:20<span class="text-xs font-normal">/km</span></span>
-              </div>
-              <div class="text-right">
-                <span class="text-[10px] text-slate-500 block">流し100m最速</span>
-                <span class="text-xl font-black text-rose-400">3:20<span class="text-xs font-normal">/km</span></span>
-              </div>
-            </div>
-            <div class="text-[11px] text-slate-400 border-t border-slate-800/70 pt-1.5 leading-snug">
-              ピッチ186spm・歩幅1.61m。サブ50（5:00/km）を余裕で凌駕するバネ！
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ====================================================================== -->
       <!-- 🔥 SECTION 2: 直近ラン「3kmアップ vs 3km以降(本練習)」ハイライト ＆ 今週の6週間計画 -->
       <!-- ====================================================================== -->
       <section class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
@@ -422,63 +319,6 @@
             </div>
             {% endif %}
 
-            <!-- ⚡️ ウィンドスプリント（流し 100m×2）高精度秒単位解析 -->
-            {% if latest_insight.analysis and latest_insight.analysis.workout_structure and latest_insight.analysis.workout_structure.wind_sprints %}
-            {% set ws_sprints = latest_insight.analysis.workout_structure.wind_sprints %}
-            <div class="bg-gradient-to-r from-amber-950/40 via-slate-950 to-slate-950 border border-amber-500/30 rounded-2xl p-3 space-y-2 shadow-inner">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-bold text-amber-300 flex items-center space-x-1.5">
-                  <span>⚡️</span>
-                  <span>{{ ws_sprints.title }}</span>
-                </span>
-                <span class="text-[10px] text-slate-400 font-mono">最速 3:20/km ｜ 歩幅 1.61m (+61%)</span>
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 font-mono">
-                {% for sp in ws_sprints.sprint_sets %}
-                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-[11px] space-y-1.5 shadow-sm">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-white">{{ sp.set }}</span>
-                    <span class="text-[9px] px-1.5 py-0.5 rounded border {{ sp.badge_color }}">{{ sp.badge }}</span>
-                  </div>
-                  <div class="flex items-baseline justify-between border-b border-slate-800/80 pb-1">
-                    <div>
-                      <span class="text-base font-black text-rose-400">{{ sp.avg_pace }}</span>
-                      <span class="text-[9px] text-slate-400">/km</span>
-                    </div>
-                    <div class="text-right">
-                      <span class="text-xs font-bold text-white">{{ sp.distance_m }}m</span>
-                      <span class="text-[10px] text-slate-400">({{ sp.duration_sec }}s)</span>
-                    </div>
-                  </div>
-                  <div class="grid grid-cols-2 gap-1 text-[9px] text-slate-300 pt-0.5">
-                    <div>
-                      <span class="text-slate-500 block text-[8px]">最高速</span>
-                      <strong class="text-white">{{ sp.max_speed_kmh }}km/h</strong>
-                    </div>
-                    <div>
-                      <span class="text-slate-500 block text-[8px]">ピッチ</span>
-                      <strong class="text-amber-300">{{ sp.max_cadence }}spm</strong>
-                    </div>
-                    <div>
-                      <span class="text-slate-500 block text-[8px]">心拍</span>
-                      <strong class="text-rose-300">{{ sp.avg_hr }} / {{ sp.max_hr }}</strong>
-                    </div>
-                    <div>
-                      <span class="text-slate-500 block text-[8px]">歩幅</span>
-                      <strong class="text-emerald-300">{{ sp.est_stride_m }}m</strong>
-                    </div>
-                  </div>
-                </div>
-                {% endfor %}
-              </div>
-              {% if ws_sprints.biomechanics_summary %}
-              <div class="text-[10px] text-amber-200/90 bg-amber-950/20 border border-amber-500/20 rounded-xl p-2 leading-relaxed font-sans">
-                💡 <strong>バイオメカニクス:</strong> {{ ws_sprints.biomechanics_summary }}
-              </div>
-              {% endif %}
-            </div>
-            {% endif %}
-
             <!-- ラップ推移ミニピルバー -->
             {% if latest_quality_split.laps_summary %}
             <div class="space-y-1.5">
@@ -486,7 +326,7 @@
                 <span>1km毎のラップ推移（1〜3kmアップ ➔ 4km以降本練習）</span>
                 <span>ピッチ {{ latest_insight.running_cadence or latest_insight.cadence }} spm</span>
               </div>
-              <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 font-mono">
+              <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5 font-mono">
                 {% for lap in latest_quality_split.laps_summary[:10] %}
                 <div class="p-1.5 rounded-xl border text-center {% if lap.pace_sec <= 300 %}bg-rose-500/20 border-rose-500/40 text-rose-200{% elif lap.pace_sec <= 338 %}bg-emerald-500/15 border-emerald-500/30 text-emerald-200{% elif lap.lap_index <= 3 %}bg-slate-900/90 border-slate-800 text-slate-400{% else %}bg-slate-900 border-slate-800 text-slate-300{% endif %}">
                   <div class="text-[9px] opacity-75">L{{ lap.lap_index }}</div>
@@ -611,134 +451,6 @@
       </section>
 
       <!-- ====================================================================== -->
-      <!-- 🏆 SECTION 2.5: 自己ベスト（PB）＆ 歴代トップ3ランキング (Hall of Fame) -->
-      <!-- ====================================================================== -->
-      {% if hall_of_fame %}
-      <section class="glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl border border-slate-800/90">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
-          <div class="flex items-center space-x-2">
-            <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold border border-amber-500/30">🏆</span>
-            <div>
-              <h3 class="text-sm sm:text-base font-black text-white tracking-tight">自己ベスト（PB）＆ 部門別歴代トップ3（Hall of Fame）</h3>
-              <p class="text-[11px] text-slate-400">各項目をクリックすると、その日の「個別分析・ラップ詳細」へダイレクトにジャンプします</p>
-            </div>
-          </div>
-          <span class="text-[10px] font-mono px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold">ALL-TIME RECORDS</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <!-- ① 10km実走タイム Top 3 -->
-          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2.5">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-              <span class="text-xs font-black text-rose-400 flex items-center gap-1.5"><span>⏱️</span> 10kmタイム 歴代Top3</span>
-              <span class="text-[10px] font-mono text-slate-500">Sub-50への道</span>
-            </div>
-            <div class="space-y-1.5">
-              {% for r in hall_of_fame.top_10k %}
-              <div onclick="selectActivityAndSwitch({{ r.id }})" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-rose-500/40 transition cursor-pointer group flex items-center justify-between">
-                <div class="flex items-center space-x-2 min-w-0">
-                  <span class="w-5 h-5 rounded-lg flex items-center justify-center text-[11px] font-black font-mono shrink-0 {% if loop.index == 1 %}bg-amber-500/20 text-amber-300 border border-amber-500/40{% elif loop.index == 2 %}bg-slate-300/20 text-slate-200 border border-slate-400/30{% else %}bg-amber-700/20 text-amber-400 border border-amber-700/30{% endif %}">
-                    {{ loop.index }}
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-sm font-black text-white font-mono group-hover:text-rose-300 transition">{{ r.main_val }}</div>
-                    <div class="text-[10px] text-slate-400 font-mono truncate">{{ r.date }} • {{ r.sub_val }}</div>
-                  </div>
-                </div>
-                <div class="text-right shrink-0 ml-1">
-                  <span class="text-[10px] font-mono text-rose-300 block">{{ r.hr_val }}</span>
-                  <span class="text-[9px] text-slate-500 group-hover:text-white transition">分析 →</span>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-
-          <!-- ② 本練習区間（Quality Zone）ペース Top 3 -->
-          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2.5">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-              <span class="text-xs font-black text-emerald-400 flex items-center gap-1.5"><span>⚡</span> 本練習ペース 歴代Top3</span>
-              <span class="text-[10px] font-mono text-slate-500">3kmアップ除外</span>
-            </div>
-            <div class="space-y-1.5">
-              {% for r in hall_of_fame.top_quality %}
-              <div onclick="selectActivityAndSwitch({{ r.id }})" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/40 transition cursor-pointer group flex items-center justify-between">
-                <div class="flex items-center space-x-2 min-w-0">
-                  <span class="w-5 h-5 rounded-lg flex items-center justify-center text-[11px] font-black font-mono shrink-0 {% if loop.index == 1 %}bg-amber-500/20 text-amber-300 border border-amber-500/40{% elif loop.index == 2 %}bg-slate-300/20 text-slate-200 border border-slate-400/30{% else %}bg-amber-700/20 text-amber-400 border border-amber-700/30{% endif %}">
-                    {{ loop.index }}
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-sm font-black text-emerald-400 font-mono group-hover:text-emerald-300 transition">{{ r.main_val }}</div>
-                    <div class="text-[10px] text-slate-400 font-mono truncate">{{ r.date }} • {{ r.sub_val }}</div>
-                  </div>
-                </div>
-                <div class="text-right shrink-0 ml-1">
-                  <span class="text-[10px] font-mono text-rose-300 block">{{ r.hr_val }}</span>
-                  <span class="text-[9px] text-slate-500 group-hover:text-white transition">分析 →</span>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-
-          <!-- ③ 1km最速ラップ Top 3 -->
-          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2.5">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-              <span class="text-xs font-black text-amber-400 flex items-center gap-1.5"><span>🚀</span> 1km最速ラップ Top3</span>
-              <span class="text-[10px] font-mono text-slate-500">最大出力スピード</span>
-            </div>
-            <div class="space-y-1.5">
-              {% for r in hall_of_fame.top_laps %}
-              <div onclick="selectActivityAndSwitch({{ r.id }})" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/40 transition cursor-pointer group flex items-center justify-between">
-                <div class="flex items-center space-x-2 min-w-0">
-                  <span class="w-5 h-5 rounded-lg flex items-center justify-center text-[11px] font-black font-mono shrink-0 {% if loop.index == 1 %}bg-amber-500/20 text-amber-300 border border-amber-500/40{% elif loop.index == 2 %}bg-slate-300/20 text-slate-200 border border-slate-400/30{% else %}bg-amber-700/20 text-amber-400 border border-amber-700/30{% endif %}">
-                    {{ loop.index }}
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-sm font-black text-amber-300 font-mono group-hover:text-amber-200 transition">{{ r.main_val }}</div>
-                    <div class="text-[10px] text-slate-400 font-mono truncate">{{ r.date }} • {{ r.sub_val }}</div>
-                  </div>
-                </div>
-                <div class="text-right shrink-0 ml-1">
-                  <span class="text-[10px] font-mono text-rose-300 block">{{ r.hr_val }}</span>
-                  <span class="text-[9px] text-slate-500 group-hover:text-white transition">分析 →</span>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-
-          <!-- ④ 最長走破距離 Top 3 -->
-          <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3.5 space-y-2.5">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-              <span class="text-xs font-black text-sky-400 flex items-center gap-1.5"><span>🏃</span> 最長距離スタミナ Top3</span>
-              <span class="text-[10px] font-mono text-slate-500">有酸素ベース</span>
-            </div>
-            <div class="space-y-1.5">
-              {% for r in hall_of_fame.top_long %}
-              <div onclick="selectActivityAndSwitch({{ r.id }})" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-sky-500/40 transition cursor-pointer group flex items-center justify-between">
-                <div class="flex items-center space-x-2 min-w-0">
-                  <span class="w-5 h-5 rounded-lg flex items-center justify-center text-[11px] font-black font-mono shrink-0 {% if loop.index == 1 %}bg-amber-500/20 text-amber-300 border border-amber-500/40{% elif loop.index == 2 %}bg-slate-300/20 text-slate-200 border border-slate-400/30{% else %}bg-amber-700/20 text-amber-400 border border-amber-700/30{% endif %}">
-                    {{ loop.index }}
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-sm font-black text-sky-300 font-mono group-hover:text-sky-200 transition">{{ r.main_val }}</div>
-                    <div class="text-[10px] text-slate-400 font-mono truncate">{{ r.date }} • {{ r.sub_val }}</div>
-                  </div>
-                </div>
-                <div class="text-right shrink-0 ml-1">
-                  <span class="text-[10px] font-mono text-rose-300 block">{{ r.hr_val }}</span>
-                  <span class="text-[9px] text-slate-500 group-hover:text-white transition">分析 →</span>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-      </section>
-      {% endif %}
-
-      <!-- ====================================================================== -->
       <!-- ⚡ SECTION 3: コンディション・疲労 (CTL/ATL/TSB) × 80/20強度 × VDOTペース -->
       <!-- ====================================================================== -->
       <section id="cockpit-panel-condition" class="space-y-5">
@@ -789,28 +501,6 @@
               <p class="text-xs text-slate-300 bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60 leading-relaxed">
                 {{ training_load.status_desc }}
               </p>
-
-              <!-- 🎯 2大レース当日朝のピーキング着地予測（大規模改善8） -->
-              {% if training_load.peaking_forecast %}
-              <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
-                <div class="bg-amber-950/20 border border-amber-500/30 rounded-xl p-2.5 flex items-center justify-between">
-                  <div>
-                    <span class="text-[10px] text-amber-300 font-sans font-bold block">🏁 11/29 ヨロン当日朝予測</span>
-                    <span class="text-xs text-white font-black">TSB <strong class="text-emerald-400">{% if training_load.peaking_forecast.yoron.morning_tsb > 0 %}+{% endif %}{{ training_load.peaking_forecast.yoron.morning_tsb }}</strong></span>
-                    <span class="text-[9px] text-slate-400 block">CTL {{ training_load.peaking_forecast.yoron.ctl }} / ATL {{ training_load.peaking_forecast.yoron.atl }}</span>
-                  </div>
-                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-sans font-bold">ピーク圏</span>
-                </div>
-                <div class="bg-sky-950/20 border border-sky-500/30 rounded-xl p-2.5 flex items-center justify-between">
-                  <div>
-                    <span class="text-[10px] text-sky-300 font-sans font-bold block">👑 12/06 NAHA当日朝予測</span>
-                    <span class="text-xs text-white font-black">TSB <strong class="text-emerald-400">{% if training_load.peaking_forecast.naha.morning_tsb > 0 %}+{% endif %}{{ training_load.peaking_forecast.naha.morning_tsb }}</strong></span>
-                    <span class="text-[9px] text-slate-400 block">CTL {{ training_load.peaking_forecast.naha.ctl }} / ATL {{ training_load.peaking_forecast.naha.atl }}</span>
-                  </div>
-                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 font-sans font-bold">V字回復</span>
-                </div>
-              </div>
-              {% endif %}
             </div>
 
             <!-- 直近8週間の週間走行距離ミニチャート -->
@@ -1142,53 +832,98 @@
           </summary>
 
           <div class="mt-5 space-y-6 border-t border-slate-800/80 pt-5">
-            <!-- 自己ベスト 5大レコード -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3.5 space-y-1">
-                <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-                  <span>🏃 最長走破</span>
-                  <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.longest_dist.date }}</span>
+            <!-- 🏆 部門別歴代トップ3 (Hall of Fame - 旧5大レコードと統合) -->
+            {% if hall_of_fame %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+              <!-- ① 10km実走タイム Top 3 -->
+              <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 space-y-2">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                  <span class="text-xs font-black text-rose-400 flex items-center gap-1"><span>⏱️</span> 10kmタイム Top3</span>
+                  <span class="text-[10px] font-mono text-slate-500">Sub-50基準</span>
                 </div>
-                <div class="text-xl font-black text-white font-mono tracking-tight">{{ personal_records.longest_dist.val }}</div>
-                <div class="text-[11px] text-slate-400 font-mono">{{ personal_records.longest_dist.time }} ({{ personal_records.longest_dist.pace }}/km)</div>
+                <div class="space-y-1">
+                  {% for r in hall_of_fame.top_10k %}
+                  <div onclick="selectActivityAndSwitch({{ r.id }})" class="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-rose-500/40 transition cursor-pointer group flex items-center justify-between">
+                    <div class="flex items-center space-x-2 min-w-0">
+                      <span class="w-4 h-4 rounded flex items-center justify-center text-[10px] font-black font-mono shrink-0 {% if loop.index == 1 %}bg-amber-500/20 text-amber-300{% elif loop.index == 2 %}bg-slate-300/20 text-slate-200{% else %}bg-amber-700/20 text-amber-400{% endif %}">{{ loop.index }}</span>
+                      <div class="min-w-0">
+                        <span class="text-xs font-black text-white font-mono group-hover:text-rose-300">{{ r.main_val }}</span>
+                        <span class="text-[9px] text-slate-400 font-mono block truncate">{{ r.date }} • {{ r.sub_val }}</span>
+                      </div>
+                    </div>
+                    <span class="text-[9px] font-mono text-rose-300 shrink-0">{{ r.hr_val }}</span>
+                  </div>
+                  {% endfor %}
+                </div>
               </div>
 
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3.5 space-y-1">
-                <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-                  <span>⚡ 最速平均ペース</span>
-                  <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.best_pace.date }}</span>
+              <!-- ② 本練習区間ペース Top 3 -->
+              <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 space-y-2">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                  <span class="text-xs font-black text-emerald-400 flex items-center gap-1"><span>⚡</span> 本練習ペース Top3</span>
+                  <span class="text-[10px] font-mono text-slate-500">3kmアップ除外</span>
                 </div>
-                <div class="text-xl font-black text-white font-mono tracking-tight">{{ personal_records.best_pace.val }}</div>
-                <div class="text-[11px] text-slate-400 font-mono">{{ personal_records.best_pace.dist }} (HR {{ personal_records.best_pace.hr }})</div>
+                <div class="space-y-1">
+                  {% for r in hall_of_fame.top_quality %}
+                  <div onclick="selectActivityAndSwitch({{ r.id }})" class="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/40 transition cursor-pointer group flex items-center justify-between">
+                    <div class="flex items-center space-x-2 min-w-0">
+                      <span class="w-4 h-4 rounded flex items-center justify-center text-[10px] font-black font-mono shrink-0 {% if loop.index == 1 %}bg-amber-500/20 text-amber-300{% elif loop.index == 2 %}bg-slate-300/20 text-slate-200{% else %}bg-amber-700/20 text-amber-400{% endif %}">{{ loop.index }}</span>
+                      <div class="min-w-0">
+                        <span class="text-xs font-black text-emerald-400 font-mono">{{ r.main_val }}</span>
+                        <span class="text-[9px] text-slate-400 font-mono block truncate">{{ r.date }} • {{ r.sub_val }}</span>
+                      </div>
+                    </div>
+                    <span class="text-[9px] font-mono text-rose-300 shrink-0">{{ r.hr_val }}</span>
+                  </div>
+                  {% endfor %}
+                </div>
               </div>
 
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3.5 space-y-1">
-                <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-                  <span>⏱️ 最速5km換算</span>
-                  <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.best_5k.date }}</span>
+              <!-- ③ 1km最速ラップ Top 3 -->
+              <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 space-y-2">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                  <span class="text-xs font-black text-amber-400 flex items-center gap-1"><span>🚀</span> 1km最速ラップ Top3</span>
+                  <span class="text-[10px] font-mono text-slate-500">最大スピード</span>
                 </div>
-                <div class="text-xl font-black text-white font-mono tracking-tight">{{ personal_records.best_5k.val }}</div>
-                <div class="text-[11px] text-slate-400 font-mono">平均 {{ personal_records.best_5k.pace }}</div>
+                <div class="space-y-1">
+                  {% for r in hall_of_fame.top_laps %}
+                  <div onclick="selectActivityAndSwitch({{ r.id }})" class="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/40 transition cursor-pointer group flex items-center justify-between">
+                    <div class="flex items-center space-x-2 min-w-0">
+                      <span class="w-4 h-4 rounded flex items-center justify-center text-[10px] font-black font-mono shrink-0 {% if loop.index == 1 %}bg-amber-500/20 text-amber-300{% elif loop.index == 2 %}bg-slate-300/20 text-slate-200{% else %}bg-amber-700/20 text-amber-400{% endif %}">{{ loop.index }}</span>
+                      <div class="min-w-0">
+                        <span class="text-xs font-black text-amber-300 font-mono">{{ r.main_val }}</span>
+                        <span class="text-[9px] text-slate-400 font-mono block truncate">{{ r.date }} • {{ r.sub_val }}</span>
+                      </div>
+                    </div>
+                    <span class="text-[9px] font-mono text-rose-300 shrink-0">{{ r.hr_val }}</span>
+                  </div>
+                  {% endfor %}
+                </div>
               </div>
 
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3.5 space-y-1">
-                <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-                  <span>💎 最高有酸素効率</span>
-                  <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.best_aei.date }}</span>
+              <!-- ④ 最長走破距離 Top 3 -->
+              <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-3 space-y-2">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                  <span class="text-xs font-black text-sky-400 flex items-center gap-1"><span>🏃</span> 最長距離 Top3</span>
+                  <span class="text-[10px] font-mono text-slate-500">スタミナ基盤</span>
                 </div>
-                <div class="text-xl font-black text-white font-mono tracking-tight">{{ personal_records.best_aei.val }}</div>
-                <div class="text-[11px] text-slate-400 font-mono">{{ personal_records.best_aei.pace }}/km • {{ personal_records.best_aei.hr }}</div>
-              </div>
-
-              <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3.5 space-y-1 col-span-2 sm:col-span-1">
-                <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-                  <span>📅 月間最多走行</span>
-                  <span class="text-slate-500 font-mono text-[10px]">{{ personal_records.best_month.date }}</span>
+                <div class="space-y-1">
+                  {% for r in hall_of_fame.top_long %}
+                  <div onclick="selectActivityAndSwitch({{ r.id }})" class="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-sky-500/40 transition cursor-pointer group flex items-center justify-between">
+                    <div class="flex items-center space-x-2 min-w-0">
+                      <span class="w-4 h-4 rounded flex items-center justify-center text-[10px] font-black font-mono shrink-0 {% if loop.index == 1 %}bg-amber-500/20 text-amber-300{% elif loop.index == 2 %}bg-slate-300/20 text-slate-200{% else %}bg-amber-700/20 text-amber-400{% endif %}">{{ loop.index }}</span>
+                      <div class="min-w-0">
+                        <span class="text-xs font-black text-sky-300 font-mono">{{ r.main_val }}</span>
+                        <span class="text-[9px] text-slate-400 font-mono block truncate">{{ r.date }} • {{ r.sub_val }}</span>
+                      </div>
+                    </div>
+                    <span class="text-[9px] font-mono text-rose-300 shrink-0">{{ r.hr_val }}</span>
+                  </div>
+                  {% endfor %}
                 </div>
-                <div class="text-xl font-black text-white font-mono tracking-tight">{{ personal_records.best_month.val }}</div>
-                <div class="text-[11px] text-slate-400">歴代最高月間ボリューム</div>
               </div>
             </div>
+            {% endif %}
 
             <!-- 👟 シューズ寿命・レース当日残量予測トラッカー & 🔬 ピッチ×歩幅バイオメカニクス解析（大規模改善7） -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">

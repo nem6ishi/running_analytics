@@ -60,569 +60,43 @@
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-    <!-- 🎯 SECTION 1: 3大ターゲット ＆ カウントダウン -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <!-- ① ヨロンマラソン (ハーフ) -->
-      <div class="glass-card rounded-3xl p-5 border border-emerald-500/40 bg-gradient-to-br from-emerald-950/30 via-slate-950 to-slate-950 shadow-xl relative overflow-hidden flex flex-col justify-between">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-black uppercase tracking-wider text-emerald-400 font-mono">11/29(日) ハーフ本番</span>
-          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            あと {{ three_pillars.half_marathon.days_left }} 日
+    <!-- 🎯 スリム・ターゲット＆カウントダウンバー（スリム化5） -->
+    <div class="glass-card rounded-2xl px-4 py-3 border border-slate-800 bg-slate-900/70 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex flex-wrap items-center gap-2 sm:gap-4">
+        <div class="flex items-center gap-1.5">
+          <span class="px-2 py-0.5 rounded-full font-mono font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px]">
+            11/29 ヨロンHalf あと{{ three_pillars.half_marathon.days_left }}日
           </span>
+          <span class="font-bold text-white">サブ2</span>
+          <span class="text-slate-400 font-mono text-[11px] hidden sm:inline">(5:24〜5:37/km • HR 168-174)</span>
         </div>
-        <div class="my-3">
-          <div class="text-xs text-slate-400 font-bold">🏁 ヨロンマラソン（ハーフ 21.1km）</div>
-          <div class="text-2xl font-black text-white tracking-tight font-mono mt-0.5">サブ2 達成！</div>
-          <div class="text-xs text-emerald-300 font-mono mt-1">基本目標: 1:55:00〜1:59:59 (5:27〜5:38/km)</div>
-          <div class="text-[11px] text-amber-300 font-mono mt-0.5 font-bold">🔥 絶好調シフト: 1:52:00〜1:55:00 (5:18〜5:27/km)</div>
+        <span class="text-slate-700 hidden md:inline">|</span>
+        <div class="flex items-center gap-1.5">
+          <span class="px-2 py-0.5 rounded-full font-mono font-black bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[11px]">
+            12/06 NAHAフル あと{{ three_pillars.full_marathon.days_left }}日
+          </span>
+          <span class="font-bold text-white">サブ4.5</span>
+          <span class="text-slate-400 font-mono text-[11px] hidden sm:inline">(6:07〜6:20/km • HR 150-156)</span>
         </div>
-        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
-          想定心拍: <strong class="text-white font-mono">168〜174 bpm</strong>（適正LTゾーンで攻略）
+        <span class="text-slate-700 hidden lg:inline">|</span>
+        <div class="flex items-center gap-1.5">
+          <span class="px-2 py-0.5 rounded-full font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px]">
+            主目標 10km
+          </span>
+          <span class="font-bold text-amber-300 font-mono">サブ50 (4:55/km)</span>
         </div>
       </div>
-
-      <!-- ② NAHAマラソン (フル) -->
-      <div class="glass-card rounded-3xl p-5 border border-sky-500/40 bg-gradient-to-br from-sky-950/30 via-slate-950 to-slate-950 shadow-xl relative overflow-hidden flex flex-col justify-between">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-black uppercase tracking-wider text-sky-400 font-mono">12/06(日) フル本番</span>
-          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-sky-500/20 text-sky-300 border border-sky-500/30">
-            あと {{ three_pillars.full_marathon.days_left }} 日
-          </span>
-        </div>
-        <div class="my-3">
-          <div class="text-xs text-slate-400 font-bold">👑 NAHAマラソン（フル 42.195km）</div>
-          <div class="text-2xl font-black text-white tracking-tight font-mono mt-0.5">サブ4.5 達成！</div>
-          <div class="text-xs text-sky-300 font-mono mt-1">目標: 4:15:00〜4:30:00 (6:00〜6:25/km)</div>
-        </div>
-        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
-          想定心拍: <strong class="text-white font-mono">150〜156 bpm</strong>（18〜20km LSDスタックで完走）
-        </div>
-      </div>
-
-      <!-- ③ 主目標 10kmサブ50 -->
-      <div class="glass-card rounded-3xl p-5 border border-amber-500/40 bg-gradient-to-br from-amber-950/30 via-slate-950 to-slate-950 shadow-xl relative overflow-hidden flex flex-col justify-between">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-black uppercase tracking-wider text-amber-400 font-mono">PRIMARY GOAL</span>
-          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">
-            SUB 50
-          </span>
-        </div>
-        <div class="my-3">
-          <div class="text-xs text-slate-400 font-bold">🎯 主目標 10km</div>
-          <div class="text-2xl font-black text-white tracking-tight font-mono mt-0.5">50分00秒 突破</div>
-          <div class="text-xs text-amber-300 font-mono mt-1">基準ペース: 4:55〜5:00/km (秒速 3.33m)</div>
-          <div class="text-[11px] text-rose-300 font-mono mt-0.5 font-bold">🔥 絶好調シフト: 48:30〜49:40 (4:51〜4:58/km)</div>
-        </div>
-        <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800/80 flex items-center justify-between">
-          <span>実測Max: <strong class="text-rose-400 font-mono">196 bpm</strong></span>
-          <span>想定心拍: <strong class="text-amber-300 font-mono">175〜180 bpm</strong></span>
-        </div>
+      <div class="flex items-center gap-2 text-[11px]">
+        <a href="#race-pacing" class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 font-bold transition">
+          ⏱️ 本番5km毎スプリット表 ↓
+        </a>
+        <a href="#repertoire-guide" onclick="document.getElementById('repertoire-guide').open = true;" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold transition">
+          🏃‍♂️ 練習メニュー辞書 ↓
+        </a>
       </div>
     </div>
 
-    <!-- 🧭 SECTION 2: 心拍数を下げる3大改善ルール & 生活ルーティン -->
-    <div class="glass-card rounded-3xl p-5 sm:p-6 border border-slate-800 space-y-4">
-      <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
-        <span class="text-lg">💡</span>
-        <h2 class="text-sm sm:text-base font-black text-white tracking-tight">心拍数を削り落とす3大改善ルール ＆ ライフスタイル制約</h2>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs text-slate-300">
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
-          <div class="font-bold text-amber-300 flex items-center space-x-1.5">
-            <span>⚡️</span>
-            <span>ジョグ後に「流し（100m×2〜3本）」</span>
-          </div>
-          <p class="text-[11px] text-slate-400 leading-relaxed">
-            ジョグ後に大きなストライドと高回転（180spm超）で走ることで、筋腱のバネ（伸張反射）を目覚めさせ、巡航時の酸素消費量・心拍数を抑制。
-          </p>
-        </div>
-
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
-          <div class="font-bold text-emerald-300 flex items-center space-x-1.5">
-            <span>🎯</span>
-            <span>平日のLT走は「適正LTゾーン（168〜174bpm）」</span>
-          </div>
-          <p class="text-[11px] text-slate-400 leading-relaxed">
-            最大心拍196bpmに合わせ、心拍168〜174bpm（上限目安176）を維持。乳酸を溜めずにエネルギーとして再利用する「乳酸クリアランス酵素」を最大化。
-          </p>
-        </div>
-
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
-          <div class="font-bold text-sky-300 flex items-center space-x-1.5">
-            <span>💧</span>
-            <span>長距離LSDでの「給水・補給プロトコル」</span>
-          </div>
-          <p class="text-[11px] text-slate-400 leading-relaxed">
-            脱水による血液濃縮（心拍ドリフト +5〜10bpm）を防ぐため、5kmごとの給水と10km地点のエナジージェル補給を練習時からルーティン化。
-          </p>
-        </div>
-      </div>
-
-      <!-- 生活制約バナー -->
-      <div class="bg-indigo-950/30 border border-indigo-500/30 rounded-2xl p-3.5 text-xs text-indigo-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div class="space-y-0.5">
-          <span class="font-bold text-white flex items-center space-x-1.5">
-            <span>🏃</span>
-            <span>平日トレーニング＆出走設計:</span>
-          </span>
-          <span class="text-[11px] text-slate-300">
-            平日は夕方出走（最短18:00〜）。<strong>最初の3kmは必ず心拍を抑えたウォームアップ走</strong>とし、3km以降の本練習区間で質を追求。長距離走からショートスピリットまで柔軟に展開。
-          </span>
-        </div>
-        <span class="text-[10px] font-mono px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0">
-          遠征移動期間＝完全アクティブレスト
-        </span>
-      </div>
-    </div>
-
-    <!-- 🏁 SECTION 3: 本番レース推奨ペース ＆ スプリット配分戦略 -->
-    <div id="race-pacing" class="glass-card rounded-3xl p-5 sm:p-6 border border-rose-500/30 bg-gradient-to-br from-rose-950/20 via-slate-950 to-slate-950 shadow-2xl space-y-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-4 gap-3">
-        <div>
-          <div class="flex items-center space-x-2">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono tracking-wider">
-              RACE DAY PACING STRATEGY
-            </span>
-            <span class="text-xs text-slate-400 font-mono">実戦スプリット＆心拍配分</span>
-          </div>
-          <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight mt-1 flex items-center space-x-2">
-            <span>🏁</span>
-            <span>本番レース推奨ペース ＆ スプリット配分戦略</span>
-          </h2>
-          <p class="text-xs text-slate-400 mt-0.5">
-            1km交代走（疾走4:20/km）の実績および実測最大心拍数（196bpm）に基づき、最高の結果を出すための区間別ペース配分です。
-          </p>
-        </div>
-        <div class="flex items-center space-x-2 shrink-0">
-          <span class="text-[11px] font-mono bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl text-amber-300 font-bold">
-            ⚡️ PAP効果（活動後増強）連動
-          </span>
-        </div>
-      </div>
-
-      <!-- 3大レース・推奨ペースカードグリッド -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-        <!-- ① 主目標 10km (サブ50突破 / 48〜49分台アタック) -->
-        <div class="bg-slate-950/90 border border-amber-500/40 rounded-2xl p-4 flex flex-col justify-between shadow-lg relative overflow-hidden">
-          <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
-                PRIMARY GOAL
-              </span>
-              <span class="text-xs font-mono font-bold text-amber-400">目標 48:30〜49:40</span>
-            </div>
-            <div>
-              <h3 class="text-base font-black text-white flex items-center space-x-1.5">
-                <span>🔥</span>
-                <span>10km 走（サブ50突破アタック）</span>
-              </h3>
-              <p class="text-[11px] text-slate-400 mt-0.5">平均 4:51〜4:58/km • 想定平均HR 176〜179 bpm</p>
-            </div>
-
-            <!-- スタート前アクション -->
-            <div class="bg-amber-950/20 border border-amber-500/20 rounded-xl p-2.5 text-[11px] text-amber-200/90 leading-relaxed">
-              <span class="font-bold text-amber-300">🏃 スタート前:</span> ジョグ1km ＋ <strong class="text-white">流し100m×2本</strong>（出走10分前）。筋肉のバネ（PAP）を点火し、1km目から5分切りが楽に感じる状態を作る。
-            </div>
-
-            <!-- 区間スプリット -->
-            <div class="space-y-1.5 text-xs font-mono">
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">0 〜 3 km（導入）</div>
-                  <div class="text-xs text-white">5:00 〜 5:05 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-emerald-400">HR 165〜172</div>
-                  <div class="text-[10px] text-slate-400 font-sans">焦らず体温を上げる</div>
-                </div>
-              </div>
-
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">4 〜 7 km（主戦場巡航）</div>
-                  <div class="text-xs text-amber-300 font-bold">4:55 〜 4:58 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-amber-400">HR 173〜178</div>
-                  <div class="text-[10px] text-slate-400 font-sans">適正LTゾーンで粘る</div>
-                </div>
-              </div>
-
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">8 〜 10 km（スパート）</div>
-                  <div class="text-xs text-rose-400 font-black">4:40 〜 4:50 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-rose-400">HR 180〜188+</div>
-                  <div class="text-[10px] text-slate-400 font-sans">4:20のバネ全開解放！</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ② ヨロンマラソン (ハーフ 21.0975km) -->
-        <div class="bg-slate-950/90 border border-emerald-500/40 rounded-2xl p-4 flex flex-col justify-between shadow-lg relative overflow-hidden">
-          <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
-                11/29(日) HALF
-              </span>
-              <span class="text-xs font-mono font-bold text-emerald-400">目標 1:52:00〜1:56:00</span>
-            </div>
-            <div>
-              <h3 class="text-base font-black text-white flex items-center space-x-1.5">
-                <span>🏁</span>
-                <span>ヨロンマラソン（ハーフ）</span>
-              </h3>
-              <p class="text-[11px] text-slate-400 mt-0.5">平均 5:18〜5:30/km • 想定平均HR 168〜174 bpm</p>
-            </div>
-
-            <!-- スタート前アクション -->
-            <div class="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-2.5 text-[11px] text-emerald-200/90 leading-relaxed">
-              <span class="font-bold text-emerald-300">🏃 スタート前:</span> 動的ストレッチ ＋ <strong class="text-white">整列15分前に流し100m×2本</strong>。レース中に1km上げるのではなく、事前にバネを起動しておくことで序盤から5:25が楽に巡航可能！
-            </div>
-
-            <!-- 区間スプリット -->
-            <div class="space-y-1.5 text-xs font-mono">
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">0 〜 3 km（慎重な入り）</div>
-                  <div class="text-xs text-white">5:35 〜 5:40 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-emerald-400">HR 160〜168</div>
-                  <div class="text-[10px] text-slate-400 font-sans">混雑を交わし脚を慣らす</div>
-                </div>
-              </div>
-
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">4 〜 16 km（快適LT巡航）</div>
-                  <div class="text-xs text-emerald-300 font-bold">5:20 〜 5:25 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-amber-400">HR 168〜174</div>
-                  <div class="text-[10px] text-slate-400 font-sans">主戦場・一定リズム巡航</div>
-                </div>
-              </div>
-
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">17 〜 21.1 km（ビルドアップ）</div>
-                  <div class="text-xs text-emerald-400 font-black">5:10 〜 5:20 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-rose-400">HR 175〜182</div>
-                  <div class="text-[10px] text-slate-400 font-sans">余力解放！サブ1:55制圧</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ③ NAHAマラソン (フル 42.195km) -->
-        <div class="bg-slate-950/90 border border-sky-500/40 rounded-2xl p-4 flex flex-col justify-between shadow-lg relative overflow-hidden">
-          <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-sky-500/20 text-sky-300 border border-sky-500/30 font-mono">
-                12/06(日) FULL
-              </span>
-              <span class="text-xs font-mono font-bold text-sky-400">目標 4:15:00〜4:25:00</span>
-            </div>
-            <div>
-              <h3 class="text-base font-black text-white flex items-center space-x-1.5">
-                <span>👑</span>
-                <span>NAHAマラソン（フル）</span>
-              </h3>
-              <p class="text-[11px] text-slate-400 mt-0.5">平均 6:02〜6:16/km • 想定平均HR 150〜156 bpm</p>
-            </div>
-
-            <!-- スタート前アクション -->
-            <div class="bg-sky-950/20 border border-sky-500/20 rounded-xl p-2.5 text-[11px] text-sky-200/90 leading-relaxed">
-              <span class="font-bold text-sky-300">🏃 スタート前:</span> 静的・動的ストレッチのみ。<strong class="text-white">※フルでは流しは不要！</strong> 貴重な筋グリコーゲンを1gも無駄遣いせず、完全に温存してスタートラインに立つ。
-            </div>
-
-            <!-- 区間スプリット -->
-            <div class="space-y-1.5 text-xs font-mono">
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">0 〜 5 km（大混雑＆温存）</div>
-                  <div class="text-xs text-white">6:20 〜 6:35 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-emerald-400">HR 140〜148</div>
-                  <div class="text-[10px] text-slate-400 font-sans">無理に抜かない・完全温存</div>
-                </div>
-              </div>
-
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">5 〜 25 km（イーブン巡航）</div>
-                  <div class="text-xs text-sky-300 font-bold">6:05 〜 6:15 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-sky-400">HR 148〜156</div>
-                  <div class="text-[10px] text-slate-400 font-sans">5km給水＆10km/20kmジェル</div>
-                </div>
-              </div>
-
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">25 〜 35 km（南部峠越え）</div>
-                  <div class="text-xs text-slate-300">6:15 〜 6:25 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-amber-400">HR 156以下死守</div>
-                  <div class="text-[10px] text-slate-400 font-sans">上りは落として心拍キープ</div>
-                </div>
-              </div>
-
-              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                <div>
-                  <div class="text-[11px] text-slate-400 font-sans font-bold">35 〜 42.195 km（魂の粘り）</div>
-                  <div class="text-xs text-sky-400 font-black">6:00 〜 6:15 /km</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-rose-400">HR 155〜165</div>
-                  <div class="text-[10px] text-slate-400 font-sans">21km LSDの脚力で全員抜く</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- 生理学ワンポイントアドバイス -->
-      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 text-xs text-slate-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div class="space-y-1">
-          <div class="font-bold text-white flex items-center space-x-1.5">
-            <span>💡</span>
-            <span>生理学ワンポイント:「活動後増強（PAP効果）」とフルの絶対鉄則</span>
-          </div>
-          <p class="text-[11px] text-slate-400 leading-relaxed">
-            疾走した後にペースを落としても速く走れるのは、大きな筋腱のバネ（伸張反射）が目覚めるためです。<strong>ハーフや10kmはスタート前の流しでこのバネを起動するのが最強の武器</strong>になります。一方、<strong>フルマラソンは序盤に速く走ると30km以降の大失速を招くため「最初から最後までずっとイーブン」</strong>が鉄則です！
-          </p>
-        </div>
-      </div>
-
-      <!-- ⏱️ 本番5km毎スプリット通過タイム ＆ 給水・ジェル補給タイミング早見表（中規模改善4） -->
-      <div class="bg-slate-950/90 border border-indigo-500/30 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
-          <div>
-            <div class="flex items-center space-x-2">
-              <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 text-[10px] font-mono font-bold">RACE DAY POCKET GUIDE</span>
-              <span class="text-[11px] text-slate-400">📱 スマホでスクショして本番携行推奨</span>
-            </div>
-            <h3 class="text-sm sm:text-base font-black text-white mt-1">⏱️ 5km毎スプリット通過タイム ＆ 給水・ジェル補給タイミング早見表</h3>
-          </div>
-          <div class="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold self-start sm:self-auto">
-            <button type="button" id="split-tab-yoron" onclick="switchRaceSplitTab('yoron')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 transition">
-              🏁 11/29 ヨロンハーフ
-            </button>
-            <button type="button" id="split-tab-naha" onclick="switchRaceSplitTab('naha')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition">
-              👑 12/06 NAHAフル
-            </button>
-          </div>
-        </div>
-
-        <!-- ヨロンハーフ スプリット表 -->
-        <div id="split-panel-yoron" class="space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2 text-xs bg-amber-950/20 border border-amber-500/20 rounded-xl px-3.5 py-2">
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-amber-300">🏁 ヨロンマラソン（ハーフ 21.0975km）</span>
-              <span class="text-[11px] text-slate-400">| ネットタイム基準</span>
-            </div>
-            <div class="flex flex-wrap items-center gap-3 text-[11px] font-mono">
-              <span class="text-amber-300">🔥 プランA（絶好調）: <strong>1:54:00</strong> (平均 5:24/km)</span>
-              <span class="text-emerald-300">🎯 プランB（サブ2確実）: <strong>1:58:30</strong> (平均 5:37/km)</span>
-            </div>
-          </div>
-
-          <div class="overflow-x-auto -mx-2 sm:mx-0">
-            <table class="w-full text-left border-collapse text-xs font-mono">
-              <thead>
-                <tr class="border-b border-slate-800 text-[10px] text-slate-400 uppercase bg-slate-900/60">
-                  <th class="py-2 px-3">地点</th>
-                  <th class="py-2 px-3 text-amber-300">🔥 プランA (1:54:00)</th>
-                  <th class="py-2 px-3 text-emerald-300">🎯 プランB (1:58:30)</th>
-                  <th class="py-2 px-3">区間設定ペース</th>
-                  <th class="py-2 px-3">心拍目安</th>
-                  <th class="py-2 px-3 font-sans">💧 補給・戦術アクション</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-800/60">
-                <tr class="hover:bg-slate-900/40">
-                  <td class="py-2 px-3 font-bold text-slate-200">3 km <span class="text-[10px] text-slate-400 font-sans">導入完了</span></td>
-                  <td class="py-2 px-3 text-amber-300 font-bold">0:16:45</td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">0:17:15</td>
-                  <td class="py-2 px-3 text-slate-300">5:35〜5:45/km</td>
-                  <td class="py-2 px-3 text-rose-300">160〜168 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-slate-300">💨 呼吸と接地リズムを整える（周囲につられて5:15/km以内で入らない）</td>
-                </tr>
-                <tr class="hover:bg-slate-900/40">
-                  <td class="py-2 px-3 font-bold text-slate-200">5 km</td>
-                  <td class="py-2 px-3 text-amber-300 font-bold">0:27:35</td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">0:28:35</td>
-                  <td class="py-2 px-3 text-slate-300">5:25〜5:38/km</td>
-                  <td class="py-2 px-3 text-rose-300">166〜172 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-sky-300">💧 <strong>第1給水</strong>：スポドリを1〜2口（喉が渇く前に必ず摂取）</td>
-                </tr>
-                <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
-                  <td class="py-2 px-3 font-bold text-white">10 km <span class="text-[10px] text-indigo-300 font-sans">前半通過</span></td>
-                  <td class="py-2 px-3 text-amber-300 font-black">0:54:40</td>
-                  <td class="py-2 px-3 text-emerald-300 font-black">0:56:45</td>
-                  <td class="py-2 px-3 text-slate-200">5:25〜5:38/km</td>
-                  <td class="py-2 px-3 text-rose-300">168〜174 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>エネルギー補給①</strong>：ジェル1個投入 ＋ 水で流し込む</td>
-                </tr>
-                <tr class="hover:bg-slate-900/40">
-                  <td class="py-2 px-3 font-bold text-slate-200">15 km <span class="text-[10px] text-slate-400 font-sans">中盤の山場</span></td>
-                  <td class="py-2 px-3 text-amber-300 font-bold">1:21:45</td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">1:24:55</td>
-                  <td class="py-2 px-3 text-slate-300">5:25〜5:38/km</td>
-                  <td class="py-2 px-3 text-rose-300">170〜176 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-sky-300">💧 <strong>重要給水</strong>：スポドリ＋首筋へ掛水（与論のアップダウンは心拍一定でやり過ごす）</td>
-                </tr>
-                <tr class="hover:bg-slate-900/40">
-                  <td class="py-2 px-3 font-bold text-slate-200">18 km <span class="text-[10px] text-amber-300 font-sans">残り3.1km</span></td>
-                  <td class="py-2 px-3 text-amber-300 font-bold">1:37:50</td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">1:41:40</td>
-                  <td class="py-2 px-3 text-amber-300">5:15〜5:30/km</td>
-                  <td class="py-2 px-3 text-rose-300">174〜180 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-amber-200">🔥 <strong>ギア切り替え</strong>：心拍リミッター解除、腕振りでストライドを伸ばす</td>
-                </tr>
-                <tr class="bg-amber-950/30 border-t border-amber-500/40">
-                  <td class="py-2.5 px-3 font-black text-amber-300">21.0975 km <span class="text-[10px] font-sans">Finish</span></td>
-                  <td class="py-2.5 px-3 text-amber-300 font-black text-sm">1:54:00</td>
-                  <td class="py-2.5 px-3 text-emerald-300 font-black text-sm">1:58:30</td>
-                  <td class="py-2.5 px-3 text-amber-300 font-bold">5:10〜5:25/km</td>
-                  <td class="py-2.5 px-3 text-rose-400 font-bold">178〜188 bpm</td>
-                  <td class="py-2.5 px-3 font-sans text-[11px] font-bold text-white">🏆 <strong>サブ2完全制圧フィニッシュ！</strong>（1:59:59以内で大勝利）</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- NAHAフル スプリット表 -->
-        <div id="split-panel-naha" class="space-y-3 hidden">
-          <div class="flex flex-wrap items-center justify-between gap-2 text-xs bg-sky-950/20 border border-sky-500/20 rounded-xl px-3.5 py-2">
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-sky-300">👑 NAHAマラソン（フル 42.195km）</span>
-              <span class="text-[11px] text-slate-400">| 09:00号砲・ネットタイム基準</span>
-            </div>
-            <div class="flex flex-wrap items-center gap-3 text-[11px] font-mono">
-              <span class="text-sky-300">🔥 プランA（4時間18分）: <strong>4:18:00</strong> (平均 6:07/km)</span>
-              <span class="text-emerald-300">🎯 プランB（サブ4.5確実）: <strong>4:27:00</strong> (平均 6:20/km)</span>
-            </div>
-          </div>
-
-          <div class="overflow-x-auto -mx-2 sm:mx-0">
-            <table class="w-full text-left border-collapse text-xs font-mono">
-              <thead>
-                <tr class="border-b border-slate-800 text-[10px] text-slate-400 uppercase bg-slate-900/60">
-                  <th class="py-2 px-3">地点</th>
-                  <th class="py-2 px-3 text-sky-300">🔥 プランA (4:18:00)</th>
-                  <th class="py-2 px-3 text-emerald-300">🎯 プランB (4:27:00)</th>
-                  <th class="py-2 px-3">区間設定ペース</th>
-                  <th class="py-2 px-3">心拍上限</th>
-                  <th class="py-2 px-3 font-sans">💧 補給・戦術アクション（30kmの壁完全回避プロトコル）</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-800/60">
-                <tr class="hover:bg-slate-900/40">
-                  <td class="py-2 px-3 font-bold text-slate-200">5 km <span class="text-[10px] text-slate-400 font-sans">国際通り後</span></td>
-                  <td class="py-2 px-3 text-sky-300 font-bold">0:30:50 <span class="text-[10px] text-slate-400">(09:31)</span></td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">0:31:50 <span class="text-[10px] text-slate-400">(09:32)</span></td>
-                  <td class="py-2 px-3 text-slate-300">6:10〜6:22/km</td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">≤ 154 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-slate-300">💧 <strong>初回給水必須</strong>：お祭りムードで5:40/km台に入るのを絶対封印</td>
-                </tr>
-                <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
-                  <td class="py-2 px-3 font-bold text-white">10 km</td>
-                  <td class="py-2 px-3 text-sky-300 font-bold">1:01:30 <span class="text-[10px] text-slate-400">(10:02)</span></td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">1:03:30 <span class="text-[10px] text-slate-400">(10:04)</span></td>
-                  <td class="py-2 px-3 text-slate-300">6:08〜6:20/km</td>
-                  <td class="py-2 px-3 text-emerald-300">150〜155 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>ジェル補給① (10km)</strong> ＋ 水（グリコーゲン枯渇を先回り防止）</td>
-                </tr>
-                <tr class="hover:bg-slate-900/40">
-                  <td class="py-2 px-3 font-bold text-slate-200">15 km <span class="text-[10px] text-slate-400 font-sans">南風原上り</span></td>
-                  <td class="py-2 px-3 text-sky-300 font-bold">1:32:10 <span class="text-[10px] text-slate-400">(10:32)</span></td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">1:35:10 <span class="text-[10px] text-slate-400">(10:35)</span></td>
-                  <td class="py-2 px-3 text-slate-300">6:08〜6:20/km</td>
-                  <td class="py-2 px-3 text-emerald-300">152〜156 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-sky-300">💧 給水 ＋ <strong>塩タブレット1粒</strong>（前半の上り坂はペースが6:30に落ちても心拍優先）</td>
-                </tr>
-                <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
-                  <td class="py-2 px-3 font-bold text-white">20 km</td>
-                  <td class="py-2 px-3 text-sky-300 font-bold">2:03:00 <span class="text-[10px] text-slate-400">(11:03)</span></td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">2:07:00 <span class="text-[10px] text-slate-400">(11:07)</span></td>
-                  <td class="py-2 px-3 text-slate-300">6:10〜6:22/km</td>
-                  <td class="py-2 px-3 text-amber-300">154〜158 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>ジェル補給② (20km)</strong> ＋ 水（平和祈念公園前後のアップダウンを耐える）</td>
-                </tr>
-                <tr class="bg-sky-950/30 border-y border-sky-500/30">
-                  <td class="py-2 px-3 font-black text-sky-300">Half 21.1 km <span class="text-[10px] font-sans">中間点</span></td>
-                  <td class="py-2 px-3 text-sky-300 font-black">2:09:45 <span class="text-[10px] text-slate-300">(11:10)</span></td>
-                  <td class="py-2 px-3 text-emerald-300 font-black">2:14:00 <span class="text-[10px] text-slate-300">(11:14)</span></td>
-                  <td class="py-2 px-3 text-sky-200">6:09〜6:21/km</td>
-                  <td class="py-2 px-3 text-amber-300">154〜158 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-white font-bold">🎯 <strong>中間点チェック</strong>：ここで脚が軽ければ後半イーブンでサブ4.5確勝！</td>
-                </tr>
-                <tr class="hover:bg-slate-900/40">
-                  <td class="py-2 px-3 font-bold text-slate-200">25 km <span class="text-[10px] text-slate-400 font-sans">糸満へ下り</span></td>
-                  <td class="py-2 px-3 text-sky-300 font-bold">2:33:40 <span class="text-[10px] text-slate-400">(11:34)</span></td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">2:38:40 <span class="text-[10px] text-slate-400">(11:39)</span></td>
-                  <td class="py-2 px-3 text-slate-300">6:05〜6:18/km</td>
-                  <td class="py-2 px-3 text-amber-300">154〜158 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-sky-300">💧 給水＋掛水冷却（下り坂でドカ踏みせず、ブレーキをかけないピッチ走法）</td>
-                </tr>
-                <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
-                  <td class="py-2 px-3 font-bold text-white">30 km <span class="text-[10px] text-rose-300 font-sans">運命の分岐</span></td>
-                  <td class="py-2 px-3 text-sky-300 font-black">3:04:15 <span class="text-[10px] text-slate-400">(12:04)</span></td>
-                  <td class="py-2 px-3 text-emerald-300 font-black">3:10:15 <span class="text-[10px] text-slate-400">(12:10)</span></td>
-                  <td class="py-2 px-3 text-slate-200">6:05〜6:18/km</td>
-                  <td class="py-2 px-3 text-rose-300">155〜160 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>ジェル補給③ (30km)</strong> ＋ 塩タブ1粒（30kmの壁を糖質補給で突破）</td>
-                </tr>
-                <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
-                  <td class="py-2 px-3 font-bold text-white">35 km <span class="text-[10px] text-amber-300 font-sans">残り7.2km</span></td>
-                  <td class="py-2 px-3 text-sky-300 font-bold">3:34:50 <span class="text-[10px] text-slate-400">(12:35)</span></td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">3:41:50 <span class="text-[10px] text-slate-400">(12:42)</span></td>
-                  <td class="py-2 px-3 text-slate-200">6:05〜6:18/km</td>
-                  <td class="py-2 px-3 text-rose-300">156〜162 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>最終ジェル④ (35km・カフェイン系推奨)</strong> で中枢神経の疲労をブロック</td>
-                </tr>
-                <tr class="hover:bg-slate-900/40">
-                  <td class="py-2 px-3 font-bold text-slate-200">40 km <span class="text-[10px] text-sky-300 font-sans">残り2.2km</span></td>
-                  <td class="py-2 px-3 text-sky-300 font-bold">4:05:10 <span class="text-[10px] text-slate-400">(13:05)</span></td>
-                  <td class="py-2 px-3 text-emerald-300 font-bold">4:13:20 <span class="text-[10px] text-slate-400">(13:13)</span></td>
-                  <td class="py-2 px-3 text-sky-300">6:00〜6:15/km</td>
-                  <td class="py-2 px-3 text-rose-300">160〜166 bpm</td>
-                  <td class="py-2 px-3 font-sans text-[11px] text-amber-200">🔥 21km LSDで鍛えた遅筋と毛細血管の底力で周囲をごぼう抜き！</td>
-                </tr>
-                <tr class="bg-sky-950/40 border-t border-sky-500/40">
-                  <td class="py-2.5 px-3 font-black text-sky-300">42.195 km <span class="text-[10px] font-sans">Finish</span></td>
-                  <td class="py-2.5 px-3 text-sky-300 font-black text-sm">4:18:00 <span class="text-[10px] text-slate-300">(13:18)</span></td>
-                  <td class="py-2.5 px-3 text-emerald-300 font-black text-sm">4:27:00 <span class="text-[10px] text-slate-300">(13:27)</span></td>
-                  <td class="py-2.5 px-3 text-sky-300 font-bold">6:00〜6:10/km</td>
-                  <td class="py-2.5 px-3 text-rose-400 font-bold">162〜170 bpm</td>
-                  <td class="py-2.5 px-3 font-sans text-[11px] font-bold text-white">👑 <strong>奥武山競技場フィニッシュ！サブ4.5（4:29:59以内）完全制覇！</strong></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 📊 SECTION 4: 全42日間トレーニングスケジュール通し表 -->
+    <!-- 📊 SECTION 1 (最優先表示): 全42日間トレーニングスケジュール通し表 -->
     <div class="glass-card rounded-3xl p-5 sm:p-6 border border-slate-800 space-y-4 shadow-2xl">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
@@ -630,7 +104,7 @@
             <span>📋</span>
             <span>全42日間トレーニングスケジュール通し表</span>
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">10/26(月) 〜 12/06(日) NAHAマラソン本番まで週の区切りなしで一覧</p>
+          <p class="text-xs text-slate-400 mt-0.5">10/26(月) 〜 12/06(日) NAHAマラソン本番まで週の区切りなしで一覧（最初の3kmはウォームアップ）</p>
         </div>
 
         <!-- フィルターボタン群 -->
@@ -777,32 +251,239 @@
       </div>
     </div>
 
-    <!-- 練習レパートリー完全ガイド -->
-    <div id="repertoire-guide" class="mt-12 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl backdrop-blur-xl">
-      <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-8 border-b border-slate-800 gap-4">
+    <!-- 🏁 SECTION 2: 本番レース 5km毎スプリット通過タイム ＆ 給水・ジェル補給タイミング早見表 -->
+    <div id="race-pacing" class="glass-card rounded-3xl p-5 sm:p-6 border border-rose-500/30 bg-gradient-to-br from-rose-950/20 via-slate-950 to-slate-950 shadow-2xl space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
-          <div class="flex items-center gap-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/30">
-              TRAINING REPERTOIRE
-            </span>
-            <span class="text-xs text-slate-500 font-mono">Purpose & Physiological Adaptations</span>
+          <div class="flex items-center space-x-2">
+            <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-mono font-bold">RACE DAY POCKET GUIDE</span>
+            <span class="text-[11px] text-slate-400">📱 スマホでスクショして本番携行推奨</span>
           </div>
-          <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight mt-2 flex items-center gap-2">
-            <span>🏃‍♂️</span> 練習メニュー・レパートリー完全ガイド
-          </h2>
-          <p class="text-xs md:text-sm text-slate-400 mt-1">
-            主目標（10km：サブ50）および目標レース（ヨロンハーフ：サブ2 / NAHAフル：サブ4.5）達成に向けた各メニューの目的・生理学的効果・設定目安一覧です。
-          </p>
+          <h2 class="text-lg sm:text-xl font-black text-white mt-1">⏱️ 本番レース 5km毎スプリット通過タイム ＆ 給水・補給早見表</h2>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs text-slate-400 font-mono bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
-            全9バリエーション（実測HRmax 196bpm準拠）
-          </span>
+        <div class="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold self-start sm:self-auto">
+          <button type="button" id="split-tab-yoron" onclick="switchRaceSplitTab('yoron')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 transition">
+            🏁 11/29 ヨロンハーフ
+          </button>
+          <button type="button" id="split-tab-naha" onclick="switchRaceSplitTab('naha')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition">
+            👑 12/06 NAHAフル
+          </button>
         </div>
       </div>
 
+      <!-- ヨロンハーフ スプリット表 -->
+      <div id="split-panel-yoron" class="space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs bg-amber-950/20 border border-amber-500/20 rounded-xl px-3.5 py-2">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-amber-300">🏁 ヨロンマラソン（ハーフ 21.0975km）</span>
+            <span class="text-[11px] text-slate-400">| 整列15分前に流し100m×2本（PAP起動）</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 text-[11px] font-mono">
+            <span class="text-amber-300">🔥 プランA（絶好調）: <strong>1:54:00</strong> (平均 5:24/km)</span>
+            <span class="text-emerald-300">🎯 プランB（サブ2確実）: <strong>1:58:30</strong> (平均 5:37/km)</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto -mx-2 sm:mx-0">
+          <table class="w-full text-left border-collapse text-xs font-mono">
+            <thead>
+              <tr class="border-b border-slate-800 text-[10px] text-slate-400 uppercase bg-slate-900/60">
+                <th class="py-2 px-3">地点</th>
+                <th class="py-2 px-3 text-amber-300">🔥 プランA (1:54:00)</th>
+                <th class="py-2 px-3 text-emerald-300">🎯 プランB (1:58:30)</th>
+                <th class="py-2 px-3">区間設定ペース</th>
+                <th class="py-2 px-3">心拍目安</th>
+                <th class="py-2 px-3 font-sans">💧 補給・戦術アクション</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60">
+              <tr class="hover:bg-slate-900/40">
+                <td class="py-2 px-3 font-bold text-slate-200">3 km <span class="text-[10px] text-slate-400 font-sans">導入完了</span></td>
+                <td class="py-2 px-3 text-amber-300 font-bold">0:16:45</td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">0:17:15</td>
+                <td class="py-2 px-3 text-slate-300">5:35〜5:45/km</td>
+                <td class="py-2 px-3 text-rose-300">160〜168 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-slate-300">💨 呼吸と接地リズムを整える（周囲につられて5:15/km以内で入らない）</td>
+              </tr>
+              <tr class="hover:bg-slate-900/40">
+                <td class="py-2 px-3 font-bold text-slate-200">5 km</td>
+                <td class="py-2 px-3 text-amber-300 font-bold">0:27:35</td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">0:28:35</td>
+                <td class="py-2 px-3 text-slate-300">5:25〜5:38/km</td>
+                <td class="py-2 px-3 text-rose-300">166〜172 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-sky-300">💧 <strong>第1給水</strong>：スポドリを1〜2口（喉が渇く前に必ず摂取）</td>
+              </tr>
+              <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
+                <td class="py-2 px-3 font-bold text-white">10 km <span class="text-[10px] text-indigo-300 font-sans">前半通過</span></td>
+                <td class="py-2 px-3 text-amber-300 font-black">0:54:40</td>
+                <td class="py-2 px-3 text-emerald-300 font-black">0:56:45</td>
+                <td class="py-2 px-3 text-slate-200">5:25〜5:38/km</td>
+                <td class="py-2 px-3 text-rose-300">168〜174 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>エネルギー補給①</strong>：ジェル1個投入 ＋ 水で流し込む</td>
+              </tr>
+              <tr class="hover:bg-slate-900/40">
+                <td class="py-2 px-3 font-bold text-slate-200">15 km <span class="text-[10px] text-slate-400 font-sans">中盤の山場</span></td>
+                <td class="py-2 px-3 text-amber-300 font-bold">1:21:45</td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">1:24:55</td>
+                <td class="py-2 px-3 text-slate-300">5:25〜5:38/km</td>
+                <td class="py-2 px-3 text-rose-300">170〜176 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-sky-300">💧 <strong>重要給水</strong>：スポドリ＋首筋へ掛水（与論のアップダウンは心拍一定でやり過ごす）</td>
+              </tr>
+              <tr class="hover:bg-slate-900/40">
+                <td class="py-2 px-3 font-bold text-slate-200">18 km <span class="text-[10px] text-amber-300 font-sans">残り3.1km</span></td>
+                <td class="py-2 px-3 text-amber-300 font-bold">1:37:50</td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">1:41:40</td>
+                <td class="py-2 px-3 text-amber-300">5:15〜5:30/km</td>
+                <td class="py-2 px-3 text-rose-300">174〜180 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-amber-200">🔥 <strong>ギア切り替え</strong>：心拍リミッター解除、腕振りでストライドを伸ばす</td>
+              </tr>
+              <tr class="bg-amber-950/30 border-t border-amber-500/40">
+                <td class="py-2.5 px-3 font-black text-amber-300">21.0975 km <span class="text-[10px] font-sans">Finish</span></td>
+                <td class="py-2.5 px-3 text-amber-300 font-black text-sm">1:54:00</td>
+                <td class="py-2.5 px-3 text-emerald-300 font-black text-sm">1:58:30</td>
+                <td class="py-2.5 px-3 text-amber-300 font-bold">5:10〜5:25/km</td>
+                <td class="py-2.5 px-3 text-rose-400 font-bold">178〜188 bpm</td>
+                <td class="py-2.5 px-3 font-sans text-[11px] font-bold text-white">🏆 <strong>サブ2完全制圧フィニッシュ！</strong>（1:59:59以内で大勝利）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NAHAフル スプリット表 -->
+      <div id="split-panel-naha" class="space-y-3 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs bg-sky-950/20 border border-sky-500/20 rounded-xl px-3.5 py-2">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sky-300">👑 NAHAマラソン（フル 42.195km）</span>
+            <span class="text-[11px] text-slate-400">| 09:00号砲・※フルはスタート前の流し不要（グリコーゲン完全温存）</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 text-[11px] font-mono">
+            <span class="text-sky-300">🔥 プランA（4時間18分）: <strong>4:18:00</strong> (平均 6:07/km)</span>
+            <span class="text-emerald-300">🎯 プランB（サブ4.5確実）: <strong>4:27:00</strong> (平均 6:20/km)</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto -mx-2 sm:mx-0">
+          <table class="w-full text-left border-collapse text-xs font-mono">
+            <thead>
+              <tr class="border-b border-slate-800 text-[10px] text-slate-400 uppercase bg-slate-900/60">
+                <th class="py-2 px-3">地点</th>
+                <th class="py-2 px-3 text-sky-300">🔥 プランA (4:18:00)</th>
+                <th class="py-2 px-3 text-emerald-300">🎯 プランB (4:27:00)</th>
+                <th class="py-2 px-3">区間設定ペース</th>
+                <th class="py-2 px-3">心拍上限</th>
+                <th class="py-2 px-3 font-sans">💧 補給・戦術アクション（30kmの壁完全回避プロトコル）</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60">
+              <tr class="hover:bg-slate-900/40">
+                <td class="py-2 px-3 font-bold text-slate-200">5 km <span class="text-[10px] text-slate-400 font-sans">国際通り後</span></td>
+                <td class="py-2 px-3 text-sky-300 font-bold">0:30:50 <span class="text-[10px] text-slate-400">(09:31)</span></td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">0:31:50 <span class="text-[10px] text-slate-400">(09:32)</span></td>
+                <td class="py-2 px-3 text-slate-300">6:10〜6:22/km</td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">≤ 154 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-slate-300">💧 <strong>初回給水必須</strong>：お祭りムードで5:40/km台に入るのを絶対封印</td>
+              </tr>
+              <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
+                <td class="py-2 px-3 font-bold text-white">10 km</td>
+                <td class="py-2 px-3 text-sky-300 font-bold">1:01:30 <span class="text-[10px] text-slate-400">(10:02)</span></td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">1:03:30 <span class="text-[10px] text-slate-400">(10:04)</span></td>
+                <td class="py-2 px-3 text-slate-300">6:08〜6:20/km</td>
+                <td class="py-2 px-3 text-emerald-300">150〜155 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>ジェル補給① (10km)</strong> ＋ 水（グリコーゲン枯渇を先回り防止）</td>
+              </tr>
+              <tr class="hover:bg-slate-900/40">
+                <td class="py-2 px-3 font-bold text-slate-200">15 km <span class="text-[10px] text-slate-400 font-sans">南風原上り</span></td>
+                <td class="py-2 px-3 text-sky-300 font-bold">1:32:10 <span class="text-[10px] text-slate-400">(10:32)</span></td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">1:35:10 <span class="text-[10px] text-slate-400">(10:35)</span></td>
+                <td class="py-2 px-3 text-slate-300">6:08〜6:20/km</td>
+                <td class="py-2 px-3 text-emerald-300">152〜156 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-sky-300">💧 給水 ＋ <strong>塩タブレット1粒</strong>（前半の上り坂はペースが6:30に落ちても心拍優先）</td>
+              </tr>
+              <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
+                <td class="py-2 px-3 font-bold text-white">20 km</td>
+                <td class="py-2 px-3 text-sky-300 font-bold">2:03:00 <span class="text-[10px] text-slate-400">(11:03)</span></td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">2:07:00 <span class="text-[10px] text-slate-400">(11:07)</span></td>
+                <td class="py-2 px-3 text-slate-300">6:10〜6:22/km</td>
+                <td class="py-2 px-3 text-amber-300">154〜158 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>ジェル補給② (20km)</strong> ＋ 水（平和祈念公園前後のアップダウンを耐える）</td>
+              </tr>
+              <tr class="bg-sky-950/30 border-y border-sky-500/30">
+                <td class="py-2 px-3 font-black text-sky-300">Half 21.1 km <span class="text-[10px] font-sans">中間点</span></td>
+                <td class="py-2 px-3 text-sky-300 font-black">2:09:45 <span class="text-[10px] text-slate-300">(11:10)</span></td>
+                <td class="py-2 px-3 text-emerald-300 font-black">2:14:00 <span class="text-[10px] text-slate-300">(11:14)</span></td>
+                <td class="py-2 px-3 text-sky-200">6:09〜6:21/km</td>
+                <td class="py-2 px-3 text-amber-300">154〜158 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-white font-bold">🎯 <strong>中間点チェック</strong>：ここで脚が軽ければ後半イーブンでサブ4.5確勝！</td>
+              </tr>
+              <tr class="hover:bg-slate-900/40">
+                <td class="py-2 px-3 font-bold text-slate-200">25 km <span class="text-[10px] text-slate-400 font-sans">糸満へ下り</span></td>
+                <td class="py-2 px-3 text-sky-300 font-bold">2:33:40 <span class="text-[10px] text-slate-400">(11:34)</span></td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">2:38:40 <span class="text-[10px] text-slate-400">(11:39)</span></td>
+                <td class="py-2 px-3 text-slate-300">6:05〜6:18/km</td>
+                <td class="py-2 px-3 text-amber-300">154〜158 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-sky-300">💧 給水＋掛水冷却（下り坂でドカ踏みせず、ブレーキをかけないピッチ走法）</td>
+              </tr>
+              <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
+                <td class="py-2 px-3 font-bold text-white">30 km <span class="text-[10px] text-rose-300 font-sans">運命の分岐</span></td>
+                <td class="py-2 px-3 text-sky-300 font-black">3:04:15 <span class="text-[10px] text-slate-400">(12:04)</span></td>
+                <td class="py-2 px-3 text-emerald-300 font-black">3:10:15 <span class="text-[10px] text-slate-400">(12:10)</span></td>
+                <td class="py-2 px-3 text-slate-200">6:05〜6:18/km</td>
+                <td class="py-2 px-3 text-rose-300">155〜160 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>ジェル補給③ (30km)</strong> ＋ 塩タブ1粒（30kmの壁を糖質補給で突破）</td>
+              </tr>
+              <tr class="bg-indigo-950/20 hover:bg-indigo-950/30">
+                <td class="py-2 px-3 font-bold text-white">35 km <span class="text-[10px] text-amber-300 font-sans">残り7.2km</span></td>
+                <td class="py-2 px-3 text-sky-300 font-bold">3:34:50 <span class="text-[10px] text-slate-400">(12:35)</span></td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">3:41:50 <span class="text-[10px] text-slate-400">(12:42)</span></td>
+                <td class="py-2 px-3 text-slate-200">6:05〜6:18/km</td>
+                <td class="py-2 px-3 text-rose-300">156〜162 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-amber-300">⚡ <strong>最終ジェル④ (35km・カフェイン系推奨)</strong> で中枢神経の疲労をブロック</td>
+              </tr>
+              <tr class="hover:bg-slate-900/40">
+                <td class="py-2 px-3 font-bold text-slate-200">40 km <span class="text-[10px] text-sky-300 font-sans">残り2.2km</span></td>
+                <td class="py-2 px-3 text-sky-300 font-bold">4:05:10 <span class="text-[10px] text-slate-400">(13:05)</span></td>
+                <td class="py-2 px-3 text-emerald-300 font-bold">4:13:20 <span class="text-[10px] text-slate-400">(13:13)</span></td>
+                <td class="py-2 px-3 text-sky-300">6:00〜6:15/km</td>
+                <td class="py-2 px-3 text-rose-300">160〜166 bpm</td>
+                <td class="py-2 px-3 font-sans text-[11px] text-amber-200">🔥 21km LSDで鍛えた遅筋と毛細血管の底力で周囲をごぼう抜き！</td>
+              </tr>
+              <tr class="bg-sky-950/40 border-t border-sky-500/40">
+                <td class="py-2.5 px-3 font-black text-sky-300">42.195 km <span class="text-[10px] font-sans">Finish</span></td>
+                <td class="py-2.5 px-3 text-sky-300 font-black text-sm">4:18:00 <span class="text-[10px] text-slate-300">(13:18)</span></td>
+                <td class="py-2.5 px-3 text-emerald-300 font-black text-sm">4:27:00 <span class="text-[10px] text-slate-300">(13:27)</span></td>
+                <td class="py-2.5 px-3 text-sky-300 font-bold">6:00〜6:10/km</td>
+                <td class="py-2.5 px-3 text-rose-400 font-bold">162〜170 bpm</td>
+                <td class="py-2.5 px-3 font-sans text-[11px] font-bold text-white">👑 <strong>奥武山競技場フィニッシュ！サブ4.5（4:29:59以内）完全制覇！</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🏃‍♂️ SECTION 3 (折りたたみ辞書): 練習メニュー・レパートリー完全ガイド -->
+    <details id="repertoire-guide" class="group bg-slate-900/90 border border-slate-800 rounded-3xl shadow-2xl backdrop-blur-xl overflow-hidden">
+      <summary class="cursor-pointer list-none p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-800/40 transition select-none">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">🏃‍♂️</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-base sm:text-lg font-black text-white tracking-tight">練習メニュー・レパートリー完全ガイド（全9種目の目的・設定心拍辞書）</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">HRmax 196bpm準拠</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">1km交代走・LTテンポ走・Mペース持続走・本格LSDなど各メニューの生理学的効果を確認する</p>
+          </div>
+        </div>
+        <span class="text-xs font-mono font-bold text-amber-300 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 self-start sm:self-auto shrink-0">
+          <span class="group-open:hidden">クリックして展開 ▼</span>
+          <span class="hidden group-open:inline">閉じる ▲</span>
+        </span>
+      </summary>
+
+      <div class="px-6 pb-8 pt-2 border-t border-slate-800/80">
       <!-- レパートリーグリッド -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
 
         <!-- 1. 1km交代走 -->
         <div class="bg-slate-950/80 border border-rose-500/30 rounded-2xl p-5 hover:border-rose-500/60 transition-all shadow-lg flex flex-col justify-between group">
@@ -1147,7 +828,8 @@
         </div>
 
       </div>
-    </div>
+      </div>
+    </details>
 
   </main>
 
@@ -1228,6 +910,10 @@
 
     // 初期化: 'all' をアクティブに
     filterSchedule('all');
+    if (window.location.hash === '#repertoire-guide') {
+      const rep = document.getElementById('repertoire-guide');
+      if (rep) rep.open = true;
+    }
   </script>
 </body>
 </html>
