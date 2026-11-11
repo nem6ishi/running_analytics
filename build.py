@@ -78,6 +78,7 @@ def build():
         latest_quality_split=analytics_data["latest_quality_split"],
         three_pillars=analytics_data["three_pillars"],
         training_roadmap=analytics_data["training_roadmap"],
+        hall_of_fame=analytics_data["hall_of_fame"],
         insights_json=json.dumps(analytics_data["insights"], ensure_ascii=False, default=json_default),
         chart_data_json=json.dumps(analytics_data["chart_data"], ensure_ascii=False, default=json_default),
         personal_records=analytics_data["personal_records"],
@@ -119,6 +120,7 @@ def build():
         app_css=app_css,
         schedule=schedule_data,
         three_pillars=analytics_data["three_pillars"],
+        training_roadmap=analytics_data["training_roadmap"],
     )
     schedule_output_path = docs_dir / "schedule.html"
     schedule_output_path.write_text(rendered_schedule, encoding="utf-8")

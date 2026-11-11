@@ -36,6 +36,32 @@
           </div>
         </div>
 
+        <!-- 📊 フィルター動的集計サマリーバー -->
+        <div id="history-filter-summary" class="bg-slate-900/80 border border-slate-800/90 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs font-mono shadow-inner">
+          <div class="flex items-center space-x-2">
+            <span class="px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-sans font-bold text-[11px]" id="summary-filter-label">すべて表示中</span>
+            <span class="text-slate-400">該当: <strong class="text-white text-sm" id="summary-count">{{ reversed_insights | length }}</strong> 走</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+            <div>
+              <span class="text-[10px] text-slate-500 font-sans block">合計走行距離</span>
+              <span class="text-sm font-black text-emerald-400" id="summary-dist">{{ overview.total_distance_km }} km</span>
+            </div>
+            <div class="border-l border-slate-800 pl-4">
+              <span class="text-[10px] text-slate-500 font-sans block">全体平均ペース</span>
+              <span class="text-sm font-bold text-slate-200" id="summary-pace">{{ overview.avg_pace_str }} /km</span>
+            </div>
+            <div class="border-l border-slate-800 pl-4">
+              <span class="text-[10px] text-emerald-400/90 font-sans font-bold block">⚡ 本練習平均 (4km〜)</span>
+              <span class="text-sm font-black text-emerald-400" id="summary-main-pace">--:-- /km</span>
+            </div>
+            <div class="border-l border-slate-800 pl-4">
+              <span class="text-[10px] text-slate-500 font-sans block">平均心拍数</span>
+              <span class="text-sm font-bold text-rose-400" id="summary-hr">{{ overview.avg_hr }} bpm</span>
+            </div>
+          </div>
+        </div>
+
         <div class="glass-card rounded-2xl overflow-hidden shadow-xl border border-slate-800/80">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs sm:text-sm" id="activity-table">
@@ -44,7 +70,7 @@
                   <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(0, 'date')">日付 <span class="sort-icon text-[10px]">▼</span></th>
                   <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(1, 'num')">距離 <span class="sort-icon text-[10px]"></span></th>
                   <th class="py-3.5 px-4">タイム</th>
-                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(3, 'pace')">平均ペース <span class="sort-icon text-[10px]"></span></th>
+                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(3, 'pace')">全体 / ⚡本練習ペース <span class="sort-icon text-[10px]"></span></th>
                   <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(4, 'num')">平均心拍 <span class="sort-icon text-[10px]"></span></th>
                   <th class="py-3.5 px-4">VDOT / 安定性</th>
                   <th class="py-3.5 px-4">強度 / トレーニング種別</th>
@@ -58,6 +84,8 @@
                     data-date="{{ item.date }}"
                     data-dist="{{ item.distance_km }}"
                     data-pace-sec="{{ item.pace_sec }}"
+                    data-main-pace-sec="{{ item.quality_split.main_pace_sec if item.quality_split else item.pace_sec }}"
+                    data-main-km="{{ item.quality_split.main_km if item.quality_split else item.distance_km }}"
                     data-hr="{{ item.avg_hr }}"
                     data-vdot="{{ item.evaluation.vdot or 0 }}"
                     data-type="{{ item.analysis.workout_structure.type if item.analysis and item.analysis.workout_structure else '' }}"
@@ -73,8 +101,19 @@
                   <td class="py-3 px-4 whitespace-nowrap text-slate-300 font-mono font-medium">
                     {{ item.duration_str }}
                   </td>
-                  <td class="py-3 px-4 whitespace-nowrap font-bold text-slate-200 font-mono">
-                    {{ item.pace_str }} <span class="text-[10px] text-slate-500 font-normal">/km</span>
+                  <td class="py-3 px-4 whitespace-nowrap font-mono">
+                    <div class="font-bold text-slate-200">
+                      {{ item.pace_str }} <span class="text-[10px] text-slate-500 font-normal">/km (全体)</span>
+                    </div>
+                    {% if item.quality_split and item.quality_split.has_split %}
+                    <div class="text-[11px] font-black text-emerald-400 mt-0.5">
+                      ⚡ {{ item.quality_split.main_pace_str }}<span class="text-[9px] font-normal text-slate-400">/k (本練習{{ item.quality_split.main_km }}k)</span>
+                    </div>
+                    {% else %}
+                    <div class="text-[10px] text-slate-500 mt-0.5 font-sans">
+                      🐢 全区間単一巡航
+                    </div>
+                    {% endif %}
                   </td>
                   <td class="py-3 px-4 whitespace-nowrap font-mono">
                     <span class="inline-flex items-center text-rose-400 font-bold">

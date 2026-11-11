@@ -1040,6 +1040,92 @@ def compute_three_pillars(
     }
 
 
+def compute_hall_of_fame(df: pd.DataFrame, insights: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """全アクティビティから4部門（10km最速 / 本練習ペース最速 / 1km最速ラップ / 最長距離）の歴代トップ3を抽出"""
+    if not insights:
+        return {"top_10k": [], "top_quality": [], "top_laps": [], "top_long": []}
+
+    # 1. ⏱️ 10km実走タイム 歴代トップ3 (距離 9.5km 〜 11.5km のランを10km換算タイムで比較)
+    ten_k_candidates = []
+    for act in insights:
+        dist = float(act.get("distance_km", 0))
+        p_sec = float(act.get("pace_sec", 0))
+        if 9.5 <= dist <= 11.5 and p_sec > 0:
+            est_10k_sec = p_sec * 10.0
+            ten_k_candidates.append({
+                "id": act["id"],
+                "date": act["date"],
+                "sort_val": est_10k_sec,
+                "main_val": seconds_to_time_str(int(round(est_10k_sec))),
+                "sub_val": f"{act['pace_str']}/km ({dist}km)",
+                "hr_val": f"HR {act.get('avg_hr', '--')}bpm",
+                "badge": (act.get("analysis") or {}).get("workout_structure", {}).get("badge", "🏃 10km走"),
+            })
+    ten_k_candidates.sort(key=lambda x: x["sort_val"])
+    top_10k = ten_k_candidates[:3]
+
+    # 2. ⚡ 本練習区間（Quality Zone: 3kmアップ除外）平均ペース 歴代トップ3 (本練習区間 3.0km 以上)
+    quality_candidates = []
+    for act in insights:
+        qs = act.get("quality_split") or _extract_post_warmup_summary(act)
+        main_km = float(qs.get("main_km", 0))
+        main_p_sec = float(qs.get("main_pace_sec", 0))
+        if main_km >= 3.0 and main_p_sec > 0:
+            quality_candidates.append({
+                "id": act["id"],
+                "date": act["date"],
+                "sort_val": main_p_sec,
+                "main_val": f"{qs['main_pace_str']}/km",
+                "sub_val": f"本練習 {main_km}km (全体 {act['distance_km']}km)",
+                "hr_val": f"本練習HR {qs.get('main_hr', act.get('avg_hr', '--'))}bpm",
+                "badge": (act.get("analysis") or {}).get("workout_structure", {}).get("badge", "⚡ ポイント走"),
+            })
+    quality_candidates.sort(key=lambda x: x["sort_val"])
+    top_quality = quality_candidates[:3]
+
+    # 3. 🚀 1km最速ラップ（ベストラップ）歴代トップ3 (距離 0.8km 以上のフル1kmラップから日別ベスト)
+    lap_candidates = []
+    for act in insights:
+        laps = (act.get("distance_series") or {}).get("laps") or []
+        full_laps = [l for l in laps if float(l.get("distance_km", 0)) >= 0.8 and float(l.get("pace_sec", 0)) > 0]
+        if full_laps:
+            best_l = min(full_laps, key=lambda x: float(x.get("pace_sec", 9999)))
+            lap_candidates.append({
+                "id": act["id"],
+                "date": act["date"],
+                "sort_val": float(best_l["pace_sec"]),
+                "main_val": f"{best_l['pace_str']}/km",
+                "sub_val": f"Lap {best_l['lap_index']} ({act['distance_km']}km走)",
+                "hr_val": f"HR {best_l.get('avg_hr', '--')}bpm",
+                "badge": best_l.get("role_tag", "🔥 疾走"),
+            })
+    lap_candidates.sort(key=lambda x: x["sort_val"])
+    top_laps = lap_candidates[:3]
+
+    # 4. 🏃 最長走破距離 歴代トップ3
+    long_candidates = []
+    for act in insights:
+        dist = float(act.get("distance_km", 0))
+        long_candidates.append({
+            "id": act["id"],
+            "date": act["date"],
+            "sort_val": -dist,
+            "main_val": f"{dist} km",
+            "sub_val": f"{act['duration_str']} ({act['pace_str']}/km)",
+            "hr_val": f"HR {act.get('avg_hr', '--')}bpm",
+            "badge": (act.get("analysis") or {}).get("workout_structure", {}).get("badge", "🐢 ロング走"),
+        })
+    long_candidates.sort(key=lambda x: x["sort_val"])
+    top_long = long_candidates[:3]
+
+    return {
+        "top_10k": top_10k,
+        "top_quality": top_quality,
+        "top_laps": top_laps,
+        "top_long": top_long,
+    }
+
+
 def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
     """docs/TRAINING_PLAN_2026.md の6週間計画と実際の走行ログを照合し、現在週のアクションと全体進捗を返す"""
     run_dates = set(df["date_str"].unique()) if not df.empty else set()
@@ -1056,6 +1142,7 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             "period": "10/26 (月) 〜 11/01 (日)",
             "start": "2026-10-26",
             "end": "2026-11-01",
+            "planned_km": 14.5,
             "theme": "8kmビルドアップ完遂 ＋ 遠征前ジョグ ＋ 週末遠征アクティブレスト",
             "days": [
                 {"date": "2026-10-26", "label": "10/26(月)", "type": "point", "menu": "🔥 8km ビルドアップ走 (3kmアップ+4km加速+1kmダウン)", "target": "Lap7 4:58/km達成"},
@@ -1071,6 +1158,7 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             "period": "11/02 (月) 〜 11/08 (日)",
             "start": "2026-11-02",
             "end": "2026-11-08",
+            "planned_km": 24.8,
             "theme": "祝日LT走でヨロン目標ペース攻略 ＋ 木曜平日LSD(15〜18km)で有酸素土台スタック",
             "days": [
                 {"date": "2026-11-03", "label": "11/03(火・祝)", "type": "point", "menu": "🔥 8.32km LTテンポ巡航走 ＋ 流し2本", "target": "5:28/km・HR171達成"},
@@ -1084,6 +1172,7 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             "period": "11/09 (月) 〜 11/15 (日)",
             "start": "2026-11-09",
             "end": "2026-11-15",
+            "planned_km": 32.5,
             "theme": "1kmインターバルでVO2max覚醒 ＆ フル本番巡航ペース（6:00〜6:15/km）完全定着＋補給テスト",
             "days": [
                 {"date": "2026-11-10", "label": "11/10(火)", "type": "point", "menu": "🔥 1km交代走 × 3本 (1km 4:55〜5:05/km ⇄ 1kmつなぎジョグ)", "target": "VO2max覚醒・乳酸クリアランス向上"},
@@ -1097,6 +1186,7 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             "period": "11/16 (月) 〜 11/22 (日)",
             "start": "2026-11-16",
             "end": "2026-11-22",
+            "planned_km": 23.5,
             "theme": "疲労を抜きながら木曜6kmビルドアップと日曜8km快調走で調子を上げる",
             "days": [
                 {"date": "2026-11-17", "label": "11/17(火)", "type": "easy", "menu": "🌱 5〜6km 疲労抜きリカバリージョグ", "target": "超回復"},
@@ -1110,6 +1200,7 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             "period": "11/23 (月) 〜 11/29 (日)",
             "start": "2026-11-23",
             "end": "2026-11-29",
+            "planned_km": 30.1,
             "theme": "完全ピーキング（TSB +5〜+15）で与論島へ！1時間55分〜59分でサブ2達成",
             "days": [
                 {"date": "2026-11-24", "label": "11/24(火)", "type": "easy", "menu": "🌱 5km 調整ジョグ ＋ 流し3本", "target": "神経系刺激"},
@@ -1124,6 +1215,7 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             "period": "11/30 (月) 〜 12/06 (日)",
             "start": "2026-11-30",
             "end": "2026-12-06",
+            "planned_km": 47.2,
             "theme": "ヨロン後の徹底アイシング・栄養補給で超回復し、奥武山公園へサブ4.5ゴール",
             "days": [
                 {"date": "2026-12-02", "label": "12/02(水)", "type": "easy", "menu": "🌱 3km 超スロージョグ（脚の軽さ確認）", "target": "完全脱力"},
@@ -1146,6 +1238,22 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
     for idx, w in enumerate(weeks_plan):
         w["is_current"] = (idx == current_week_idx)
         w["is_past"] = (idx < current_week_idx)
+
+        # 期間内の全実走距離・回数を集計
+        s_str = w["start"]
+        e_str = w["end"]
+        week_actual_km = 0.0
+        week_runs = 0
+        for r_date, r_km in run_dist_map.items():
+            if s_str <= r_date <= e_str:
+                week_actual_km += float(r_km)
+                week_runs += 1
+        w["actual_km"] = round(week_actual_km, 2)
+        w["actual_runs"] = week_runs
+        planned_km = float(w.get("planned_km", 20.0))
+        w["achievement_pct"] = round((week_actual_km / planned_km) * 100.0, 0) if planned_km > 0 else 0
+        w["progress_bar_pct"] = min(100, int(w["achievement_pct"]))
+
         for d in w["days"]:
             d_str = d["date"]
             d_dt = datetime.strptime(d_str, "%Y-%m-%d").date()
@@ -1228,6 +1336,8 @@ def prepare_full_analytics(
     for i, (_, row) in enumerate(df.iterrows()):
         act = insights[i] if i < len(insights) else {}
         split = _extract_post_warmup_summary(act)
+        if act:
+            act["quality_split"] = split
         if split["has_split"]:
             q_p_sec = split["main_pace_sec"]
             q_hr = split["main_hr"]
@@ -1273,6 +1383,7 @@ def prepare_full_analytics(
     latest_quality_split = _extract_post_warmup_summary(latest_insight)
     three_pillars = compute_three_pillars(df, insights, vdot_data["current_vdot"], sub50_progress)
     training_roadmap = compute_training_roadmap(df)
+    hall_of_fame = compute_hall_of_fame(df, insights)
 
     # アクティビティ履歴は新しい順（降順）で表示
     reversed_insights = list(reversed(insights))
@@ -1286,6 +1397,7 @@ def prepare_full_analytics(
         "latest_quality_split": latest_quality_split,
         "three_pillars": three_pillars,
         "training_roadmap": training_roadmap,
+        "hall_of_fame": hall_of_fame,
         "personal_records": personal_records,
         "vdot_data": vdot_data,
         "race_predictions": race_predictions,

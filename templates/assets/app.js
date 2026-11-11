@@ -184,6 +184,7 @@ const {
       `;
 
       // ラップスプリットHTML
+      const qs = act.quality_split || {};
       const laps = (act.distance_series && act.distance_series.laps) ? act.distance_series.laps : [];
       let lapsHtml = '';
       if (laps.length > 0) {
@@ -193,12 +194,12 @@ const {
 
         lapsHtml = `
           <div class="bg-slate-900/40 border border-slate-800/70 rounded-2xl p-4 space-y-3">
-            <div class="flex items-center justify-between text-xs">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
               <span class="font-bold text-slate-300 flex items-center space-x-1.5">
                 <span>⏱️</span>
-                <span>1km ごとのラップスプリット詳細（走りの役割別）</span>
+                <span>1km ごとのラップスプリット詳細（${qs.has_split ? '1〜3kmアップ ➔ 4km以降本練習' : '全区間単一巡航'}）</span>
               </span>
-              <span class="text-slate-400 text-[11px]">全 ${laps.length} ラップ</span>
+              <span class="text-slate-400 text-[11px] font-mono">全 ${laps.length} ラップ</span>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
@@ -217,13 +218,17 @@ const {
                 <tbody class="divide-y divide-slate-800/40 text-slate-300">
                   ${laps.map(l => {
                     const isFastest = (l.pace_sec === minPace);
+                    const isWarmupLap = (qs.has_split && l.lap_index <= 3);
                     const barWidth = maxPace > minPace ? Math.max(20, 100 - ((l.pace_sec - minPace) / (maxPace - minPace)) * 60) : 80;
-                    const barColor = isFastest ? 'bg-emerald-400' : 'bg-indigo-400';
+                    const barColor = isFastest ? 'bg-emerald-400' : (isWarmupLap ? 'bg-slate-500' : 'bg-indigo-400');
                     const roleBadge = l.role_badge || 'bg-slate-800 text-slate-400 border-slate-700';
                     const roleTag = l.role_tag || '巡航';
                     return `
-                      <tr class="hover:bg-slate-800/30 transition">
-                        <td class="py-2.5 px-3 font-semibold text-white whitespace-nowrap">Lap ${l.lap_index}</td>
+                      <tr class="hover:bg-slate-800/30 transition ${isWarmupLap ? 'opacity-85 bg-slate-950/30' : ''}">
+                        <td class="py-2.5 px-3 font-semibold text-white whitespace-nowrap font-mono">
+                          Lap ${l.lap_index}
+                          ${isWarmupLap ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700 ml-1">🌱 アップ</span>' : ''}
+                        </td>
                         <td class="py-2.5 px-3 whitespace-nowrap">
                           <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${roleBadge}">
                             ${roleTag}
@@ -247,6 +252,42 @@ const {
                 </tbody>
               </table>
             </div>
+          </div>
+        `;
+      }
+
+      // 1〜3kmアップ vs 3km以降本練習 分割サマリーHTML
+      let qualitySplitHtml = '';
+      if (qs && qs.has_split) {
+        qualitySplitHtml = `
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-1">
+            <div class="sm:col-span-5 bg-slate-900/90 border border-slate-800 rounded-2xl p-3 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-slate-400 font-bold block">🌱 1〜3km ウォームアップ (${qs.warmup_km}km)</span>
+                <div class="text-lg font-black text-slate-200 font-mono mt-0.5">${qs.warmup_pace_str}<span class="text-xs font-normal text-slate-400 ml-0.5">/km</span></div>
+              </div>
+              <div class="text-right font-mono">
+                <span class="text-[10px] text-slate-500 font-sans block">導入心拍</span>
+                <span class="text-sm font-bold text-slate-300">${qs.warmup_hr} bpm</span>
+              </div>
+            </div>
+            <div class="sm:col-span-7 bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-900 border border-emerald-500/40 rounded-2xl p-3 flex items-center justify-between shadow-inner">
+              <div>
+                <span class="text-[10px] text-emerald-300 font-black block">⚡ 3km以降 本練習区間 (${qs.main_km}km 巡航)</span>
+                <div class="text-xl font-black text-emerald-400 font-mono mt-0.5">${qs.main_pace_str}<span class="text-xs font-normal text-slate-300 ml-0.5">/km</span></div>
+              </div>
+              <div class="text-right font-mono space-y-0.5">
+                <span class="text-[11px] text-slate-300 block">本練習心拍: <strong class="text-rose-300">${qs.main_hr} bpm</strong></span>
+                <span class="text-[10px] text-amber-300 block">最速 Lap${qs.fastest_lap_idx}: <strong>${qs.fastest_lap_str}/km</strong>${qs.cooldown_km > 0 ? ` ｜ ダウン${qs.cooldown_km}k` : ''}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (qs) {
+        qualitySplitHtml = `
+          <div class="bg-emerald-950/25 border border-emerald-500/30 rounded-2xl px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+            <span class="text-emerald-300 font-bold font-sans">🐢 ${qs.session_type_label || '単一有酸素ワークアウト'}（3kmアップ分離なし・全行程 ${act.distance_km}km が本練習）</span>
+            <span class="text-slate-300">最速 Lap${qs.fastest_lap_idx || 1}: <strong class="text-emerald-400">${qs.fastest_lap_str || act.max_pace_str}/km</strong></span>
           </div>
         `;
       }
@@ -281,7 +322,7 @@ const {
               <span class="text-xs text-slate-400 font-mono">km (${act.duration_str})</span>
             </div>
             <div>
-              <span class="text-[11px] text-slate-400 font-medium block">平均 / 最高ペース</span>
+              <span class="text-[11px] text-slate-400 font-medium block">全区間平均 / 最高ペース</span>
               <span class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">${act.pace_str}</span>
               <span class="text-xs text-slate-400 font-mono">/ ${act.max_pace_str}</span>
             </div>
@@ -296,6 +337,8 @@ const {
               <span class="text-xs text-slate-400 font-mono">spm (${act.running_cadence && Math.abs(act.running_cadence - act.cadence) >= 5 ? '全体' + act.cadence + ' / ' : ''}${act.stride}m)</span>
             </div>
           </div>
+
+          ${qualitySplitHtml}
         </div>
 
         <!-- ======================================================== -->
@@ -855,10 +898,73 @@ const {
       });
     }
 
+    // 履歴テーブルの動的集計サマリーバー更新
+    function formatPaceSec(sec) {
+      if (!sec || isNaN(sec) || sec <= 0) return '--:--';
+      const s = Math.round(sec);
+      return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    }
+
+    function updateHistoryFilterSummary(labelOverride) {
+      const rows = document.querySelectorAll('.activity-row');
+      let count = 0;
+      let totalDist = 0;
+      let weightedPaceSecSum = 0;
+      let totalMainKm = 0;
+      let weightedMainPaceSecSum = 0;
+      let hrSum = 0;
+      let hrCount = 0;
+
+      rows.forEach(row => {
+        if (row.style.display === 'none') return;
+        count++;
+        const d = parseFloat(row.getAttribute('data-dist') || '0');
+        const pSec = parseFloat(row.getAttribute('data-pace-sec') || '0');
+        const mKm = parseFloat(row.getAttribute('data-main-km') || d);
+        const mPSec = parseFloat(row.getAttribute('data-main-pace-sec') || pSec);
+        const hr = parseFloat(row.getAttribute('data-hr') || '0');
+
+        totalDist += d;
+        if (d > 0 && pSec > 0) weightedPaceSecSum += d * pSec;
+        if (mKm > 0 && mPSec > 0) {
+          totalMainKm += mKm;
+          weightedMainPaceSecSum += mKm * mPSec;
+        }
+        if (hr > 0) {
+          hrSum += hr;
+          hrCount++;
+        }
+      });
+
+      const elLabel = document.getElementById('summary-filter-label');
+      const elCount = document.getElementById('summary-count');
+      const elDist = document.getElementById('summary-dist');
+      const elPace = document.getElementById('summary-pace');
+      const elMainPace = document.getElementById('summary-main-pace');
+      const elHr = document.getElementById('summary-hr');
+
+      if (labelOverride && elLabel) elLabel.textContent = labelOverride;
+      if (elCount) elCount.textContent = count;
+      if (elDist) elDist.textContent = `${totalDist.toFixed(2)} km`;
+      if (elPace) elPace.textContent = `${totalDist > 0 ? formatPaceSec(weightedPaceSecSum / totalDist) : '--:--'} /km`;
+      if (elMainPace) elMainPace.textContent = `${totalMainKm > 0 ? formatPaceSec(weightedMainPaceSecSum / totalMainKm) : '--:--'} /km`;
+      if (elHr) elHr.textContent = `${hrCount > 0 ? Math.round(hrSum / hrCount) : '--'} bpm`;
+    }
+
     // 履歴テーブルの種別・距離フィルター機能
     function filterActivities(type) {
       const rows = document.querySelectorAll('.activity-row');
       const allButtons = ['all', 'lsd', 'point', 'buildup', 'jog', 'short', 'mid', 'long'];
+      const labelMap = {
+        all: 'すべて表示中',
+        lsd: '🐢 LSD のみ',
+        point: '🔥 交代/LT（ポイント走）',
+        buildup: '📈 ビルドアップ走',
+        jog: '🌱 ジョグ・持続走',
+        short: '距離 < 5km',
+        mid: '距離 5〜10km',
+        long: '距離 10km以上'
+      };
 
       allButtons.forEach(b => {
         const btn = document.getElementById('filter-' + b);
@@ -896,6 +1002,8 @@ const {
 
         row.style.display = show ? '' : 'none';
       });
+
+      updateHistoryFilterSummary(labelMap[type] || 'フィルター適用中');
     }
 
     // 週間走行負荷チャート描画
@@ -1026,6 +1134,8 @@ const {
       }
     }
 
+    let compareLapsChartInstance = null;
+
     function renderCompareActivities() {
       const idA = parseInt(document.getElementById('activity-select').value);
       const idB = parseInt(document.getElementById('activity-compare-select').value);
@@ -1035,10 +1145,50 @@ const {
 
       const evA = actA.evaluation || {};
       const evB = actB.evaluation || {};
+      const qsA = actA.quality_split || {};
+      const qsB = actB.quality_split || {};
 
       const paceDiff = actB.pace_sec - actA.pace_sec;
       const hrDiff = actB.avg_hr - actA.avg_hr;
       const distDiff = actB.distance_km - actA.distance_km;
+
+      const mainPaceA = qsA.main_pace_sec || actA.pace_sec;
+      const mainPaceB = qsB.main_pace_sec || actB.pace_sec;
+      const mainPaceStrA = qsA.main_pace_str || actA.pace_str;
+      const mainPaceStrB = qsB.main_pace_str || actB.pace_str;
+      const mainPaceDiff = mainPaceB - mainPaceA;
+
+      const mainHrA = qsA.main_hr || actA.avg_hr;
+      const mainHrB = qsB.main_hr || actB.avg_hr;
+      const mainHrDiff = mainHrB - mainHrA;
+
+      // 1kmラップ対決テーブル生成
+      const lapsA = (actA.distance_series && actA.distance_series.laps) ? actA.distance_series.laps : [];
+      const lapsB = (actB.distance_series && actB.distance_series.laps) ? actB.distance_series.laps : [];
+      const maxLapsCount = Math.max(lapsA.length, lapsB.length);
+      let lapVsRowsHtml = '';
+      for (let i = 0; i < maxLapsCount; i++) {
+        const lA = lapsA[i];
+        const lB = lapsB[i];
+        const pDiff = (lA && lB && lA.pace_sec > 0 && lB.pace_sec > 0) ? Math.round(lB.pace_sec - lA.pace_sec) : null;
+        const hDiff = (lA && lB && lA.avg_hr > 0 && lB.avg_hr > 0) ? Math.round(lB.avg_hr - lA.avg_hr) : null;
+        const isWarmup = (i < 3);
+        lapVsRowsHtml += `
+          <tr class="hover:bg-slate-800/40 transition font-mono ${isWarmup ? 'opacity-80 bg-slate-950/30' : ''}">
+            <td class="py-2 px-3 font-bold text-white whitespace-nowrap">
+              Lap ${i + 1} ${isWarmup ? '<span class="text-[9px] px-1 rounded bg-slate-800 text-slate-400 font-sans ml-1">1-3k</span>' : '<span class="text-[9px] px-1 rounded bg-emerald-500/20 text-emerald-300 font-sans ml-1">本練習</span>'}
+            </td>
+            <td class="py-2 px-3 text-emerald-300 font-bold whitespace-nowrap">${lA ? `${lA.pace_str}/km <span class="text-[10px] text-slate-400 font-normal">(${lA.avg_hr || '--'}bpm)</span>` : '-'}</td>
+            <td class="py-2 px-3 text-sky-300 font-bold whitespace-nowrap">${lB ? `${lB.pace_str}/km <span class="text-[10px] text-slate-400 font-normal">(${lB.avg_hr || '--'}bpm)</span>` : '-'}</td>
+            <td class="py-2 px-3 whitespace-nowrap">
+              ${pDiff !== null ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${pDiff <= 0 ? 'bg-sky-500/20 text-sky-300' : 'bg-emerald-500/20 text-emerald-300'}">${pDiff <= 0 ? `Bが ${Math.abs(pDiff)}秒速い` : `Aが ${pDiff}秒速い`}</span>` : '-'}
+            </td>
+            <td class="py-2 px-3 text-xs whitespace-nowrap ${hDiff !== null ? (hDiff <= 0 ? 'text-emerald-400' : 'text-rose-400') : 'text-slate-500'}">
+              ${hDiff !== null ? `${hDiff > 0 ? '+' : ''}${hDiff} bpm` : '-'}
+            </td>
+          </tr>
+        `;
+      }
 
       container.innerHTML = `
         <div class="bg-indigo-950/20 border border-indigo-500/30 rounded-3xl p-5 sm:p-6 space-y-6">
@@ -1047,33 +1197,43 @@ const {
               <span class="text-xl">⚖️</span>
               <h3 class="text-base font-black text-white">2走の直接比較 (Run A vs Run B)</h3>
             </div>
-            <div class="flex items-center space-x-2 text-xs">
-              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">● Run A: ${actA.date}</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 font-bold">▲ Run B: ${actB.date}</span>
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">● Run A: ${actA.date} (${actA.distance_km}km)</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 font-bold">▲ Run B: ${actB.date} (${actB.distance_km}km)</span>
             </div>
           </div>
 
-          <!-- 比較メトリクス表 -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <!-- 比較メトリクス表 (本練習対決を含む8項目) -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-slate-900/90 p-3 rounded-2xl border border-emerald-500/40 shadow-inner">
+              <span class="text-[10px] text-emerald-300 font-bold block">⚡ 本練習ペース対決 (4km〜)</span>
+              <div class="text-base font-black text-white font-mono mt-0.5">${mainPaceStrA} <span class="text-xs text-slate-500">vs</span> ${mainPaceStrB}</div>
+              <span class="text-[10px] font-bold font-mono ${mainPaceDiff <= 0 ? 'text-sky-400' : 'text-emerald-400'}">差: ${mainPaceDiff <= 0 ? '' : '+'}${Math.round(mainPaceDiff)}秒/km (${mainPaceDiff <= 0 ? 'Run B優位' : 'Run A優位'})</span>
+            </div>
+            <div class="bg-slate-900/90 p-3 rounded-2xl border border-rose-500/30 shadow-inner">
+              <span class="text-[10px] text-rose-300 font-bold block">🫀 本練習心拍対決 (4km〜)</span>
+              <div class="text-base font-black text-white font-mono mt-0.5">${mainHrA} <span class="text-xs text-slate-500">vs</span> ${mainHrB} <span class="text-xs font-normal">bpm</span></div>
+              <span class="text-[10px] font-bold font-mono ${mainHrDiff <= 0 ? 'text-emerald-400' : 'text-amber-400'}">差: ${mainHrDiff <= 0 ? '' : '+'}${mainHrDiff} bpm</span>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">全区間平均ペース</span>
+              <div class="text-base font-black text-white font-mono mt-0.5">${actA.pace_str} vs ${actB.pace_str}</div>
+              <span class="text-[10px] font-bold font-mono ${paceDiff <= 0 ? 'text-emerald-400' : 'text-rose-400'}">${paceDiff <= 0 ? '' : '+'}${Math.round(paceDiff)}秒/km</span>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+              <span class="text-[10px] text-slate-500 block">全区間平均心拍数</span>
+              <div class="text-base font-black text-white font-mono mt-0.5">${actA.avg_hr} vs ${actB.avg_hr} <span class="text-xs font-normal">bpm</span></div>
+              <span class="text-[10px] font-bold font-mono ${hrDiff <= 0 ? 'text-emerald-400' : 'text-amber-400'}">${hrDiff <= 0 ? '' : '+'}${hrDiff} bpm</span>
+            </div>
             <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
               <span class="text-[10px] text-slate-500 block">走行距離</span>
               <div class="text-base font-black text-white font-mono mt-0.5">${actA.distance_km} vs ${actB.distance_km} <span class="text-xs font-normal">km</span></div>
-              <span class="text-[10px] font-bold ${distDiff >= 0 ? 'text-emerald-400' : 'text-slate-400'}">${distDiff >= 0 ? '+' : ''}${distDiff.toFixed(2)} km</span>
-            </div>
-            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
-              <span class="text-[10px] text-slate-500 block">平均ペース</span>
-              <div class="text-base font-black text-white font-mono mt-0.5">${actA.pace_str} vs ${actB.pace_str}</div>
-              <span class="text-[10px] font-bold ${paceDiff <= 0 ? 'text-emerald-400' : 'text-rose-400'}">${paceDiff <= 0 ? '' : '+'}${Math.round(paceDiff)}秒/km</span>
-            </div>
-            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
-              <span class="text-[10px] text-slate-500 block">平均心拍数</span>
-              <div class="text-base font-black text-white font-mono mt-0.5">${actA.avg_hr} vs ${actB.avg_hr} <span class="text-xs font-normal">bpm</span></div>
-              <span class="text-[10px] font-bold ${hrDiff <= 0 ? 'text-emerald-400' : 'text-amber-400'}">${hrDiff <= 0 ? '' : '+'}${hrDiff} bpm</span>
+              <span class="text-[10px] font-bold font-mono ${distDiff >= 0 ? 'text-emerald-400' : 'text-slate-400'}">${distDiff >= 0 ? '+' : ''}${distDiff.toFixed(2)} km</span>
             </div>
             <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
               <span class="text-[10px] text-slate-500 block">有酸素デカップリング</span>
               <div class="text-base font-black text-white font-mono mt-0.5">${evA.decoupling_pct || 0}% vs ${evB.decoupling_pct || 0}%</div>
-              <span class="text-[10px] text-slate-400">安定度比較</span>
+              <span class="text-[10px] text-slate-400">心拍ドリフト安定度</span>
             </div>
             <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
               <span class="text-[10px] text-slate-500 block">VDOT スコア</span>
@@ -1083,14 +1243,25 @@ const {
             <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
               <span class="text-[10px] text-slate-500 block">キロ5維持距離</span>
               <div class="text-base font-black text-amber-400 font-mono mt-0.5">${evA.sub50_sustained_km || 0} vs ${evB.sub50_sustained_km || 0} km</div>
-              <span class="text-[10px] text-slate-400">持続力</span>
+              <span class="text-[10px] text-slate-400">サブ50持続力</span>
             </div>
           </div>
 
-          <!-- 比較折れ線グラフ -->
+          <!-- 1. 1kmラップ毎のペース＆心拍 オーバーレイ比較グラフ -->
           <div class="space-y-2">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-1">
-              <span class="font-medium text-slate-300">📈 ペース・心拍数のオーバーレイ比較グラフ (距離軸)</span>
+              <span class="font-bold text-white flex items-center gap-1.5"><span>📊</span> 1kmラップ毎のペース ＆ 心拍 オーバーレイ比較チャート (Lap 1 〜 Lap ${maxLapsCount})</span>
+              <span class="text-[11px] font-mono text-slate-400">※ペース線は上にあるほど高速</span>
+            </div>
+            <div class="w-full h-72 sm:h-80 relative bg-slate-900/60 rounded-2xl p-2.5 border border-slate-800/80">
+              <canvas id="compareLapsChart"></canvas>
+            </div>
+          </div>
+
+          <!-- 2. 連続距離軸の速度・心拍オーバーレイ比較グラフ -->
+          <div class="space-y-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-1">
+              <span class="font-medium text-slate-300">📈 連続距離ストリーム（速度・心拍）オーバーレイ比較</span>
               <div class="flex items-center space-x-3 text-[11px]">
                 <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>Run A 速度</span>
                 <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-sky-400 mr-1"></span>Run B 速度</span>
@@ -1098,14 +1269,150 @@ const {
                 <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-amber-400 mr-1"></span>Run B 心拍</span>
               </div>
             </div>
-            <div class="w-full h-72 sm:h-80 relative bg-slate-900/50 rounded-2xl p-2 border border-slate-800/80">
+            <div class="w-full h-64 sm:h-72 relative bg-slate-900/50 rounded-2xl p-2 border border-slate-800/80">
               <canvas id="unifiedMetricChart"></canvas>
             </div>
           </div>
+
+          <!-- 3. 1kmラップ直接対決スプリット表 -->
+          ${maxLapsCount > 0 ? `
+            <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 space-y-2.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-200">⏱️ 1kmラップ毎の直接対決スプリット表</span>
+                <span class="text-[11px] text-slate-400 font-mono">Run A (${actA.date}) vs Run B (${actB.date})</span>
+              </div>
+              <div class="overflow-x-auto max-h-80 overflow-y-auto scrollbar-thin">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-950/80 text-slate-400 border-b border-slate-800 sticky top-0">
+                    <tr>
+                      <th class="py-2 px-3">ラップ</th>
+                      <th class="py-2 px-3 text-emerald-400">● Run A (${actA.date})</th>
+                      <th class="py-2 px-3 text-sky-400">▲ Run B (${actB.date})</th>
+                      <th class="py-2 px-3">ペース比較</th>
+                      <th class="py-2 px-3">心拍差 (B-A)</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800/50 text-slate-300">
+                    ${lapVsRowsHtml}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ` : ''}
         </div>
       `;
 
+      updateCompareLapsChart(actA, actB);
       updateCompareChart(actA, actB);
+    }
+
+    function updateCompareLapsChart(actA, actB) {
+      const ctx = document.getElementById('compareLapsChart');
+      if (!ctx) return;
+      if (compareLapsChartInstance) {
+        compareLapsChartInstance.destroy();
+      }
+
+      const lapsA = (actA.distance_series && actA.distance_series.laps) ? actA.distance_series.laps : [];
+      const lapsB = (actB.distance_series && actB.distance_series.laps) ? actB.distance_series.laps : [];
+      const maxLen = Math.max(lapsA.length, lapsB.length, 1);
+
+      const labels = Array.from({ length: maxLen }, (_, i) => `Lap ${i + 1}`);
+      const paceA = Array.from({ length: maxLen }, (_, i) => lapsA[i] && lapsA[i].pace_sec > 0 ? Math.round((lapsA[i].pace_sec / 60) * 100) / 100 : null);
+      const paceB = Array.from({ length: maxLen }, (_, i) => lapsB[i] && lapsB[i].pace_sec > 0 ? Math.round((lapsB[i].pace_sec / 60) * 100) / 100 : null);
+      const hrA = Array.from({ length: maxLen }, (_, i) => lapsA[i] && lapsA[i].avg_hr > 0 ? lapsA[i].avg_hr : null);
+      const hrB = Array.from({ length: maxLen }, (_, i) => lapsB[i] && lapsB[i].avg_hr > 0 ? lapsB[i].avg_hr : null);
+
+      compareLapsChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: `Run A ペース (${actA.date})`,
+              data: paceA,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderWidth: 2.5,
+              tension: 0.2,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              yAxisID: 'yPace'
+            },
+            {
+              label: `Run B ペース (${actB.date})`,
+              data: paceB,
+              borderColor: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.1)',
+              borderWidth: 2.5,
+              tension: 0.2,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              yAxisID: 'yPace'
+            },
+            {
+              label: `Run A 心拍 (${actA.date})`,
+              data: hrA,
+              borderColor: '#f43f5e',
+              borderDash: [4, 3],
+              borderWidth: 1.8,
+              tension: 0.2,
+              pointRadius: 3,
+              yAxisID: 'yHr'
+            },
+            {
+              label: `Run B 心拍 (${actB.date})`,
+              data: hrB,
+              borderColor: '#fbbf24',
+              borderDash: [4, 3],
+              borderWidth: 1.8,
+              tension: 0.2,
+              pointRadius: 3,
+              yAxisID: 'yHr'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#cbd5e1', font: { size: 10 } }
+            },
+            yPace: {
+              position: 'left',
+              reverse: true,
+              title: { display: true, text: 'ラップペース (分/km ※上が速い)', color: '#10b981', font: { size: 10 } },
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: {
+                color: '#10b981',
+                callback: v => formatPaceSec(v * 60)
+              }
+            },
+            yHr: {
+              position: 'right',
+              title: { display: true, text: '心拍数 (bpm)', color: '#f43f5e', font: { size: 10 } },
+              grid: { display: false },
+              ticks: { color: '#f43f5e' }
+            }
+          },
+          plugins: {
+            legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 11 }, boxWidth: 12 } },
+            tooltip: {
+              callbacks: {
+                label: c => {
+                  if (c.dataset.yAxisID === 'yPace') {
+                    return `${c.dataset.label}: ${formatPaceSec(c.raw * 60)}/km`;
+                  }
+                  return `${c.dataset.label}: ${c.raw} bpm`;
+                }
+              }
+            }
+          }
+        }
+      });
     }
 
     function updateCompareChart(actA, actB) {
@@ -1489,6 +1796,7 @@ const {
           row.style.display = 'none';
         }
       });
+      updateHistoryFilterSummary(query ? `🔍 検索: "${query}"` : 'すべて表示中');
     }
 
     function sortTable(colIndex, type) {
@@ -1536,6 +1844,7 @@ const {
     document.getElementById('activity-select').value = latestId;
     renderActivity(latestId);
     updateActivityNavButtons();
+    updateHistoryFilterSummary('すべて表示中');
     initWeeklyWorkloadChart(weeklyWorkload);
     initCalendarHeatmap();
 
