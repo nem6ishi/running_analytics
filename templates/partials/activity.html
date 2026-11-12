@@ -22,9 +22,13 @@
                 <span>⚖️</span>
                 <span id="compare-btn-text">ラン比較モード</span>
               </button>
+              <button id="btn-compare-same-type" onclick="compareWithPrevSameType()" class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-950/60 hover:bg-emerald-900/70 text-emerald-300 border border-emerald-500/40 transition flex items-center space-x-1 shadow-sm" title="同じ練習種別（または同距離帯）の直近過去ランとワンクリック比較">
+                <span>⚡</span>
+                <span>前回の同種ランと比較</span>
+              </button>
 
               <div class="flex items-center space-x-1.5">
-                <button type="button" onclick="navigateActivity(-1)" id="btn-prev-act" class="px-2.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 transition flex items-center shadow-sm" title="前のランへ (過去)">
+                <button type="button" onclick="navigateActivity(-1)" id="btn-prev-act" class="px-2.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 transition flex items-center shadow-sm" title="前のランへ (過去) [← キー]">
                   <span>◀</span>
                 </button>
                 <div class="flex items-center space-x-2">
@@ -35,9 +39,10 @@
                     {% endfor %}
                   </select>
                 </div>
-                <button type="button" onclick="navigateActivity(1)" id="btn-next-act" class="px-2.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 transition flex items-center shadow-sm" title="次のランへ (未来)">
+                <button type="button" onclick="navigateActivity(1)" id="btn-next-act" class="px-2.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 transition flex items-center shadow-sm" title="次のランへ (未来) [→ キー]">
                   <span>▶</span>
                 </button>
+                <span class="hidden xl:inline-flex items-center text-[10px] font-mono text-slate-500 bg-slate-900/80 border border-slate-800 px-2 py-1 rounded-lg" title="キーボードの左右矢印キーで前後のランへ移動できます">⌨️ ←/→</span>
               </div>
 
               <!-- Compare Run B Selector (初期非表示) -->

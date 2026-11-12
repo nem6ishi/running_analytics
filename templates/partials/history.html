@@ -68,13 +68,11 @@
               <thead class="bg-slate-800/70 text-slate-400 uppercase font-bold text-[11px] border-b border-slate-800 select-none">
                 <tr>
                   <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(0, 'date')">日付 <span class="sort-icon text-[10px]">▼</span></th>
-                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(1, 'num')">距離 <span class="sort-icon text-[10px]"></span></th>
-                  <th class="py-3.5 px-4">タイム</th>
-                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(3, 'pace')">全体 / ⚡本練習ペース <span class="sort-icon text-[10px]"></span></th>
-                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(4, 'num')">平均心拍 <span class="sort-icon text-[10px]"></span></th>
-                  <th class="py-3.5 px-4">VDOT / 安定性</th>
-                  <th class="py-3.5 px-4">強度 / トレーニング種別</th>
-                  <th class="py-3.5 px-4 text-right">アクション</th>
+                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(1, 'num')">距離 / タイム <span class="sort-icon text-[10px]"></span></th>
+                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(2, 'pace')">全体 / ⚡本練習ペース <span class="sort-icon text-[10px]"></span></th>
+                  <th class="py-3.5 px-4 cursor-pointer hover:text-white transition" onclick="sortTable(3, 'num')">心拍 / 効率(VDOT・Pw) <span class="sort-icon text-[10px]"></span></th>
+                  <th class="py-3.5 px-4">トレーニング種別 / ゾーン</th>
+                  <th class="py-3.5 px-4 text-right">詳細</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-800/50 text-slate-300" id="activity-tbody">
@@ -95,11 +93,13 @@
                     {{ item.date }}
                     <span class="text-xs text-slate-500 block sm:inline sm:ml-1 font-sans">{{ item.time_of_day }}</span>
                   </td>
-                  <td class="py-3 px-4 whitespace-nowrap font-black text-emerald-400 font-mono">
-                    {{ item.distance_km }} <span class="text-xs text-slate-400 font-normal">km</span>
-                  </td>
-                  <td class="py-3 px-4 whitespace-nowrap text-slate-300 font-mono font-medium">
-                    {{ item.duration_str }}
+                  <td class="py-3 px-4 whitespace-nowrap font-mono">
+                    <div class="font-black text-emerald-400 text-sm">
+                      {{ item.distance_km }} <span class="text-xs text-slate-400 font-normal">km</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400 font-medium mt-0.5">
+                      ⏱️ {{ item.duration_str }}
+                    </div>
                   </td>
                   <td class="py-3 px-4 whitespace-nowrap font-mono">
                     <div class="font-bold text-slate-200">
@@ -116,12 +116,11 @@
                     {% endif %}
                   </td>
                   <td class="py-3 px-4 whitespace-nowrap font-mono">
-                    <span class="inline-flex items-center text-rose-400 font-bold">
+                    <div class="inline-flex items-center text-rose-400 font-bold text-sm">
                       {{ item.avg_hr }} <span class="text-[10px] text-slate-500 ml-0.5 font-normal">bpm</span>
-                    </span>
-                  </td>
-                  <td class="py-3 px-4 whitespace-nowrap">
-                    <div class="flex items-center space-x-1.5 font-mono">
+                      <span class="text-[10px] text-slate-500 font-normal ml-1.5">(最大 {{ item.max_hr }})</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5 mt-1">
                       {% if item.evaluation.vdot %}
                       <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
                         V: {{ item.evaluation.vdot }}
@@ -135,20 +134,20 @@
                     </div>
                   </td>
                   <td class="py-3 px-4 whitespace-nowrap">
-                    <div class="flex flex-col gap-1">
-                      <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium {{ item.hr_zone.bg_color }}">
-                        {{ item.hr_zone.name }}
-                      </span>
+                    <div class="flex flex-wrap items-center gap-1.5">
                       {% if item.analysis and item.analysis.workout_structure %}
-                      <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border {{ item.analysis.workout_structure.badge_color }}">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold border {{ item.analysis.workout_structure.badge_color }}">
                         {{ item.analysis.workout_structure.badge }}
                       </span>
                       {% endif %}
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium {{ item.hr_zone.bg_color }}">
+                        {{ item.hr_zone.name }}
+                      </span>
                     </div>
                   </td>
                   <td class="py-3 px-4 whitespace-nowrap text-right">
                     <button class="px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-300 group-hover:bg-emerald-500 group-hover:text-white transition font-medium">
-                      分析を見る →
+                      分析 →
                     </button>
                   </td>
                 </tr>

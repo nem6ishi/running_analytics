@@ -349,44 +349,54 @@ const {
           <!-- 左カラム (lg:col-span-7): グラフ・心拍メーター・構成・ラップ -->
           <div class="lg:col-span-7 space-y-6">
 
-            <!-- 1. 走行距離に対する折れ線グラフ (標高オーバーレイ付き) -->
+            <!-- 1. 走行データ精密チャート (タブ切替: 距離別時系列 ⇄ 速度×心拍ドリフト散布図) -->
             <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3 shadow-xl">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-800/80 pb-2.5">
-                <div class="flex items-center space-x-2">
-                  <span class="text-base">📈</span>
-                  <h4 class="text-xs sm:text-sm font-black text-white tracking-tight">走行距離（0km 〜 ${act.distance_km}km）時系列ログ</h4>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                <div class="inline-flex bg-slate-950/90 border border-slate-800 rounded-xl p-1 gap-1">
+                  <button type="button" id="act-chart-tab-series" onclick="switchActivityChartTab('series')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 bg-emerald-500 text-white shadow">
+                    <span>📈</span>
+                    <span>距離別時系列 (0〜${act.distance_km}km)</span>
+                  </button>
+                  <button type="button" id="act-chart-tab-scatter" onclick="switchActivityChartTab('scatter')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 text-slate-400 hover:text-white">
+                    <span>🔬</span>
+                    <span>速度 × 心拍ドリフト散布図</span>
+                  </button>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 text-[10px] font-mono">
-                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1"></span>心拍 (bpm)</span>
-                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-teal-400 mr-1"></span>ケイデンス (spm)</span>
-                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>速度 (km/h)</span>
-                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-purple-400 mr-1"></span>標高 (m)</span>
-                </div>
-              </div>
-              <div class="w-full h-72 sm:h-80 relative bg-slate-950/60 rounded-2xl p-2 border border-slate-800/60 shadow-inner">
-                <canvas id="unifiedMetricChart"></canvas>
-              </div>
-              <div class="text-[10px] text-slate-500 flex justify-between font-mono px-1">
-                <span>※薄紫色の背景面はコースの標高（勾配）プロファイルです</span>
-                <span>${act.distance_series && act.distance_series.has_fit ? '🟢 Garmin FIT 実測ログ' : '推定値'}</span>
-              </div>
-            </div>
 
-            <!-- 1.5 速度 × 心拍数 散布図 (ラン内の関係性) -->
-            <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3 shadow-xl">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-800/80 pb-2.5">
-                <div class="flex items-center space-x-2">
-                  <span class="text-base">🔬</span>
-                  <h4 class="text-xs sm:text-sm font-black text-white tracking-tight">速度 × 心拍数 の関係（このラン内）</h4>
+                <!-- 時系列タブ用コントロール (ピッチ重ね表示ON/OFF) -->
+                <div id="act-chart-controls-series" class="flex flex-wrap items-center gap-2 text-[10px] font-mono">
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1"></span>心拍</span>
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>速度</span>
+                  <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-purple-400 mr-1"></span>標高</span>
+                  <button type="button" id="btn-toggle-cadence" onclick="toggleUnifiedCadence()" class="ml-1 px-2 py-0.5 rounded-lg border transition font-sans font-bold text-[10px] ${showCadenceOnUnified ? 'bg-teal-500/20 text-teal-300 border-teal-500/40' : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200'}">
+                    👟 ピッチ重ね表示: ${showCadenceOnUnified ? 'ON' : 'OFF'}
+                  </button>
                 </div>
-                <div id="speedHrStats" class="flex flex-wrap items-center gap-2 text-[10px] font-mono text-slate-400"></div>
+
+                <!-- 散布図タブ用統計バッジ -->
+                <div id="speedHrStats" class="hidden flex-wrap items-center gap-1.5 text-[10px] font-mono text-slate-400"></div>
               </div>
-              <div class="w-full h-72 sm:h-80 relative bg-slate-950/60 rounded-2xl p-2 border border-slate-800/60 shadow-inner">
-                <canvas id="speedHrScatterChart"></canvas>
+
+              <!-- Panel A: 距離別時系列折れ線グラフ -->
+              <div id="act-chart-panel-series" class="space-y-2">
+                <div class="w-full h-72 sm:h-80 relative bg-slate-950/60 rounded-2xl p-2 border border-slate-800/60 shadow-inner">
+                  <canvas id="unifiedMetricChart"></canvas>
+                </div>
+                <div class="text-[10px] text-slate-500 flex flex-wrap justify-between gap-1 font-mono px-1">
+                  <span>※薄紫色の背景面はコース標高プロファイル（右上のボタンでピッチspmも重ね表示可能）</span>
+                  <span>${act.distance_series && act.distance_series.has_fit ? '🟢 Garmin FIT 実測ログ' : '推定値'}</span>
+                </div>
               </div>
-              <div class="text-[10px] text-slate-500 flex flex-wrap justify-between gap-1 font-mono px-1">
-                <span>※点の色 = 走行の進行度（<span style="color:#38bdf8;">序盤</span> → <span style="color:#f43f5e;">終盤</span>）。同じ速度で終盤の点が上にずれるほど心拍ドリフト大</span>
-                <span>◆ = ラップ平均 / 破線 = 回帰直線</span>
+
+              <!-- Panel B: 速度 × 心拍数 散布図 -->
+              <div id="act-chart-panel-scatter" class="space-y-2 hidden">
+                <div class="w-full h-72 sm:h-80 relative bg-slate-950/60 rounded-2xl p-2 border border-slate-800/60 shadow-inner">
+                  <canvas id="speedHrScatterChart"></canvas>
+                </div>
+                <div class="text-[10px] text-slate-500 flex flex-wrap justify-between gap-1 font-mono px-1">
+                  <span>※点の色 = 走行の進行度（<span style="color:#38bdf8;">序盤</span> → <span style="color:#f43f5e;">終盤</span>）。同じ速度で終盤の点が上にずれるほど心拍ドリフト大</span>
+                  <span>◆ = ラップ平均 / 破線 = 回帰直線</span>
+                </div>
               </div>
             </div>
 
@@ -556,6 +566,9 @@ const {
       // グラフを描画・更新
       updateUnifiedChart(act);
       updateSpeedHrScatter(act);
+      if (currentActivityChartTab === 'scatter' && typeof window.switchActivityChartTab === 'function') {
+        window.switchActivityChartTab('scatter');
+      }
     }
 
     let speedHrScatterChart = null;
@@ -721,6 +734,59 @@ const {
     }
 
     let unifiedMetricChart = null;
+    let showCadenceOnUnified = false;
+    let currentActivityChartTab = 'series';
+
+    window.switchActivityChartTab = function(tab) {
+      currentActivityChartTab = tab;
+      const btnSeries = document.getElementById('act-chart-tab-series');
+      const btnScatter = document.getElementById('act-chart-tab-scatter');
+      const panelSeries = document.getElementById('act-chart-panel-series');
+      const panelScatter = document.getElementById('act-chart-panel-scatter');
+      const ctrlSeries = document.getElementById('act-chart-controls-series');
+      const statsScatter = document.getElementById('speedHrStats');
+
+      const activeClass = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 bg-emerald-500 text-white shadow';
+      const inactiveClass = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 text-slate-400 hover:text-white';
+
+      if (tab === 'scatter') {
+        if (btnSeries) btnSeries.className = inactiveClass;
+        if (btnScatter) btnScatter.className = activeClass;
+        if (panelSeries) panelSeries.classList.add('hidden');
+        if (panelScatter) panelScatter.classList.remove('hidden');
+        if (ctrlSeries) ctrlSeries.classList.add('hidden');
+        if (statsScatter) {
+          statsScatter.classList.remove('hidden');
+          statsScatter.classList.add('flex');
+        }
+        if (speedHrScatterChart) speedHrScatterChart.resize();
+      } else {
+        if (btnSeries) btnSeries.className = activeClass;
+        if (btnScatter) btnScatter.className = inactiveClass;
+        if (panelSeries) panelSeries.classList.remove('hidden');
+        if (panelScatter) panelScatter.classList.add('hidden');
+        if (ctrlSeries) ctrlSeries.classList.remove('hidden');
+        if (statsScatter) {
+          statsScatter.classList.add('hidden');
+          statsScatter.classList.remove('flex');
+        }
+        if (unifiedMetricChart) unifiedMetricChart.resize();
+      }
+    };
+
+    window.toggleUnifiedCadence = function() {
+      showCadenceOnUnified = !showCadenceOnUnified;
+      const btn = document.getElementById('btn-toggle-cadence');
+      if (btn) {
+        btn.className = `ml-1 px-2 py-0.5 rounded-lg border transition font-sans font-bold text-[10px] ${showCadenceOnUnified ? 'bg-teal-500/20 text-teal-300 border-teal-500/40' : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200'}`;
+        btn.innerHTML = `👟 ピッチ重ね表示: ${showCadenceOnUnified ? 'ON' : 'OFF'}`;
+      }
+      const currentId = parseInt(document.getElementById('activity-select')?.value);
+      const act = activities.find(a => a.id === currentId) || activities[activities.length - 1];
+      if (act && !isCompareMode) {
+        updateUnifiedChart(act);
+      }
+    };
 
     // ★走行距離に対する速度・心拍数・ピッチの折れ線グラフ更新
     function updateUnifiedChart(act) {
@@ -753,8 +819,11 @@ const {
           pointHoverRadius: 5,
           fill: false,
           yAxisID: 'y'
-        },
-        {
+        }
+      ];
+
+      if (showCadenceOnUnified) {
+        datasets.push({
           label: 'ケイデンス (spm)',
           data: series.cadences,
           borderColor: '#2dd4bf',
@@ -765,20 +834,21 @@ const {
           pointRadius: series.distances.length > 50 ? 0 : 2,
           pointHoverRadius: 5,
           yAxisID: 'y'
-        },
-        {
-          label: '速度 (km/h)',
-          data: series.speeds_kmh,
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.08)',
-          borderWidth: 2,
-          tension: 0.25,
-          pointRadius: series.distances.length > 50 ? 0 : 2,
-          pointHoverRadius: 5,
-          fill: false,
-          yAxisID: 'y1'
-        }
-      ];
+        });
+      }
+
+      datasets.push({
+        label: '速度 (km/h)',
+        data: series.speeds_kmh,
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+        borderWidth: 2,
+        tension: 0.25,
+        pointRadius: series.distances.length > 50 ? 0 : 2,
+        pointHoverRadius: 5,
+        fill: false,
+        yAxisID: 'y1'
+      });
 
       if (series.altitudes && series.altitudes.length > 0) {
         datasets.push({
@@ -825,7 +895,7 @@ const {
             },
             y: {
               position: 'left',
-              title: { display: true, text: '心拍数(bpm) / ケイデンス(spm)', color: '#94a3b8', font: { size: 10 } },
+              title: { display: true, text: showCadenceOnUnified ? '心拍数(bpm) / ケイデンス(spm)' : '心拍数 (bpm)', color: '#f43f5e', font: { size: 10 } },
               min: 100,
               max: 210,
               grid: { color: 'rgba(255, 255, 255, 0.06)' },
@@ -1093,6 +1163,75 @@ const {
     // ⚖️ ラン比較モード (Compare Runs)
     // ==========================================
     let isCompareMode = false;
+    let currentCompareChartTab = 'laps';
+
+    // 同じ練習種別（または同距離帯）の直近過去ランを自動検索
+    function findBestCompareRun(actA) {
+      if (!actA || !activities || activities.length < 2) return null;
+      const typeA = actA.analysis?.workout_structure?.type || '';
+      const distA = actA.distance_km || 0;
+
+      // 1. 基準ランより過去（id < actA.id）で同じ workout_structure.type の直近ランを探す
+      const olderRuns = activities.filter(a => a.id < actA.id).sort((a, b) => b.id - a.id);
+      if (typeA) {
+        const sameTypeOlder = olderRuns.find(a => (a.analysis?.workout_structure?.type || '') === typeA);
+        if (sameTypeOlder) return sameTypeOlder;
+      }
+
+      // 2. 過去ランの中で距離が近い（±25%以内）直近ランを探す
+      const similarDistOlder = olderRuns.find(a => Math.abs((a.distance_km || 0) - distA) <= Math.max(2.0, distA * 0.25));
+      if (similarDistOlder) return similarDistOlder;
+
+      // 3. 未来も含めて同種別の別ランを探す
+      const otherRuns = activities.filter(a => a.id !== actA.id).sort((a, b) => b.id - a.id);
+      if (typeA) {
+        const sameTypeAny = otherRuns.find(a => (a.analysis?.workout_structure?.type || '') === typeA);
+        if (sameTypeAny) return sameTypeAny;
+      }
+
+      // 4. フォールバック：直前のランまたは最新ラン
+      return olderRuns[0] || otherRuns[0] || null;
+    }
+
+    window.compareWithPrevSameType = function() {
+      const currentA = parseInt(document.getElementById('activity-select').value);
+      const actA = activities.find(a => a.id === currentA) || activities[activities.length - 1];
+      const bestB = findBestCompareRun(actA);
+      const selectB = document.getElementById('activity-compare-select');
+      if (bestB && selectB) {
+        selectB.value = bestB.id;
+      }
+      if (!isCompareMode) {
+        toggleCompareMode();
+      } else {
+        renderCompareActivities();
+      }
+    };
+
+    window.switchCompareChartTab = function(tab) {
+      currentCompareChartTab = tab;
+      const btnLaps = document.getElementById('cmp-chart-tab-laps');
+      const btnStream = document.getElementById('cmp-chart-tab-stream');
+      const panelLaps = document.getElementById('cmp-chart-panel-laps');
+      const panelStream = document.getElementById('cmp-chart-panel-stream');
+
+      const activeClass = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 bg-indigo-500 text-white shadow';
+      const inactiveClass = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 text-slate-400 hover:text-white';
+
+      if (tab === 'stream') {
+        if (btnLaps) btnLaps.className = inactiveClass;
+        if (btnStream) btnStream.className = activeClass;
+        if (panelLaps) panelLaps.classList.add('hidden');
+        if (panelStream) panelStream.classList.remove('hidden');
+        if (unifiedMetricChart) unifiedMetricChart.resize();
+      } else {
+        if (btnLaps) btnLaps.className = activeClass;
+        if (btnStream) btnStream.className = inactiveClass;
+        if (panelLaps) panelLaps.classList.remove('hidden');
+        if (panelStream) panelStream.classList.add('hidden');
+        if (compareLapsChartInstance) compareLapsChartInstance.resize();
+      }
+    };
 
     function toggleCompareMode() {
       isCompareMode = !isCompareMode;
@@ -1109,10 +1248,11 @@ const {
         labelA.textContent = 'ラン A (基準):';
 
         const currentA = parseInt(document.getElementById('activity-select').value);
+        const actA = activities.find(a => a.id === currentA) || activities[activities.length - 1];
         const selectB = document.getElementById('activity-compare-select');
         if (parseInt(selectB.value) === currentA) {
-          const altAct = activities.find(a => a.id !== currentA) || activities[0];
-          if (altAct) selectB.value = altAct.id;
+          const bestB = findBestCompareRun(actA);
+          if (bestB) selectB.value = bestB.id;
         }
         renderCompareActivities();
       } else {
@@ -1238,30 +1378,42 @@ const {
             </div>
           </div>
 
-          <!-- 1. 1kmラップ毎のペース＆心拍 オーバーレイ比較グラフ -->
-          <div class="space-y-2">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-1">
-              <span class="font-bold text-white flex items-center gap-1.5"><span>📊</span> 1kmラップ毎のペース ＆ 心拍 オーバーレイ比較チャート (Lap 1 〜 Lap ${maxLapsCount})</span>
-              <span class="text-[11px] font-mono text-slate-400">※ペース線は上にあるほど高速</span>
+          <!-- 比較オーバーレイチャート (タブ切替: 1kmラップ対決 ⇄ 実距離ストリーム比較) -->
+          <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+              <div class="inline-flex bg-slate-900 border border-slate-800 rounded-xl p-1 gap-1">
+                <button type="button" id="cmp-chart-tab-laps" onclick="switchCompareChartTab('laps')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 bg-indigo-500 text-white shadow">
+                  <span>📊</span>
+                  <span>1kmラップ対決チャート (Lap 1〜${maxLapsCount})</span>
+                </button>
+                <button type="button" id="cmp-chart-tab-stream" onclick="switchCompareChartTab('stream')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 text-slate-400 hover:text-white">
+                  <span>📈</span>
+                  <span>実距離ストリーム比較 (線形距離軸)</span>
+                </button>
+              </div>
+              <span class="text-[11px] font-mono text-slate-400">● Run A: 緑/赤 vs ▲ Run B: 水色/黄</span>
             </div>
-            <div class="w-full h-72 sm:h-80 relative bg-slate-900/60 rounded-2xl p-2.5 border border-slate-800/80">
-              <canvas id="compareLapsChart"></canvas>
-            </div>
-          </div>
 
-          <!-- 2. 連続距離軸の速度・心拍オーバーレイ比較グラフ -->
-          <div class="space-y-2">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 gap-1">
-              <span class="font-medium text-slate-300">📈 連続距離ストリーム（速度・心拍）オーバーレイ比較</span>
-              <div class="flex items-center space-x-3 text-[11px]">
-                <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>Run A 速度</span>
-                <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-sky-400 mr-1"></span>Run B 速度</span>
-                <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1"></span>Run A 心拍</span>
-                <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-amber-400 mr-1"></span>Run B 心拍</span>
+            <!-- Tab 1: 1kmラップ毎のペース＆心拍 オーバーレイ比較グラフ -->
+            <div id="cmp-chart-panel-laps" class="space-y-1.5">
+              <div class="w-full h-72 sm:h-80 relative bg-slate-900/60 rounded-2xl p-2.5 border border-slate-800/80">
+                <canvas id="compareLapsChart"></canvas>
+              </div>
+              <div class="text-[10px] font-mono text-slate-500 flex justify-between px-1">
+                <span>※実線＝ラップペース（上にあるほど高速）、破線＝平均心拍数</span>
+                <span>1〜3kmはウォームアップ区間、4km以降が本練習区間</span>
               </div>
             </div>
-            <div class="w-full h-64 sm:h-72 relative bg-slate-900/50 rounded-2xl p-2 border border-slate-800/80">
-              <canvas id="unifiedMetricChart"></canvas>
+
+            <!-- Tab 2: 連続距離軸の速度・心拍オーバーレイ比較グラフ -->
+            <div id="cmp-chart-panel-stream" class="space-y-1.5 hidden">
+              <div class="w-full h-72 sm:h-80 relative bg-slate-900/60 rounded-2xl p-2.5 border border-slate-800/80">
+                <canvas id="unifiedMetricChart"></canvas>
+              </div>
+              <div class="text-[10px] font-mono text-slate-500 flex justify-between px-1">
+                <span>※実走行距離（km）の線形X軸でプロットしているため、異なる走行距離のラン同士でも同一地点で正確に比較できます</span>
+                <span>実線＝速度(km/h)・心拍(bpm)</span>
+              </div>
             </div>
           </div>
 
@@ -1295,6 +1447,9 @@ const {
 
       updateCompareLapsChart(actA, actB);
       updateCompareChart(actA, actB);
+      if (currentCompareChartTab === 'stream' && typeof window.switchCompareChartTab === 'function') {
+        window.switchCompareChartTab('stream');
+      }
     }
 
     function updateCompareLapsChart(actA, actB) {
@@ -1416,17 +1571,16 @@ const {
       const serA = actA.distance_series || { distances: [0, actA.distance_km], speeds_kmh: [actA.speed_kmh, actA.speed_kmh], heart_rates: [actA.avg_hr, actA.avg_hr] };
       const serB = actB.distance_series || { distances: [0, actB.distance_km], speeds_kmh: [actB.speed_kmh, actB.speed_kmh], heart_rates: [actB.avg_hr, actB.avg_hr] };
 
-      const baseSer = (serA.distances.length >= serB.distances.length) ? serA : serB;
-      const labels = baseSer.distances.map(d => d + ' km');
+      const toXY = (dists, vals) => (dists || []).map((d, i) => ({ x: Number(d), y: Number(vals[i]) })).filter(p => !isNaN(p.x) && !isNaN(p.y));
+      const maxDist = Math.max(actA.distance_km || 0, actB.distance_km || 0, 1);
 
       unifiedMetricChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: labels,
           datasets: [
             {
               label: `Run A 心拍 (${actA.date})`,
-              data: serA.heart_rates,
+              data: toXY(serA.distances, serA.heart_rates),
               borderColor: '#f43f5e',
               borderWidth: 2,
               tension: 0.25,
@@ -1435,7 +1589,7 @@ const {
             },
             {
               label: `Run B 心拍 (${actB.date})`,
-              data: serB.heart_rates,
+              data: toXY(serB.distances, serB.heart_rates),
               borderColor: '#fbbf24',
               borderDash: [3, 3],
               borderWidth: 2,
@@ -1445,7 +1599,7 @@ const {
             },
             {
               label: `Run A 速度 (${actA.date})`,
-              data: serA.speeds_kmh,
+              data: toXY(serA.distances, serA.speeds_kmh),
               borderColor: '#10b981',
               backgroundColor: 'rgba(16, 185, 129, 0.05)',
               borderWidth: 2,
@@ -1456,7 +1610,7 @@ const {
             },
             {
               label: `Run B 速度 (${actB.date})`,
-              data: serB.speeds_kmh,
+              data: toXY(serB.distances, serB.speeds_kmh),
               borderColor: '#38bdf8',
               backgroundColor: 'rgba(56, 189, 248, 0.05)',
               borderWidth: 2,
@@ -1470,12 +1624,21 @@ const {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          interaction: { mode: 'index', intersect: false },
+          parsing: false,
+          interaction: { mode: 'nearest', axis: 'x', intersect: false },
           scales: {
             x: {
+              type: 'linear',
+              min: 0,
+              max: Math.ceil(maxDist * 10) / 10,
               grid: { color: 'rgba(255, 255, 255, 0.04)' },
-              ticks: { color: '#94a3b8', maxTicksLimit: 8, font: { size: 10 } },
-              title: { display: true, text: '走行距離 (km)', color: '#64748b', font: { size: 10 } }
+              ticks: {
+                color: '#94a3b8',
+                maxTicksLimit: 10,
+                font: { size: 10 },
+                callback: v => v + ' km'
+              },
+              title: { display: true, text: '実走行距離 (km)', color: '#64748b', font: { size: 10 } }
             },
             y: {
               position: 'left',
@@ -1495,7 +1658,12 @@ const {
             }
           },
           plugins: {
-            legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 11 }, boxWidth: 12 } }
+            legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 11 }, boxWidth: 12 } },
+            tooltip: {
+              callbacks: {
+                title: items => items.length ? `距離: ${items[0].parsed.x.toFixed(2)} km` : ''
+              }
+            }
           }
         }
       });
@@ -1852,6 +2020,21 @@ const {
     document.getElementById('activity-compare-select').addEventListener('change', (e) => {
       if (isCompareMode) {
         renderCompareActivities();
+      }
+    });
+
+    // キーボード左右矢印キー（← / →）で前後のランへ快適に移動
+    document.addEventListener('keydown', (e) => {
+      const viewActivity = document.getElementById('view-activity');
+      if (!viewActivity || viewActivity.classList.contains('hidden')) return;
+      const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+      if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA' || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        navigateActivity(-1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        navigateActivity(1);
       }
     });
 

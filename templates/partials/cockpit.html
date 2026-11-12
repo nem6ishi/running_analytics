@@ -398,10 +398,11 @@
                 </div>
               </div>
 
-              <!-- 今週のアクションリスト (文字切れしないよう折り返し対応) -->
+              <!-- 今週のアクションリスト (文字切れしないよう折り返し対応・完了日はクリックで個別分析へ) -->
               <div class="space-y-2">
                 {% for day in training_roadmap.current_week.days %}
-                <div class="p-2.5 rounded-2xl border flex items-start justify-between gap-2 text-xs {% if day.status == 'done' %}bg-emerald-950/30 border-emerald-500/40{% elif day.status == 'today' %}bg-indigo-950/40 border-indigo-500/50 ring-1 ring-indigo-500/30{% elif day.type == 'kanto' %}bg-slate-950/40 border-slate-800/60 opacity-75{% else %}bg-slate-950/70 border-slate-800/80{% endif %}">
+                <div {% if day.status == 'done' and day.activity_id is not none %}onclick="selectActivityAndSwitch({{ day.activity_id }})" title="クリックしてこの日の個別分析・グラフを表示"{% endif %}
+                     class="p-2.5 rounded-2xl border flex items-start justify-between gap-2 text-xs transition {% if day.status == 'done' %}bg-emerald-950/30 border-emerald-500/40 hover:bg-emerald-950/60 hover:border-emerald-400 cursor-pointer group{% elif day.status == 'today' %}bg-indigo-950/40 border-indigo-500/50 ring-1 ring-indigo-500/30{% elif day.type == 'kanto' %}bg-slate-950/40 border-slate-800/60 opacity-75{% else %}bg-slate-950/70 border-slate-800/80{% endif %}">
                   <div class="flex items-start space-x-2.5 min-w-0">
                     <span class="mt-0.5 shrink-0">
                       {% if day.status == 'done' %}✅{% elif day.status == 'today' %}📍{% elif day.type == 'kanto' %}✈️{% elif day.type == 'point' or day.type == 'long' %}🔥{% elif day.type == 'easy' %}🌱{% else %}🛌{% endif %}
@@ -410,7 +411,7 @@
                       <div class="flex flex-wrap items-center gap-1.5">
                         <span class="font-mono font-bold text-white text-[11px]">{{ day.label }}</span>
                         {% if day.status == 'done' %}
-                        <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold">完了 {{ day.actual_km }}km</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold group-hover:bg-emerald-500 group-hover:text-slate-950 transition">完了 {{ day.actual_km }}km →</span>
                         {% elif day.status == 'today' %}
                         <span class="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/30 text-indigo-200 font-mono font-bold">TODAY</span>
                         {% endif %}

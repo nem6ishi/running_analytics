@@ -1241,6 +1241,7 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
     """docs/TRAINING_PLAN_2026.md の6週間計画と実際の走行ログを照合し、現在週のアクションと全体進捗を返す"""
     run_dates = set(df["date_str"].unique()) if not df.empty else set()
     run_dist_map = df.groupby("date_str")["distance_km"].sum().to_dict() if not df.empty else {}
+    date_to_id = {row["date_str"]: int(i) for i, row in df.iterrows()} if not df.empty else {}
 
     today = date.today()
     latest_act_date = df["datetime"].max().date() if not df.empty else today
@@ -1371,15 +1372,19 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             if d_str in run_dates:
                 d["status"] = "done"
                 d["actual_km"] = round(float(run_dist_map[d_str]), 2)
+                d["activity_id"] = date_to_id.get(d_str)
             elif d_dt == ref_date:
                 d["status"] = "today"
                 d["actual_km"] = 0.0
+                d["activity_id"] = None
             elif d_dt < ref_date:
                 d["status"] = "past"
                 d["actual_km"] = 0.0
+                d["activity_id"] = None
             else:
                 d["status"] = "upcoming"
                 d["actual_km"] = 0.0
+                d["activity_id"] = None
 
     return {
         "current_week": weeks_plan[current_week_idx],
