@@ -77,7 +77,7 @@ const {
               <span>⏱️</span>
               <span>セッション構成・フェーズ別実績</span>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${Math.min(ws.phases.length, 5)} gap-2.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               ${ws.phases.map((p, idx) => `
                 <div class="bg-slate-900/90 border border-slate-800/80 rounded-xl p-3 space-y-1.5 shadow-inner">
                   <div class="flex items-center justify-between">
@@ -438,13 +438,10 @@ const {
             <!-- 3. トレーニング構成 & 走りの意図 -->
             ${workoutBreakdownHtml}
 
-            <!-- 4. 1kmごとのラップスプリット詳細表 -->
-            ${lapsHtml}
-
           </div>
 
-          <!-- 右カラム (lg:col-span-5): AIコーチ診断 & 是正アクション (Sticky) -->
-          <div class="lg:col-span-5 space-y-5 lg:sticky lg:top-32">
+          <!-- 右カラム (lg:col-span-5): AIコーチ診断 & 次回への処方箋 -->
+          <div class="lg:col-span-5 space-y-4">
 
             <!-- 1. 総合総括カード (Overall Verdict) -->
             ${ev.overall_verdict ? `
@@ -460,21 +457,18 @@ const {
               </div>
             ` : ''}
 
-            <!-- 2. 有酸素デカップリング & 心拍ドリフト診断 -->
-            <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3 shadow-xl">
+            <!-- 2. 有酸素デカップリング & 心拍ドリフト診断 (重複解消) -->
+            <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-2.5 shadow-xl">
               <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-                <span class="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
+                <span class="text-xs font-bold text-slate-200 flex items-center space-x-1.5">
                   <span>🫀</span>
-                  <span>有酸素デカップリング (Pw:Hr)</span>
+                  <span>有酸素デカップリング (Pw:Hr) ＆ ドリフト</span>
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-black font-mono border ${ev.decoupling_badge || 'bg-slate-800 text-slate-400 border-slate-700'}">
                   ${ev.decoupling_pct !== undefined ? (ev.decoupling_pct >= 0 ? '+' : '') + ev.decoupling_pct + '%' : '--'}
                 </span>
               </div>
               <p class="text-xs text-slate-300 leading-relaxed">${ev.decoupling_desc || an.drift_text}</p>
-              <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/60 text-[11px] text-slate-400 leading-snug">
-                ${an.drift_text}
-              </div>
             </div>
 
             <!-- 3. ▲ 課題・留意点 VS ◎ 収穫・強み -->
@@ -518,36 +512,30 @@ const {
               </div>
             </div>
 
-            <!-- 4. 🔥 次回へのアクションフォーカス -->
-            ${ev.actionable_focus ? `
-              <div class="bg-slate-950/70 border border-amber-500/30 rounded-2xl p-4 space-y-1.5 shadow-md">
-                <div class="flex items-center space-x-2">
-                  <span class="text-base">🔥</span>
-                  <span class="text-[11px] font-black text-amber-300 uppercase tracking-wider">次回セッションへのフォーカス</span>
+            <!-- 4. 🎯 次回への処方箋 (フォーカス ＆ おすすめメニュー・リカバリー統合カード) -->
+            <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3 border border-amber-500/25 shadow-xl">
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                <div class="flex items-center space-x-1.5">
+                  <span class="text-base">🎯</span>
+                  <span class="text-xs font-black text-white tracking-tight">次回への処方箋 ＆ リカバリー指針</span>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">${ev.actionable_focus.replace(/【(.*?)】/g, '<strong class="text-amber-300 font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">【$1】</strong>')}</p>
+                <span class="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-700 text-amber-300 font-bold">回復: ${rec.recovery_hours}</span>
               </div>
-            ` : ''}
 
-            <!-- 5. 🎯 次回おすすめメニュー & リカバリー提案 -->
-            <div class="glass-card rounded-2xl p-4 space-y-3 shadow-sm">
-              <div class="flex items-center space-x-1.5 border-b border-slate-800/80 pb-2">
-                <span class="text-sm">🎯</span>
-                <span class="text-xs font-bold text-slate-200">次回おすすめメニュー & リカバリー</span>
+              ${ev.actionable_focus ? `
+                <div class="bg-amber-950/25 border border-amber-500/30 rounded-xl p-3 space-y-1">
+                  <span class="text-[10px] font-black text-amber-300 uppercase tracking-wider block">🔥 次回フォーカス</span>
+                  <p class="text-xs text-slate-200 font-medium leading-relaxed">${ev.actionable_focus.replace(/【(.*?)】/g, '<strong class="text-amber-300 font-bold">【$1】</strong>')}</p>
+                </div>
+              ` : ''}
+
+              <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80 space-y-1">
+                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">🔜 推奨メニュー: ${rec.menu_title}</span>
+                <p class="text-[11px] text-slate-300 leading-relaxed">${rec.menu_desc}</p>
               </div>
-              <div class="space-y-2 text-xs">
-                <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">おすすめメニュー</span>
-                  <h6 class="text-xs font-bold text-white mt-0.5">${rec.menu_title}</h6>
-                  <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">${rec.menu_desc}</p>
-                </div>
-                <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
-                  <div class="flex justify-between items-center text-[10px] text-slate-400">
-                    <span class="font-bold text-slate-400 uppercase tracking-wider">推奨回復時間</span>
-                    <span class="font-bold text-white font-mono">${rec.recovery_hours}</span>
-                  </div>
-                  <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">${rec.recovery_tips}</p>
-                </div>
+
+              <div class="text-[11px] text-slate-400 bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/60 leading-relaxed">
+                🛌 <strong class="text-slate-300">ケア:</strong> ${rec.recovery_tips}
               </div>
             </div>
 
@@ -560,6 +548,9 @@ const {
           </div>
 
         </div>
+
+        <!-- 全幅 (12カラム): 1kmごとのラップスプリット詳細表 -->
+        ${lapsHtml}
       `;
 
       // グラフを描画・更新
@@ -2745,6 +2736,7 @@ const {
         const chart = Chart.getChart(canvas);
         if (chart) {
           chart.resize();
+          chart.update('none');
         }
       });
     }
@@ -2753,14 +2745,12 @@ const {
       const panels = {
         overview: document.getElementById('cockpit-panel-overview'),
         condition: document.getElementById('cockpit-panel-condition'),
-        charts: document.getElementById('cockpit-panel-charts'),
         records: document.getElementById('cockpit-panel-records')
       };
 
       const buttons = {
         overview: document.getElementById('subtab-overview'),
         condition: document.getElementById('subtab-condition'),
-        charts: document.getElementById('subtab-charts'),
         records: document.getElementById('subtab-records'),
         all: document.getElementById('subtab-all')
       };

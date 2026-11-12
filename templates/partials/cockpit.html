@@ -1,459 +1,448 @@
     <!-- ======================================================= -->
-    <!-- 🏁 VIEW 1: COCKPIT (ゼロベース再設計・3大種目目標＆実戦コマンドセンター) -->
+    <!-- 🏁 VIEW 1: COCKPIT (3視点サブタブ階層化・実戦コマンドセンター) -->
     <!-- ======================================================= -->
     <div id="view-cockpit" class="view-panel space-y-6">
 
-      <!-- ====================================================================== -->
-      <!-- 🎯 SECTION 1: 3大種目目標コマンドセンター (ヨロンハーフ / NAHAフル / 10km Sub-50) -->
-      <!-- ====================================================================== -->
-      <section id="cockpit-panel-overview" class="space-y-3">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div class="flex items-center space-x-2">
-            <span class="text-base">🎯</span>
-            <h2 class="text-sm sm:text-base font-black text-white tracking-tight">3大種目ターゲット ＆ レースカウントダウン</h2>
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400 font-mono">攻めのハイパフォーマンス方針</span>
-          </div>
-          <div class="flex flex-wrap items-center gap-2 text-[11px] font-mono text-slate-400">
-            <span>固有ルーティン: <strong class="text-emerald-400">最初の3km＝ウォームアップ</strong></span>
-            <span class="text-slate-700">|</span>
-            <span>現在走力: <strong class="text-white">VDOT {{ vdot_data.current_vdot }}</strong> (Peak {{ vdot_data.peak_vdot }})</span>
-          </div>
+      <!-- 🧭 Cockpit サブタブ切り替えバー -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/80 border border-slate-800/90 rounded-2xl p-2 shadow-inner">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button type="button" id="subtab-overview" onclick="switchCockpitSubtab('overview')" class="cockpit-subtab-btn active px-3.5 py-2 rounded-xl text-xs sm:text-sm border transition-all flex items-center space-x-1.5">
+            <span>🎯</span>
+            <span>メイン (目標・直近ラン・今週計画)</span>
+          </button>
+          <button type="button" id="subtab-condition" onclick="switchCockpitSubtab('condition')" class="cockpit-subtab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm border transition-all flex items-center space-x-1.5">
+            <span>📈</span>
+            <span>コンディション＆トレンド推移</span>
+          </button>
+          <button type="button" id="subtab-records" onclick="switchCockpitSubtab('records')" class="cockpit-subtab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm border transition-all flex items-center space-x-1.5">
+            <span>🏆</span>
+            <span>自己ベスト・ギア・フォーム</span>
+          </button>
+          <button type="button" id="subtab-all" onclick="switchCockpitSubtab('all')" class="cockpit-subtab-btn px-3 py-2 rounded-xl text-xs border transition-all flex items-center space-x-1">
+            <span>👁️</span>
+            <span>すべて表示</span>
+          </button>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-          <!-- 1. 11/29 ヨロンマラソン (ハーフ・サブ2) -->
-          <div class="glass-card rounded-3xl p-5 space-y-3.5 shadow-2xl border-t-2 border-t-emerald-500/70 relative overflow-hidden flex flex-col justify-between">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-2">
-                <div>
-                  <div class="flex items-center space-x-1.5">
-                    <span class="text-base">🏁</span>
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">{{ three_pillars.half_marathon.race_date }}</span>
-                  </div>
-                  <h3 class="text-base font-black text-white tracking-tight mt-0.5">{{ three_pillars.half_marathon.race_name }}</h3>
-                </div>
-                <div class="text-right shrink-0">
-                  <div class="px-2.5 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono">
-                    <span class="text-[10px] block leading-none">本番まであと</span>
-                    <span class="text-lg font-black leading-tight">{{ three_pillars.half_marathon.days_left }}<span class="text-xs font-normal ml-0.5">日</span></span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 目標タイム vs 推定タイム -->
-              <div class="grid grid-cols-2 gap-2.5 bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
-                <div>
-                  <span class="text-[10px] text-slate-400 block">目標: <strong class="text-emerald-400">サブ2達成</strong></span>
-                  <div class="text-lg sm:text-xl font-black text-white font-mono tracking-tight mt-0.5">1:55〜1:59</div>
-                  <span class="text-[10px] text-amber-300 font-mono block">🔥 絶好調: 1:52〜1:55</span>
-                  <span class="text-[10px] text-slate-400 font-mono">{{ three_pillars.half_marathon.target_pace_str }}</span>
-                </div>
-                <div class="border-l border-slate-800/80 pl-2.5">
-                  <span class="text-[10px] text-slate-400 block">現在VDOT推定</span>
-                  <div class="text-lg sm:text-xl font-black text-emerald-400 font-mono tracking-tight mt-0.5">{{ three_pillars.half_marathon.est_time_str }}</div>
-                  <span class="text-[10px] text-slate-400 font-mono">{{ three_pillars.half_marathon.est_pace_str }} /km</span>
-                </div>
-              </div>
-
-              <!-- 実戦KPI -->
-              <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
-                  <span class="text-[10px] text-slate-400 font-sans block">5:38/km以内 連続維持</span>
-                  <span class="text-sm font-black text-white">{{ three_pillars.half_marathon.sustained_pace_km }} km</span>
-                  <span class="text-[10px] text-slate-500">/ 21.1km</span>
-                </div>
-                <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
-                  <span class="text-[10px] text-slate-400 font-sans block">那覇での残り練習機会</span>
-                  <span class="text-sm font-black text-amber-300">約 {{ three_pillars.half_marathon.est_sessions_left }} 回</span>
-                  <span class="text-[10px] text-slate-500">(遠征オフ除き{{ three_pillars.half_marathon.available_days }}日)</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="space-y-1.5 pt-1 border-t border-slate-800/60">
-              <div class="flex items-center justify-between text-[10px]">
-                <span class="text-slate-400">最長距離到達率 ({{ three_pillars.half_marathon.longest_dist_km }}km / 21.1km)</span>
-                <span class="px-2 py-0.2 rounded-full border {{ three_pillars.half_marathon.status_badge }} font-bold font-mono">{{ three_pillars.half_marathon.status_label }}</span>
-              </div>
-              <p class="text-[10px] text-slate-400 font-mono truncate" title="{{ three_pillars.half_marathon.strategy_note }}">
-                🧭 {{ three_pillars.half_marathon.strategy_note }}
-              </p>
-            </div>
-          </div>
-
-          <!-- 2. 12/06 NAHAマラソン (フル・サブ4.5) -->
-          <div class="glass-card rounded-3xl p-5 space-y-3.5 shadow-2xl border-t-2 border-t-sky-500/70 relative overflow-hidden flex flex-col justify-between">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-2">
-                <div>
-                  <div class="flex items-center space-x-1.5">
-                    <span class="text-base">👑</span>
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400">{{ three_pillars.full_marathon.race_date }}</span>
-                  </div>
-                  <h3 class="text-base font-black text-white tracking-tight mt-0.5">{{ three_pillars.full_marathon.race_name }}</h3>
-                </div>
-                <div class="text-right shrink-0">
-                  <div class="px-2.5 py-1 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 font-mono">
-                    <span class="text-[10px] block leading-none">本番まであと</span>
-                    <span class="text-lg font-black leading-tight">{{ three_pillars.full_marathon.days_left }}<span class="text-xs font-normal ml-0.5">日</span></span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 目標タイム vs 推定タイム -->
-              <div class="grid grid-cols-2 gap-2.5 bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
-                <div>
-                  <span class="text-[10px] text-slate-400 block">目標: <strong class="text-sky-400">サブ4.5達成</strong></span>
-                  <div class="text-lg sm:text-xl font-black text-white font-mono tracking-tight mt-0.5">4:15〜4:30</div>
-                  <span class="text-[10px] text-slate-400 font-mono">{{ three_pillars.full_marathon.target_pace_str }}</span>
-                </div>
-                <div class="border-l border-slate-800/80 pl-2.5">
-                  <span class="text-[10px] text-slate-400 block">現在VDOT推定</span>
-                  <div class="text-lg sm:text-xl font-black text-sky-400 font-mono tracking-tight mt-0.5">{{ three_pillars.full_marathon.est_time_str }}</div>
-                  <span class="text-[10px] text-slate-400 font-mono">{{ three_pillars.full_marathon.est_pace_str }} /km</span>
-                </div>
-              </div>
-
-              <!-- 実戦KPI -->
-              <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
-                  <span class="text-[10px] text-slate-400 font-sans block">過去最長ロング走実績</span>
-                  <span class="text-sm font-black text-white">{{ three_pillars.full_marathon.longest_dist_km }} km</span>
-                  <span class="text-[10px] text-slate-500">(フル比 {{ three_pillars.full_marathon.dist_reach_pct }}%)</span>
-                </div>
-                <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
-                  <span class="text-[10px] text-slate-400 font-sans block">直近4週 低強度(Z1+Z2)比</span>
-                  <span class="text-sm font-black text-emerald-400">{{ zone_distribution.recent_4w.low_intensity_pct }}%</span>
-                  <span class="text-[10px] text-slate-500">(30日計 {{ rolling_volume.current_volume }}km)</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="space-y-1.5 pt-1 border-t border-slate-800/60">
-              <div class="flex items-center justify-between text-[10px]">
-                <span class="text-slate-400 truncate">最長LSD: {{ three_pillars.full_marathon.long_run_summary }}</span>
-                <span class="px-2 py-0.2 rounded-full border {{ three_pillars.full_marathon.status_badge }} font-bold font-mono shrink-0">{{ three_pillars.full_marathon.status_label }}</span>
-              </div>
-              <p class="text-[10px] text-slate-400 font-mono truncate" title="{{ three_pillars.full_marathon.strategy_note }}">
-                🧭 {{ three_pillars.full_marathon.strategy_note }}
-              </p>
-            </div>
-          </div>
-
-          <!-- 3. 10km 50分切り (サブ50・スピードコア) -->
-          <div class="glass-card rounded-3xl p-5 space-y-3.5 shadow-2xl border-t-2 border-t-rose-500/70 relative overflow-hidden flex flex-col justify-between">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-2">
-                <div>
-                  <div class="flex items-center space-x-1.5">
-                    <span class="text-base">⚡</span>
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-rose-400">SPEED BENCHMARK</span>
-                  </div>
-                  <h3 class="text-base font-black text-white tracking-tight mt-0.5">10km 50分切り (サブ50)</h3>
-                </div>
-                <div class="text-right shrink-0">
-                  <div class="px-2.5 py-1 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 font-mono">
-                    <span class="text-[10px] block leading-none">到達進捗率</span>
-                    <span class="text-lg font-black leading-tight">{{ sub50_progress.progress_pct }}<span class="text-xs font-normal ml-0.5">%</span></span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 目標タイム vs 推定タイム -->
-              <div class="grid grid-cols-2 gap-2.5 bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
-                <div>
-                  <span class="text-[10px] text-slate-400 block">目標: <strong class="text-rose-400">50:00 突破</strong></span>
-                  <div class="text-lg sm:text-xl font-black text-white font-mono tracking-tight mt-0.5">50:00</div>
-                  <span class="text-[10px] text-rose-400 font-mono block">🔥 絶好調: 48:30〜49:40</span>
-                  <span class="text-[10px] text-slate-400 font-mono">5:00 /km 巡航</span>
-                </div>
-                <div class="border-l border-slate-800/80 pl-2.5">
-                  <span class="text-[10px] text-slate-400 block">現在推定10km力</span>
-                  <div class="text-lg sm:text-xl font-black font-mono tracking-tight mt-0.5" style="color: var(--theme-primary);">{{ sub50_progress.est_10k_time_str }}</div>
-                  <span class="text-[10px] text-slate-400 font-mono">{{ sub50_progress.est_10k_pace_str }} /km ({{ sub50_progress.gap_time_str }})</span>
-                </div>
-              </div>
-
-              <!-- 実戦KPI -->
-              <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
-                  <span class="text-[10px] text-slate-400 font-sans block">5:00/km以内 連続維持</span>
-                  <span class="text-sm font-black text-white">{{ sub50_progress.max_sustained_km }} km</span>
-                  <span class="text-[10px] text-slate-500">(直近 {{ sub50_progress.latest_sustained_km }}km)</span>
-                </div>
-                <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
-                  <span class="text-[10px] text-slate-400 font-sans block">Tペース (閾値LT基準)</span>
-                  <span class="text-sm font-black" style="color: var(--theme-primary);">{{ vdot_data.paces.t_pace.pace_str }}</span>
-                  <span class="text-[10px] text-slate-500">I: {{ vdot_data.paces.i_pace.pace_str }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="space-y-1.5 pt-1 border-t border-slate-800/60">
-              <div class="w-full bg-slate-950 rounded-full h-2 p-0.5 border border-slate-800 overflow-hidden">
-                <div class="h-full rounded-full" style="width: {{ sub50_progress.progress_pct }}%; background: linear-gradient(90deg, #f43f5e, var(--theme-primary));"></div>
-              </div>
-              <div class="flex items-center justify-between text-[10px] font-mono text-slate-400">
-                <span>{{ sub50_progress.gap_status }}</span>
-                <span class="text-slate-300">{{ sub50_forecast.status_label }}</span>
-              </div>
-            </div>
-          </div>
-
+        <div class="hidden xl:flex items-center space-x-2 text-[11px] font-mono text-slate-400 px-2">
+          <span>固有ルーティン: <strong class="text-emerald-400">最初の3km＝ウォームアップ</strong></span>
         </div>
-      </section>
+      </div>
 
       <!-- ====================================================================== -->
-      <!-- 🔥 SECTION 2: 直近ラン「3kmアップ vs 3km以降(本練習)」ハイライト ＆ 今週の6週間計画 -->
+      <!-- 🎯 PANEL 1: OVERVIEW (3大種目目標 ＋ 直近ラン ＆ 今週スケジュール) -->
       <!-- ====================================================================== -->
-      <section class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+      <div id="cockpit-panel-overview" class="space-y-6">
 
-        <!-- 左カラム (7列): 最新ラン・ダイジェスト (最初の3kmアップ vs 3km以降の本練習区間) -->
-        {% if latest_insight %}
-        <div class="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl flex flex-col justify-between border border-slate-800/90">
-          <div class="space-y-4">
-            <!-- ヘッダー -->
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
-              <div class="flex items-center space-x-2.5">
-                <span class="w-9 h-9 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 flex items-center justify-center text-base font-bold">🔥</span>
-                <div>
-                  <div class="flex items-center space-x-2">
-                    <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300">LATEST RUN DIGEST</span>
-                    <span class="text-xs font-mono font-bold text-white">{{ latest_insight.date }} {{ latest_insight.time_of_day }}</span>
-                  </div>
-                  <h3 class="text-sm sm:text-base font-black text-white tracking-tight mt-0.5">
-                    {{ latest_insight.analysis.workout_structure.summary_title if latest_insight.analysis and latest_insight.analysis.workout_structure else latest_insight.title }}
-                  </h3>
-                </div>
-              </div>
-              <button type="button" onclick="selectActivityAndSwitch({{ latest_insight.id }})" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500 text-emerald-300 hover:text-slate-950 border border-emerald-500/40 transition flex items-center space-x-1 shrink-0">
-                <span>精密分析・グラフを見る</span>
-                <span>→</span>
-              </button>
-            </div>
+        <!-- 🎯 SECTION 1: 3大種目目標コマンドセンター -->
+        <section class="space-y-3">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-            <!-- ルーティン別 実績ブロック: ポイント走は [全体 vs 1〜3kmアップ vs 3km以降本練習] / LSD・ジョグは [全区間単一巡航] -->
-            {% if latest_quality_split.has_split %}
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-              <!-- ① 全体実績 (3列) -->
-              <div class="sm:col-span-3 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-between">
-                <span class="text-[10px] text-slate-400 font-bold block">📊 全区間トータル</span>
-                <div class="my-1">
-                  <span class="text-xl font-black text-white font-mono">{{ latest_insight.distance_km }}<span class="text-xs font-normal text-slate-400 ml-0.5">km</span></span>
-                  <div class="text-xs font-bold text-slate-300 font-mono">{{ latest_insight.pace_str }} /km</div>
-                </div>
-                <div class="text-[10px] text-slate-400 font-mono">
-                  HR {{ latest_insight.avg_hr }}bpm • {{ latest_insight.running_cadence or latest_insight.cadence }}spm
-                </div>
-              </div>
-
-              <!-- ② 0〜3km ウォームアップ区間 (4列) -->
-              <div class="sm:col-span-4 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-between">
-                <div class="flex items-center justify-between">
-                  <span class="text-[10px] text-slate-400 font-bold">🌱 1〜3km ウォームアップ</span>
-                  <span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">{{ latest_quality_split.warmup_km }}km</span>
-                </div>
-                <div class="my-1">
-                  <span class="text-xl font-black text-slate-200 font-mono">{{ latest_quality_split.warmup_pace_str }}<span class="text-xs font-normal text-slate-400 ml-0.5">/km</span></span>
-                </div>
-                <div class="text-[10px] text-slate-400 font-mono">
-                  平均心拍 {{ latest_quality_split.warmup_hr }} bpm (準備導入)
-                </div>
-              </div>
-
-              <!-- ③ 3km以降 本練習区間 (Quality Zone - 5列・強調) -->
-              <div class="sm:col-span-5 bg-gradient-to-br from-emerald-950/50 via-slate-950 to-slate-950 border border-emerald-500/40 rounded-2xl p-3 flex flex-col justify-between shadow-inner">
-                <div class="flex items-center justify-between">
-                  <span class="text-[10px] text-emerald-300 font-black">⚡ 3km以降 本練習区間</span>
-                  <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono font-bold">{{ latest_quality_split.main_km }}km 巡航</span>
-                </div>
-                <div class="my-1 flex items-baseline justify-between">
+            <!-- 1. 11/29 ヨロンマラソン (ハーフ・サブ2) -->
+            <div class="glass-card rounded-3xl p-5 space-y-3 shadow-2xl border-t-2 border-t-emerald-500/70 relative overflow-hidden flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-start justify-between gap-2">
                   <div>
-                    <span class="text-2xl font-black text-emerald-400 font-mono tracking-tight">{{ latest_quality_split.main_pace_str }}</span>
-                    <span class="text-xs text-slate-300 font-mono">/km</span>
+                    <div class="flex items-center space-x-1.5">
+                      <span class="text-base">🏁</span>
+                      <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">{{ three_pillars.half_marathon.race_date }}</span>
+                      <span class="px-2 py-0.2 rounded-full border {{ three_pillars.half_marathon.status_badge }} text-[10px] font-bold font-mono">{{ three_pillars.half_marathon.status_label }}</span>
+                    </div>
+                    <h3 class="text-base font-black text-white tracking-tight mt-0.5">{{ three_pillars.half_marathon.race_name }}</h3>
                   </div>
-                  <div class="text-right font-mono">
-                    <span class="text-[10px] text-slate-400 block">最速 Lap{{ latest_quality_split.fastest_lap_idx }}</span>
-                    <span class="text-xs font-black text-rose-400">{{ latest_quality_split.fastest_lap_str }}/km</span>
+                  <div class="text-right shrink-0">
+                    <div class="px-2.5 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono">
+                      <span class="text-[10px] block leading-none">本番まであと</span>
+                      <span class="text-lg font-black leading-tight">{{ three_pillars.half_marathon.days_left }}<span class="text-xs font-normal ml-0.5">日</span></span>
+                    </div>
                   </div>
                 </div>
-                <div class="text-[10px] text-slate-300 font-mono flex items-center justify-between">
-                  <span>本練習心拍: <strong class="text-rose-300">{{ latest_quality_split.main_hr }} bpm</strong></span>
-                  {% if latest_quality_split.cooldown_km > 0 %}
-                  <span class="text-sky-300">＋ダウン{{ latest_quality_split.cooldown_km }}k ({{ latest_quality_split.cooldown_pace_str }})</span>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-            {% else %}
-            <!-- LSD または 単一有酸素走（3kmアップなし・全区間が本練習） -->
-            <div class="bg-gradient-to-br from-emerald-950/40 via-slate-950 to-slate-950 border border-emerald-500/40 rounded-2xl p-4 space-y-2.5 shadow-inner">
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
-                <div class="flex items-center space-x-2">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
-                    🐢 ALL-ZONE SINGLE WORKOUT
-                  </span>
-                  <span class="text-xs font-bold text-white">{{ latest_quality_split.session_type_label }}</span>
-                </div>
-                <span class="text-[11px] text-slate-400 font-mono">※アップ区間なし・全行程（{{ latest_insight.distance_km }}km）が有酸素スタミナ本練習</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
-                <div>
-                  <span class="text-[10px] text-slate-500 font-sans block">走破距離</span>
-                  <span class="text-2xl font-black text-white">{{ latest_insight.distance_km }}<span class="text-xs font-normal text-slate-400 ml-0.5">km</span></span>
-                </div>
-                <div>
-                  <span class="text-[10px] text-slate-500 font-sans block">平均ペース</span>
-                  <span class="text-2xl font-black text-emerald-400">{{ latest_insight.pace_str }}<span class="text-xs font-normal text-slate-400 ml-0.5">/km</span></span>
-                </div>
-                <div>
-                  <span class="text-[10px] text-slate-500 font-sans block">平均心拍数</span>
-                  <span class="text-2xl font-black text-rose-400">{{ latest_insight.avg_hr }}<span class="text-xs font-normal text-slate-400 ml-0.5">bpm</span></span>
-                </div>
-                <div>
-                  <span class="text-[10px] text-slate-500 font-sans block">平均ピッチ</span>
-                  <span class="text-2xl font-black text-teal-400">{{ latest_insight.running_cadence or latest_insight.cadence }}<span class="text-xs font-normal text-slate-400 ml-0.5">spm</span></span>
-                </div>
-              </div>
-            </div>
-            {% endif %}
 
-            <!-- ラップ推移ミニピルバー -->
-            {% if latest_quality_split.laps_summary %}
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                <span>1km毎のラップ推移（1〜3kmアップ ➔ 4km以降本練習）</span>
-                <span>ピッチ {{ latest_insight.running_cadence or latest_insight.cadence }} spm</span>
+                <!-- 目標タイム vs 推定タイム -->
+                <div class="grid grid-cols-2 gap-2.5 bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
+                  <div>
+                    <span class="text-[10px] text-slate-400 block">目標: <strong class="text-emerald-400">サブ2達成</strong></span>
+                    <div class="text-lg sm:text-xl font-black text-white font-mono tracking-tight mt-0.5">1:55〜1:59</div>
+                    <span class="text-[10px] text-slate-400 font-mono block">{{ three_pillars.half_marathon.target_pace_str }}</span>
+                  </div>
+                  <div class="border-l border-slate-800/80 pl-2.5">
+                    <span class="text-[10px] text-slate-400 block">現在VDOT推定</span>
+                    <div class="text-lg sm:text-xl font-black text-emerald-400 font-mono tracking-tight mt-0.5">{{ three_pillars.half_marathon.est_time_str }}</div>
+                    <span class="text-[10px] text-slate-400 font-mono block">{{ three_pillars.half_marathon.est_pace_str }} /km</span>
+                  </div>
+                </div>
+
+                <!-- 実戦KPI -->
+                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                  <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
+                    <span class="text-[10px] text-slate-400 font-sans block">最長距離 / 5:38以内連続</span>
+                    <span class="text-sm font-black text-white">{{ three_pillars.half_marathon.longest_dist_km }}km</span>
+                    <span class="text-[10px] text-slate-400">/ {{ three_pillars.half_marathon.sustained_pace_km }}km</span>
+                  </div>
+                  <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
+                    <span class="text-[10px] text-slate-400 font-sans block">那覇での残り練習機会</span>
+                    <span class="text-sm font-black text-amber-300">約 {{ three_pillars.half_marathon.est_sessions_left }} 回</span>
+                    <span class="text-[10px] text-slate-500">({{ three_pillars.half_marathon.available_days }}日)</span>
+                  </div>
+                </div>
               </div>
-              <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5 font-mono">
-                {% for lap in latest_quality_split.laps_summary[:10] %}
-                <div class="p-1.5 rounded-xl border text-center {% if lap.pace_sec <= 300 %}bg-rose-500/20 border-rose-500/40 text-rose-200{% elif lap.pace_sec <= 338 %}bg-emerald-500/15 border-emerald-500/30 text-emerald-200{% elif lap.lap_index <= 3 %}bg-slate-900/90 border-slate-800 text-slate-400{% else %}bg-slate-900 border-slate-800 text-slate-300{% endif %}">
-                  <div class="text-[9px] opacity-75">L{{ lap.lap_index }}</div>
-                  <div class="text-xs font-black leading-tight">{{ lap.pace_str }}</div>
-                  <div class="text-[9px] opacity-75">{{ lap.avg_hr }}bpm</div>
+
+              <div class="pt-2 border-t border-slate-800/60">
+                <p class="text-[11px] text-slate-300 leading-relaxed">
+                  🧭 {{ three_pillars.half_marathon.strategy_note }}
+                </p>
+              </div>
+            </div>
+
+            <!-- 2. 12/06 NAHAマラソン (フル・サブ4.5) -->
+            <div class="glass-card rounded-3xl p-5 space-y-3 shadow-2xl border-t-2 border-t-sky-500/70 relative overflow-hidden flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <div class="flex items-center space-x-1.5">
+                      <span class="text-base">👑</span>
+                      <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400">{{ three_pillars.full_marathon.race_date }}</span>
+                      <span class="px-2 py-0.2 rounded-full border {{ three_pillars.full_marathon.status_badge }} text-[10px] font-bold font-mono">{{ three_pillars.full_marathon.status_label }}</span>
+                    </div>
+                    <h3 class="text-base font-black text-white tracking-tight mt-0.5">{{ three_pillars.full_marathon.race_name }}</h3>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <div class="px-2.5 py-1 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 font-mono">
+                      <span class="text-[10px] block leading-none">本番まであと</span>
+                      <span class="text-lg font-black leading-tight">{{ three_pillars.full_marathon.days_left }}<span class="text-xs font-normal ml-0.5">日</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 目標タイム vs 推定タイム -->
+                <div class="grid grid-cols-2 gap-2.5 bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
+                  <div>
+                    <span class="text-[10px] text-slate-400 block">目標: <strong class="text-sky-400">サブ4.5達成</strong></span>
+                    <div class="text-lg sm:text-xl font-black text-white font-mono tracking-tight mt-0.5">4:15〜4:30</div>
+                    <span class="text-[10px] text-slate-400 font-mono block">{{ three_pillars.full_marathon.target_pace_str }}</span>
+                  </div>
+                  <div class="border-l border-slate-800/80 pl-2.5">
+                    <span class="text-[10px] text-slate-400 block">現在VDOT推定</span>
+                    <div class="text-lg sm:text-xl font-black text-sky-400 font-mono tracking-tight mt-0.5">{{ three_pillars.full_marathon.est_time_str }}</div>
+                    <span class="text-[10px] text-slate-400 font-mono block">{{ three_pillars.full_marathon.est_pace_str }} /km</span>
+                  </div>
+                </div>
+
+                <!-- 実戦KPI -->
+                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                  <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
+                    <span class="text-[10px] text-slate-400 font-sans block">過去最長ロング走実績</span>
+                    <span class="text-sm font-black text-white">{{ three_pillars.full_marathon.longest_dist_km }} km</span>
+                    <span class="text-[10px] text-slate-500">(フル比 {{ three_pillars.full_marathon.dist_reach_pct }}%)</span>
+                  </div>
+                  <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
+                    <span class="text-[10px] text-slate-400 font-sans block">直近4週 低強度(Z1+Z2)比</span>
+                    <span class="text-sm font-black text-emerald-400">{{ zone_distribution.recent_4w.low_intensity_pct }}%</span>
+                    <span class="text-[10px] text-slate-500">(30日 {{ rolling_volume.current_volume }}km)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-slate-800/60">
+                <p class="text-[11px] text-slate-300 leading-relaxed">
+                  🧭 {{ three_pillars.full_marathon.strategy_note }}
+                </p>
+              </div>
+            </div>
+
+            <!-- 3. 10km 50分切り (サブ50・スピードコア) -->
+            <div class="glass-card rounded-3xl p-5 space-y-3 shadow-2xl border-t-2 border-t-rose-500/70 relative overflow-hidden flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <div class="flex items-center space-x-1.5">
+                      <span class="text-base">⚡</span>
+                      <span class="text-[11px] font-bold uppercase tracking-wider text-rose-400">SPEED BENCHMARK</span>
+                    </div>
+                    <h3 class="text-base font-black text-white tracking-tight mt-0.5">10km 50分切り (サブ50)</h3>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <div class="px-2.5 py-1 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 font-mono">
+                      <span class="text-[10px] block leading-none">到達進捗率</span>
+                      <span class="text-lg font-black leading-tight">{{ sub50_progress.progress_pct }}<span class="text-xs font-normal ml-0.5">%</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 目標タイム vs 推定タイム -->
+                <div class="grid grid-cols-2 gap-2.5 bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
+                  <div>
+                    <span class="text-[10px] text-slate-400 block">目標: <strong class="text-rose-400">50:00 突破</strong></span>
+                    <div class="text-lg sm:text-xl font-black text-white font-mono tracking-tight mt-0.5">50:00</div>
+                    <span class="text-[10px] text-slate-400 font-mono block">4:55〜5:00 /km 巡航</span>
+                  </div>
+                  <div class="border-l border-slate-800/80 pl-2.5">
+                    <span class="text-[10px] text-slate-400 block">現在推定10km力</span>
+                    <div class="text-lg sm:text-xl font-black font-mono tracking-tight mt-0.5" style="color: var(--theme-primary);">{{ sub50_progress.est_10k_time_str }}</div>
+                    <span class="text-[10px] text-slate-400 font-mono block">{{ sub50_progress.est_10k_pace_str }} /km ({{ sub50_progress.gap_time_str }})</span>
+                  </div>
+                </div>
+
+                <!-- 実戦KPI -->
+                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                  <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
+                    <span class="text-[10px] text-slate-400 font-sans block">5:00/km以内 連続維持</span>
+                    <span class="text-sm font-black text-white">{{ sub50_progress.max_sustained_km }} km</span>
+                    <span class="text-[10px] text-slate-500">(直近 {{ sub50_progress.latest_sustained_km }}km)</span>
+                  </div>
+                  <div class="bg-slate-950/50 px-3 py-2 rounded-xl border border-slate-800/60">
+                    <span class="text-[10px] text-slate-400 font-sans block">Tペース (閾値LT基準)</span>
+                    <span class="text-sm font-black" style="color: var(--theme-primary);">{{ vdot_data.paces.t_pace.pace_str }}</span>
+                    <span class="text-[10px] text-slate-500">I: {{ vdot_data.paces.i_pace.pace_str }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-1.5 pt-2 border-t border-slate-800/60">
+                <div class="w-full bg-slate-950 rounded-full h-2 p-0.5 border border-slate-800 overflow-hidden">
+                  <div class="h-full rounded-full" style="width: {{ sub50_progress.progress_pct }}%; background: linear-gradient(90deg, #f43f5e, var(--theme-primary));"></div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] font-mono text-slate-300">
+                  <span>{{ sub50_progress.gap_status }}</span>
+                  <span>{{ sub50_forecast.status_label }}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 🔥 SECTION 2: 直近ラン「3kmアップ vs 3km以降(本練習)」ハイライト ＆ 今週のスケジュール -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+
+          <!-- 左カラム (7列): 最新ラン・ダイジェスト (最初の3kmアップ vs 3km以降の本練習区間) -->
+          {% if latest_insight %}
+          <div class="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl flex flex-col justify-between border border-slate-800/90">
+            <div class="space-y-4">
+              <!-- ヘッダー -->
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                <div class="flex items-center space-x-2.5">
+                  <span class="w-9 h-9 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 flex items-center justify-center text-base font-bold">🔥</span>
+                  <div>
+                    <div class="flex items-center space-x-2">
+                      <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300">LATEST RUN DIGEST</span>
+                      <span class="text-xs font-mono font-bold text-white">{{ latest_insight.date }} {{ latest_insight.time_of_day }}</span>
+                    </div>
+                    <h3 class="text-sm sm:text-base font-black text-white tracking-tight mt-0.5">
+                      {{ latest_insight.analysis.workout_structure.summary_title if latest_insight.analysis and latest_insight.analysis.workout_structure else latest_insight.title }}
+                    </h3>
+                  </div>
+                </div>
+                <button type="button" onclick="selectActivityAndSwitch({{ latest_insight.id }})" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500 text-emerald-300 hover:text-slate-950 border border-emerald-500/40 transition flex items-center space-x-1 shrink-0">
+                  <span>精密分析・グラフを見る</span>
+                  <span>→</span>
+                </button>
+              </div>
+
+              <!-- ルーティン別 実績ブロック: ポイント走は [全体 vs 1〜3kmアップ vs 3km以降本練習] / LSD・ジョグは [全区間単一巡航] -->
+              {% if latest_quality_split.has_split %}
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                <!-- ① 全体実績 (3列) -->
+                <div class="sm:col-span-3 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-between">
+                  <span class="text-[10px] text-slate-400 font-bold block">📊 全区間トータル</span>
+                  <div class="my-1">
+                    <span class="text-xl font-black text-white font-mono">{{ latest_insight.distance_km }}<span class="text-xs font-normal text-slate-400 ml-0.5">km</span></span>
+                    <div class="text-xs font-bold text-slate-300 font-mono">{{ latest_insight.pace_str }} /km</div>
+                  </div>
+                  <div class="text-[10px] text-slate-400 font-mono">
+                    HR {{ latest_insight.avg_hr }}bpm • {{ latest_insight.running_cadence or latest_insight.cadence }}spm
+                  </div>
+                </div>
+
+                <!-- ② 0〜3km ウォームアップ区間 (4列) -->
+                <div class="sm:col-span-4 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-between">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] text-slate-400 font-bold">🌱 1〜3km ウォームアップ</span>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">{{ latest_quality_split.warmup_km }}km</span>
+                  </div>
+                  <div class="my-1">
+                    <span class="text-xl font-black text-slate-200 font-mono">{{ latest_quality_split.warmup_pace_str }}<span class="text-xs font-normal text-slate-400 ml-0.5">/km</span></span>
+                  </div>
+                  <div class="text-[10px] text-slate-400 font-mono">
+                    平均心拍 {{ latest_quality_split.warmup_hr }} bpm (準備導入)
+                  </div>
+                </div>
+
+                <!-- ③ 3km以降 本練習区間 (Quality Zone - 5列・強調) -->
+                <div class="sm:col-span-5 bg-gradient-to-br from-emerald-950/50 via-slate-950 to-slate-950 border border-emerald-500/40 rounded-2xl p-3 flex flex-col justify-between shadow-inner">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] text-emerald-300 font-black">⚡ 3km以降 本練習区間</span>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono font-bold">{{ latest_quality_split.main_km }}km 巡航</span>
+                  </div>
+                  <div class="my-1 flex items-baseline justify-between">
+                    <div>
+                      <span class="text-2xl font-black text-emerald-400 font-mono tracking-tight">{{ latest_quality_split.main_pace_str }}</span>
+                      <span class="text-xs text-slate-300 font-mono">/km</span>
+                    </div>
+                    <div class="text-right font-mono">
+                      <span class="text-[10px] text-slate-400 block">最速 Lap{{ latest_quality_split.fastest_lap_idx }}</span>
+                      <span class="text-xs font-black text-rose-400">{{ latest_quality_split.fastest_lap_str }}/km</span>
+                    </div>
+                  </div>
+                  <div class="text-[10px] text-slate-300 font-mono flex items-center justify-between">
+                    <span>本練習心拍: <strong class="text-rose-300">{{ latest_quality_split.main_hr }} bpm</strong></span>
+                    {% if latest_quality_split.cooldown_km > 0 %}
+                    <span class="text-sky-300">＋ダウン{{ latest_quality_split.cooldown_km }}k ({{ latest_quality_split.cooldown_pace_str }})</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% else %}
+              <!-- LSD または 単一有酸素走（3kmアップなし・全区間が本練習） -->
+              <div class="bg-gradient-to-br from-emerald-950/40 via-slate-950 to-slate-950 border border-emerald-500/40 rounded-2xl p-4 space-y-2.5 shadow-inner">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
+                  <div class="flex items-center space-x-2">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
+                      🐢 ALL-ZONE SINGLE WORKOUT
+                    </span>
+                    <span class="text-xs font-bold text-white">{{ latest_quality_split.session_type_label }}</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400 font-mono">※アップ区間なし・全行程（{{ latest_insight.distance_km }}km）が有酸素スタミナ本練習</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-sans block">走破距離</span>
+                    <span class="text-2xl font-black text-white">{{ latest_insight.distance_km }}<span class="text-xs font-normal text-slate-400 ml-0.5">km</span></span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-sans block">平均ペース</span>
+                    <span class="text-2xl font-black text-emerald-400">{{ latest_insight.pace_str }}<span class="text-xs font-normal text-slate-400 ml-0.5">/km</span></span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-sans block">平均心拍数</span>
+                    <span class="text-2xl font-black text-rose-400">{{ latest_insight.avg_hr }}<span class="text-xs font-normal text-slate-400 ml-0.5">bpm</span></span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-sans block">平均ピッチ</span>
+                    <span class="text-2xl font-black text-teal-400">{{ latest_insight.running_cadence or latest_insight.cadence }}<span class="text-xs font-normal text-slate-400 ml-0.5">spm</span></span>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+
+              <!-- ラップ推移ミニピルバー -->
+              {% if latest_quality_split.laps_summary %}
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                  <span>1km毎のラップ推移（1〜3kmアップ ➔ 4km以降本練習）</span>
+                  <span>ピッチ {{ latest_insight.running_cadence or latest_insight.cadence }} spm</span>
+                </div>
+                <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5 font-mono">
+                  {% for lap in latest_quality_split.laps_summary[:10] %}
+                  <div class="p-1.5 rounded-xl border text-center {% if lap.pace_sec <= 300 %}bg-rose-500/20 border-rose-500/40 text-rose-200{% elif lap.pace_sec <= 338 %}bg-emerald-500/15 border-emerald-500/30 text-emerald-200{% elif lap.lap_index <= 3 %}bg-slate-900/90 border-slate-800 text-slate-400{% else %}bg-slate-900 border-slate-800 text-slate-300{% endif %}">
+                    <div class="text-[9px] opacity-75">L{{ lap.lap_index }}</div>
+                    <div class="text-xs font-black leading-tight">{{ lap.pace_str }}</div>
+                    <div class="text-[9px] opacity-75">{{ lap.avg_hr }}bpm</div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- AIコーチ総括 ＆ 次回への処方箋 -->
+            <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 mt-2">
+              <p class="text-xs text-slate-200 leading-relaxed">
+                🤖 {{ latest_insight.evaluation.overall_verdict | replace('**', '') }}
+              </p>
+              <div class="pt-1.5 border-t border-slate-800/70 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px]">
+                <span class="text-emerald-400 font-bold">🔜 次回推奨: {{ latest_insight.recommendation.menu_title }}</span>
+                <span class="text-slate-400 font-mono shrink-0">推奨回復: {{ latest_insight.recommendation.recovery_hours }}</span>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- 右カラム (5列): 今週のトレーニングスケジュール -->
+          <div class="lg:col-span-5 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl flex flex-col justify-between border border-slate-800/90">
+            <div class="space-y-3.5">
+              <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <div class="flex items-center space-x-2">
+                  <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold border border-amber-500/30">📅</span>
+                  <div>
+                    <div class="flex items-center space-x-1.5">
+                      <span class="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold">THIS WEEK'S PLAN</span>
+                      <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono">{{ training_roadmap.current_week.period }}</span>
+                    </div>
+                    <h3 class="text-sm font-black text-white tracking-tight mt-0.5">{{ training_roadmap.current_week.title }}</h3>
+                  </div>
+                </div>
+                <a href="schedule.html" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/30 transition flex items-center space-x-1 shrink-0" title="全42日間の通し予定表を見る">
+                  <span>全日程の予定表</span>
+                  <span>→</span>
+                </a>
+              </div>
+
+              <p class="text-xs text-slate-300 bg-slate-950/60 px-3 py-2 rounded-xl border border-slate-800/70">
+                🎯 <strong>今週のテーマ:</strong> {{ training_roadmap.current_week.theme }}
+              </p>
+
+              <!-- 今週の達成距離・消化率プログレスバー -->
+              <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-3 space-y-1.5">
+                <div class="flex items-center justify-between text-[11px] font-mono">
+                  <span class="text-slate-400 font-sans font-bold">📊 今週の走行距離 消化率 ({{ training_roadmap.current_week.actual_runs }}走)</span>
+                  <div>
+                    <span class="text-emerald-400 font-black text-sm">{{ training_roadmap.current_week.actual_km }}</span>
+                    <span class="text-slate-500">/ {{ training_roadmap.current_week.planned_km }} km</span>
+                    <span class="ml-1.5 px-1.5 py-0.2 rounded text-[10px] font-black {% if training_roadmap.current_week.achievement_pct >= 100 %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-300 border border-amber-500/30{% endif %}">
+                      {{ training_roadmap.current_week.achievement_pct | int }}%
+                    </span>
+                  </div>
+                </div>
+                <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                  <div class="h-full rounded-full transition-all duration-500 {% if training_roadmap.current_week.achievement_pct >= 100 %}bg-gradient-to-r from-emerald-500 to-teal-400{% else %}bg-gradient-to-r from-amber-500 to-emerald-400{% endif %}" style="width: {{ training_roadmap.current_week.progress_bar_pct }}%;"></div>
+                </div>
+              </div>
+
+              <!-- 今週のアクションリスト (文字切れしないよう折り返し対応) -->
+              <div class="space-y-2">
+                {% for day in training_roadmap.current_week.days %}
+                <div class="p-2.5 rounded-2xl border flex items-start justify-between gap-2 text-xs {% if day.status == 'done' %}bg-emerald-950/30 border-emerald-500/40{% elif day.status == 'today' %}bg-indigo-950/40 border-indigo-500/50 ring-1 ring-indigo-500/30{% elif day.type == 'kanto' %}bg-slate-950/40 border-slate-800/60 opacity-75{% else %}bg-slate-950/70 border-slate-800/80{% endif %}">
+                  <div class="flex items-start space-x-2.5 min-w-0">
+                    <span class="mt-0.5 shrink-0">
+                      {% if day.status == 'done' %}✅{% elif day.status == 'today' %}📍{% elif day.type == 'kanto' %}✈️{% elif day.type == 'point' or day.type == 'long' %}🔥{% elif day.type == 'easy' %}🌱{% else %}🛌{% endif %}
+                    </span>
+                    <div class="min-w-0">
+                      <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="font-mono font-bold text-white text-[11px]">{{ day.label }}</span>
+                        {% if day.status == 'done' %}
+                        <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold">完了 {{ day.actual_km }}km</span>
+                        {% elif day.status == 'today' %}
+                        <span class="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/30 text-indigo-200 font-mono font-bold">TODAY</span>
+                        {% endif %}
+                      </div>
+                      <div class="text-slate-200 font-medium leading-snug mt-0.5">{{ day.menu }}</div>
+                    </div>
+                  </div>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 mt-0.5">
+                    {{ day.target }}
+                  </span>
                 </div>
                 {% endfor %}
               </div>
             </div>
-            {% endif %}
+
+            <!-- 全6週間ロードマップ・本番スプリット表への誘導フッター -->
+            <a href="schedule.html" class="block bg-slate-950/70 hover:bg-slate-900 rounded-2xl border border-slate-800/80 hover:border-amber-500/40 px-3.5 py-2.5 text-xs text-slate-300 transition flex items-center justify-between group">
+              <span>🗺️ 全6週間ロードマップ・本番5km毎スプリット表を見る</span>
+              <span class="text-amber-400 font-mono font-bold group-hover:translate-x-0.5 transition-transform">schedule.html →</span>
+            </a>
           </div>
 
-          <!-- AIコーチ総括 ＆ 次回への処方箋 -->
-          <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 mt-2">
-            <p class="text-xs text-slate-200 leading-relaxed">
-              🤖 {{ latest_insight.evaluation.overall_verdict | replace('**', '') }}
-            </p>
-            <div class="pt-1.5 border-t border-slate-800/70 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px]">
-              <span class="text-emerald-400 font-bold">🔜 次回推奨: {{ latest_insight.recommendation.menu_title }}</span>
-              <span class="text-slate-400 font-mono shrink-0">推奨回復: {{ latest_insight.recommendation.recovery_hours }}</span>
-            </div>
-          </div>
-        </div>
-        {% endif %}
+        </section>
 
-        <!-- 右カラム (5列): 攻めの6週間トレーニング計画 (今週のスケジュール ＆ 全体ロードマップ) -->
-        <div class="lg:col-span-5 glass-card rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl flex flex-col justify-between border border-slate-800/90">
-          <div class="space-y-3.5">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-              <div class="flex items-center space-x-2">
-                <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold border border-amber-500/30">📅</span>
-                <div>
-                  <div class="flex items-center space-x-1.5">
-                    <span class="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold">6-WEEK ROADMAP</span>
-                    <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono">{{ training_roadmap.current_week.period }}</span>
-                  </div>
-                  <h3 class="text-sm font-black text-white tracking-tight mt-0.5">{{ training_roadmap.current_week.title }}</h3>
-                </div>
-              </div>
-              <a href="schedule.html" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/30 transition flex items-center space-x-1 shrink-0" title="全42日間の通し予定表を見る">
-                <span>全日程の予定表</span>
-                <span>→</span>
-              </a>
-            </div>
-
-            <p class="text-xs text-slate-300 bg-slate-950/60 px-3 py-2 rounded-xl border border-slate-800/70">
-              🎯 <strong>今週のテーマ:</strong> {{ training_roadmap.current_week.theme }}
-            </p>
-
-            <!-- 今週の達成距離・消化率プログレスバー -->
-            <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-3 space-y-1.5">
-              <div class="flex items-center justify-between text-[11px] font-mono">
-                <span class="text-slate-400 font-sans font-bold">📊 今週の走行距離 消化率 ({{ training_roadmap.current_week.actual_runs }}走)</span>
-                <div>
-                  <span class="text-emerald-400 font-black text-sm">{{ training_roadmap.current_week.actual_km }}</span>
-                  <span class="text-slate-500">/ {{ training_roadmap.current_week.planned_km }} km</span>
-                  <span class="ml-1.5 px-1.5 py-0.2 rounded text-[10px] font-black {% if training_roadmap.current_week.achievement_pct >= 100 %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-300 border border-amber-500/30{% endif %}">
-                    {{ training_roadmap.current_week.achievement_pct | int }}%
-                  </span>
-                </div>
-              </div>
-              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
-                <div class="h-full rounded-full transition-all duration-500 {% if training_roadmap.current_week.achievement_pct >= 100 %}bg-gradient-to-r from-emerald-500 to-teal-400{% else %}bg-gradient-to-r from-amber-500 to-emerald-400{% endif %}" style="width: {{ training_roadmap.current_week.progress_bar_pct }}%;"></div>
-              </div>
-            </div>
-
-            <!-- 今週のアクションリスト -->
-            <div class="space-y-2">
-              {% for day in training_roadmap.current_week.days %}
-              <div class="p-2.5 rounded-2xl border flex items-center justify-between gap-2 text-xs {% if day.status == 'done' %}bg-emerald-950/30 border-emerald-500/40{% elif day.status == 'today' %}bg-indigo-950/40 border-indigo-500/50 ring-1 ring-indigo-500/30{% elif day.type == 'kanto' %}bg-slate-950/40 border-slate-800/60 opacity-75{% else %}bg-slate-950/70 border-slate-800/80{% endif %}">
-                <div class="flex items-start space-x-2.5 min-w-0">
-                  <span class="mt-0.5 shrink-0">
-                    {% if day.status == 'done' %}✅{% elif day.status == 'today' %}📍{% elif day.type == 'kanto' %}✈️{% elif day.type == 'point' or day.type == 'long' %}🔥{% elif day.type == 'easy' %}🌱{% else %}🛌{% endif %}
-                  </span>
-                  <div class="min-w-0">
-                    <div class="flex items-center space-x-2">
-                      <span class="font-mono font-bold text-white text-[11px]">{{ day.label }}</span>
-                      {% if day.status == 'done' %}
-                      <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold">完了 {{ day.actual_km }}km</span>
-                      {% elif day.status == 'today' %}
-                      <span class="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/30 text-indigo-200 font-mono font-bold">TODAY</span>
-                      {% endif %}
-                    </div>
-                    <div class="text-slate-200 font-medium truncate mt-0.5" title="{{ day.menu }}">{{ day.menu }}</div>
-                  </div>
-                </div>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0">
-                  {{ day.target }}
-                </span>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-
-          <!-- 全6週間ロードマップ折りたたみ -->
-          <details class="group bg-slate-950/50 rounded-2xl border border-slate-800/70 px-3.5 py-2.5 text-xs text-slate-400">
-            <summary class="cursor-pointer select-none font-bold text-slate-300 flex items-center justify-between">
-              <span>🗺️ 全6週間ロードマップ (Week 1〜Week 6) を表示</span>
-              <span class="text-[10px] text-slate-500 group-open:rotate-180 transition-transform">▼</span>
-            </summary>
-            <div class="mt-3 pt-2.5 border-t border-slate-800/70 space-y-2 max-h-60 overflow-y-auto pr-1 scrollbar-thin">
-              {% for w in training_roadmap.all_weeks %}
-              <div class="p-2.5 rounded-xl border space-y-1.5 {% if w.is_current %}bg-amber-500/10 border-amber-500/40 text-white{% else %}bg-slate-900/60 border-slate-800/70 text-slate-400{% endif %}">
-                <div class="flex items-center justify-between font-mono text-[10px]">
-                  <span class="font-bold {% if w.is_current %}text-amber-300{% else %}text-slate-300{% endif %}">{{ w.title }}</span>
-                  <span>{{ w.period }}</span>
-                </div>
-                <div class="text-[11px] leading-snug">{{ w.theme }}</div>
-                <div class="flex items-center justify-between text-[10px] font-mono pt-1 border-t border-slate-800/60">
-                  <span>実績: <strong class="text-emerald-400">{{ w.actual_km }}km</strong> / 計画 {{ w.planned_km }}km ({{ w.actual_runs }}走)</span>
-                  <span class="px-1.5 py-0.2 rounded {% if w.achievement_pct >= 100 %}bg-emerald-500/20 text-emerald-300{% elif w.achievement_pct > 0 %}bg-amber-500/20 text-amber-300{% else %}bg-slate-800 text-slate-500{% endif %} font-bold">{{ w.achievement_pct | int }}%</span>
-                </div>
-                <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
-                  <div class="h-full rounded-full {% if w.achievement_pct >= 100 %}bg-emerald-400{% else %}bg-amber-400{% endif %}" style="width: {{ w.progress_bar_pct }}%;"></div>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </details>
-        </div>
-
-      </section>
+      </div>
+      <!-- END PANEL 1: OVERVIEW -->
 
       <!-- ====================================================================== -->
-      <!-- ⚡ SECTION 3: コンディション・疲労 (CTL/ATL/TSB) × 80/20強度 × VDOTペース -->
+      <!-- 📈 PANEL 2: CONDITION & TRENDS (CTL/ATL/TSB × 80/20 × 4大チャート × ヒートマップ) -->
       <!-- ====================================================================== -->
-      <section id="cockpit-panel-condition" class="space-y-5">
+      <div id="cockpit-panel-condition" class="space-y-6 hidden">
+        <section class="space-y-5">
 
         <!-- 上段: コンディション4大スナップショット + VDOT 5大トレーニングペース -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
@@ -818,20 +807,23 @@
         </div>
       </section>
 
+      </div>
+      <!-- END PANEL 2: CONDITION & TRENDS -->
+
       <!-- ====================================================================== -->
-      <!-- 🏆 SECTION 6: 自己ベスト・通算統計・ギア寿命管理・フォーム推移 (下部アーカイブ) -->
+      <!-- 🏆 PANEL 3: RECORDS, GEAR & BIOMECHANICS (自己ベスト・ギア寿命・フォーム解析) -->
       <!-- ====================================================================== -->
-      <section id="cockpit-panel-records" class="space-y-4 pt-2">
-        <details class="group glass-card rounded-3xl p-5 sm:p-6 shadow-xl" open>
-          <summary class="cursor-pointer select-none flex items-center justify-between">
+      <section id="cockpit-panel-records" class="space-y-5 hidden">
+        <div class="glass-card rounded-3xl p-5 sm:p-6 shadow-xl space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
             <div class="flex items-center space-x-2">
               <span class="text-base">🏆</span>
-              <h2 class="text-sm font-black uppercase tracking-wider text-white">自己ベスト・ギア寿命管理・通算スタッツ ({{ overview.date_range }})</h2>
+              <h2 class="text-sm sm:text-base font-black uppercase tracking-wider text-white">自己ベスト・ギア寿命管理・フォーム解析 ({{ overview.date_range }})</h2>
             </div>
-            <span class="text-xs text-slate-400 font-mono group-open:rotate-180 transition-transform">▼</span>
-          </summary>
+            <span class="text-xs text-slate-400 font-mono">通算 {{ overview.total_runs }} ラン • 合計 {{ overview.total_distance_km }} km</span>
+          </div>
 
-          <div class="mt-5 space-y-6 border-t border-slate-800/80 pt-5">
+          <div class="space-y-6">
             <!-- 🏆 部門別歴代トップ3 (Hall of Fame - 旧5大レコードと統合) -->
             {% if hall_of_fame %}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -925,7 +917,7 @@
             </div>
             {% endif %}
 
-            <!-- 👟 シューズ寿命・レース当日残量予測トラッカー & 🔬 ピッチ×歩幅バイオメカニクス解析（大規模改善7） -->
+            <!-- 👟 シューズ寿命・レース当日残量予測トラッカー & 🔬 ピッチ×歩幅バイオメカニクス解析 -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
               <!-- 左カラム (5列): 現役シューズ寿命＆2大レース投入シミュレーション -->
               <div class="lg:col-span-5 space-y-3.5">
@@ -934,7 +926,6 @@
                     <span class="text-xs font-black text-white flex items-center gap-1.5"><span>👟</span> 現役ギア寿命 ＆ 2大レース残量予測トラッカー</span>
                     <span class="text-[10px] text-slate-400">寿命上限 600km に対する現在地とヨロン・NAHA完走時点の余力</span>
                   </div>
-                  <span class="text-[10px] text-slate-400 font-mono">通算 {{ overview.total_distance_km }}km</span>
                 </div>
                 {% if gear_stats %}
                 <div class="space-y-3">
@@ -973,7 +964,6 @@
                         <span class="text-emerald-400 font-black">現在: {{ gear.total_distance_km }}km ({{ gear.lifespan_pct }}%)</span>
                         <span class="text-slate-300">残り寿命 <strong class="text-white">{{ gear.remaining_km }}km</strong> / {{ gear.lifespan_km }}km</span>
                       </div>
-                      <!-- マルチセグメントバー: 現在(29.2%) + ヨロンまで(+9.1%) + NAHA完走まで(+11.4%) -->
                       <div class="w-full bg-slate-900 rounded-full h-3 p-0.5 border border-slate-800 overflow-hidden flex relative" title="緑:現在({{ gear.total_distance_km }}km) / 黄:ヨロン出走時({{ gear.yoron_proj_km }}km) / 青:NAHA完走後({{ gear.naha_finish_km }}km)">
                         <div class="h-full bg-emerald-400 rounded-l-full" style="width: {{ gear.lifespan_pct }}%;"></div>
                         <div class="h-full bg-amber-400/85" style="width: 9.1%;"></div>
@@ -1074,7 +1064,7 @@
               </div>
             </div>
           </div>
-        </details>
+        </div>
       </section>
 
     </div>

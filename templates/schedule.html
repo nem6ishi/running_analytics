@@ -40,16 +40,6 @@
           <span class="hidden sm:inline">今日へ移動</span>
           <span class="sm:hidden">今日</span>
         </button>
-        <a href="#race-pacing" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition flex items-center space-x-1 shadow-sm">
-          <span>🏁</span>
-          <span class="hidden sm:inline">本番推奨ペース</span>
-          <span class="sm:hidden">本番ペース</span>
-        </a>
-        <a href="#repertoire-guide" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition flex items-center space-x-1 shadow-sm">
-          <span>🏃‍♂️</span>
-          <span class="hidden sm:inline">練習レパートリー</span>
-          <span class="sm:hidden">レパートリー</span>
-        </a>
         <a href="index.html" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 transition flex items-center space-x-1.5 shadow-sm">
           <span>←</span>
           <span>ダッシュボードへ戻る</span>
@@ -109,8 +99,11 @@
 
         <!-- フィルターボタン群 -->
         <div class="flex flex-wrap items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-2xl text-xs font-bold">
-          <button onclick="filterSchedule('all')" id="btn-all" class="sched-filter-btn active px-3 py-1.5 rounded-xl transition">
-            すべて (42)
+          <button onclick="filterSchedule('upcoming')" id="btn-upcoming" class="sched-filter-btn active px-3 py-1.5 rounded-xl transition">
+            📍 今日〜今後
+          </button>
+          <button onclick="filterSchedule('all')" id="btn-all" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
+            すべて (全42日)
           </button>
           <button onclick="filterSchedule('run')" id="btn-run" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
             🏃 ランのみ
@@ -120,9 +113,6 @@
           </button>
           <button onclick="filterSchedule('rest')" id="btn-rest" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
             🛌 休養・遠征
-          </button>
-          <button onclick="filterSchedule('upcoming')" id="btn-upcoming" class="sched-filter-btn px-3 py-1.5 rounded-xl transition text-slate-400 hover:text-slate-200">
-            🔜 今後の予定
           </button>
         </div>
       </div>
@@ -164,6 +154,14 @@
         </div>
       </div>
       {% endif %}
+
+      <!-- 完了済み過去日程の折りたたみ通知バー -->
+      <div id="past-days-banner" class="bg-slate-900/80 border border-slate-800 rounded-xl px-3.5 py-2 flex items-center justify-between text-xs text-slate-400">
+        <span>⏮️ 完了済みの過去日程（10/26〜昨日まで）を折りたたんで「今日〜本番」を表示しています</span>
+        <button type="button" onclick="filterSchedule('all')" class="text-amber-300 hover:text-amber-200 font-bold font-mono underline ml-2 shrink-0">
+          過去の実走実績も含め全42日を表示 ▼
+        </button>
+      </div>
 
       <!-- テーブル / リスト -->
       <div class="overflow-x-auto -mx-2 sm:mx-0">
@@ -851,6 +849,11 @@
         activeBtn.classList.remove('text-slate-400');
       }
 
+      const pastBanner = document.getElementById('past-days-banner');
+      if (pastBanner) {
+        pastBanner.style.display = (mode === 'upcoming') ? '' : 'none';
+      }
+
       const rows = document.querySelectorAll('.sched-row');
       rows.forEach(row => {
         const cat = row.getAttribute('data-category');
@@ -908,8 +911,8 @@
       }
     }
 
-    // 初期化: 'all' をアクティブに
-    filterSchedule('all');
+    // 初期化: デフォルトで「今日〜今後の予定」を表示し、スクロール不要で今日以降を確認可能に
+    filterSchedule('upcoming');
     if (window.location.hash === '#repertoire-guide') {
       const rep = document.getElementById('repertoire-guide');
       if (rep) rep.open = true;
