@@ -666,61 +666,57 @@ def calculate_activity_insights(
             else:
                 current_sustained = 0.0
 
-        # 6. 目的に応じたターゲットステータス判定
+        # 6. 【AIコーチング優先】ai_coaching.json に個別評価が存在する場合は最優先で適用
+        note = ai_notes.get(date_str)
+        if not note:
+            for k in ai_notes:
+                if k.startswith(date_str):
+                    note = ai_notes[k]
+                    break
+
+        if note and "workout_structure" in note:
+            workout_structure = note["workout_structure"]
+            is_lsd = workout_structure.get("is_lsd", False)
+            is_buildup = workout_structure.get("type") == "ビルドアップ走"
+
+        # ターゲット差分の算出
         gap_sec = pace_sec - TARGET_PACE_SEC
         is_interval = workout_structure.get("is_interval", False)
         is_tempo_run = workout_structure.get("type") in ["LTテンポ巡航走", "LTテンポ走 / ペース走"] or (pace_sec <= 335 and dist >= 4.0 and not is_buildup and not is_interval)
 
-        if is_lsd:
-            gap_pace_str = "Zone 2 有酸素走"
-            target_status = {
-                "rank": "S",
-                "label": f"有酸素ベース構築 (平均 {avg_hr} bpm)",
-                "badge_color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-            }
-            if elevation >= 80 and abs(series_analysis.get("hr_diff", 0.0)) <= 6.0:
-                series_analysis["split_badge"] = "🌱 低心拍イーブン出力 (起伏適応)"
-                series_analysis["decoupling_desc"] = (
-                    f"前半平均心拍と後半平均心拍の差はわずか {series_analysis.get('hr_diff', 0.0):+.1f} bpm。"
-                    f"獲得標高 {elevation}m の起伏に対して後半ペースを調整し、心拍をZone 2内に完璧に収めた高度なペースマネジメントです。"
-                )
-        elif is_interval:
-            best_f = workout_structure.get("best_fast_pace_sec", pace_sec)
-            gap_pace_str = f"疾走最速 {seconds_to_pace_str(best_f)}/km"
-            target_status = {
-                "rank": "S" if best_f <= 295 else "A",
-                "label": f"乳酸シャトル＆VO2max刺激 (疾走最速 {seconds_to_pace_str(best_f)}/km)",
-                "badge_color": "bg-rose-500/20 text-rose-300 border-rose-500/40",
-            }
-        elif is_buildup:
-            best_f = workout_structure.get("best_fast_pace_sec", pace_sec)
-            gap_pace_str = f"終盤最速 {seconds_to_pace_str(best_f)}/km"
-            target_status = {
-                "rank": "S" if best_f <= 305 else "A",
-                "label": f"段階ビルドアップ走 (終盤 {seconds_to_pace_str(best_f)}/km)",
-                "badge_color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-            }
-        elif is_tempo_run:
-            gap_pace_str = f"{gap_sec:+.0f}秒/km" if pace_sec > 0 else "--"
-            target_status = {
-                "rank": "S" if pace_sec <= 315 else "A",
-                "label": f"LT閾値巡航走 ({pace_str}/km・ヨロンサブ2直結)",
-                "badge_color": "bg-amber-500/20 text-amber-300 border-amber-500/40",
-            }
-        elif pace_sec <= TARGET_PACE_SEC:
-            gap_pace_str = f"{gap_sec:+.0f}秒/km"
-            target_status = {
-                "rank": "S",
-                "label": "50分ペース達成 (5:00/km以内)",
-                "badge_color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-            }
+        # AIコーチング note から評価項目を直接取得
+        if note and "evaluation" in note:
+            ai_eval = note["evaluation"]
+            overall_verdict = ai_eval.get("overall_verdict", f"走行距離 {dist:.2f}km を平均 {pace_str}/km で完走。")
+            target_status = ai_eval.get("target_status", {
+                "rank": "A",
+                "label": f"有酸素巡航 ({pace_str}/km)",
+                "badge_color": "bg-teal-500/20 text-teal-300 border-teal-500/40"
+            })
+            gap_pace_str = ai_eval.get("target_gap_str", f"{gap_sec:+.0f}秒/km" if pace_sec > 0 else "--")
+            critical_bottlenecks = ai_eval.get("critical_bottlenecks", [])
+            strong_points = ai_eval.get("strong_points", [])
+            actionable_focus = ai_eval.get("actionable_focus", "コンディションに合わせて次回メニューを実施すること。")
+            if "split_badge" in ai_eval:
+                series_analysis["split_badge"] = ai_eval["split_badge"]
+            if "decoupling_desc" in ai_eval:
+                series_analysis["decoupling_desc"] = ai_eval["decoupling_desc"]
         else:
-            gap_pace_str = f"{gap_sec:+.0f}秒/km" if pace_sec > 0 else "--"
+            # フォールバック（ai_coaching.json に未登録の場合の最低限の客観的事実サマリー）
+            overall_verdict = f"走行距離 **{dist:.2f}km** を平均 **{pace_str}/km**（平均心拍 {avg_hr} bpm）で完走。"
             target_status = {
                 "rank": "A",
-                "label": f"有酸素基礎・毛細血管構築 ({pace_str}/km)",
-                "badge_color": "bg-sky-500/20 text-sky-300 border-sky-500/40",
+                "label": f"有酸素巡航 ({pace_str}/km)",
+                "badge_color": "bg-teal-500/20 text-teal-300 border-teal-500/40"
             }
+            gap_pace_str = f"{gap_sec:+.0f}秒/km" if pace_sec > 0 else "--"
+            critical_bottlenecks = [
+                f"**走行後のコンディション確認**: {dist:.1f}km の走行負荷に対して十分な水分・栄養補給と休息を確保してください。"
+            ]
+            strong_points = [
+                f"**{dist:.2f}km の走行完遂**: 平均ペース {pace_str}/km・心拍 {avg_hr} bpm で安定して走り切りました。"
+            ]
+            actionable_focus = "体調と疲労度に合わせて次のトレーニングを計画すること。"
 
         # バッジ付与
         badges = []
@@ -760,207 +756,11 @@ def calculate_activity_insights(
                 "dist_diff": float(round(p_dist_diff, 2)),
             }
 
-        # --- ▲ 反省点・課題・留意点 (Critical Bottlenecks) の文脈適応抽出 ---
-        critical_bottlenecks = []
-        is_decay = series_analysis.get("split_type") == "ポジティブスプリット"
-        is_negative_split = series_analysis.get("split_type") == "ネガティブスプリット"
-        hr_drift_val = series_analysis.get("hr_diff", 0.0)
-        decoupling_pct = series_analysis.get("decoupling_pct", 0.0)
-
-        if is_lsd:
-            # LSDではスピードの遅さや登坂でのペース低下を責めず、長時間接地のケアと補給・フォーム維持に焦点を当てる
-            critical_bottlenecks.append(
-                f"**長時間接地（{row['duration_str']}）による深部筋・腱への機械的負荷**: 心肺負荷はZone 2（平均 {avg_hr} bpm）で穏やかですが、"
-                f"**{dist:.1f}km（獲得標高 {elevation}m）** の着地衝撃によりふくらはぎ・大腿四頭筋・膝周りには大きな疲労が蓄積しています。48時間は強いポイント練習を避けて超回復を優先してください。"
-            )
-            if running_cadence != cadence and cadence < 160:
-                critical_bottlenecks.append(
-                    f"**信号待ち・給水ウォーク後の再加速リズム**: 停止・ウォーク区間を含むため全体平均ピッチは {cadence} spm ですが、**実走行時は平均 {running_cadence} spm** で巡航できています。"
-                    "終盤の疲労時や上り坂からの切り替えでも、ストライドを広げず小刻みなリズム（170 spm前後）を意識するとさらに脚を残せます。"
-                )
-        elif is_interval:
-            critical_bottlenecks.append(
-                "**つなぎ区間での乳酸シャトル最大化**: 疾走後にペースを落としすぎず、キロ5:30〜5:45/kmの有酸素巡航をキープすることで、"
-                "血中乳酸を速筋から遅筋・心筋へ運びミトコンドリアで再利用する『乳酸シャトル機構』が最大化されます。"
-            )
-            if max_hr >= 185:
-                critical_bottlenecks.append(
-                    f"**高心拍域（Max {max_hr} bpm）からの呼吸リセット**: 疾走終了直後に大きく息を吐き出し、横隔膜を使った深い腹式呼吸で速やかに副交感神経を刺激して心拍の落ち着きを促しましょう。"
-                )
-        elif is_buildup:
-            if hr_drift_val >= 12:
-                critical_bottlenecks.append(
-                    "**加速フェーズへの移行タイミング**: 最初の3kmウォームアップで心拍を150bpm以下に抑えてリラックスし、"
-                    "後半5km以降に余力を残して一段上のギアへ切り替える配分を徹底しましょう。"
-                )
-        else:
-            # 1. 失速・タレ (4km以上の単一巡航走)
-            if is_decay and dist >= 5.0:
-                speed_drop = abs(series_analysis.get("speed_diff_pct", 0.0))
-                critical_bottlenecks.append(
-                    f"**後半のペース低下（-{speed_drop:.1f}%）**: 前半平均 {series_analysis.get('first_half_speed')} km/h から後半 {series_analysis.get('second_half_speed')} km/h へ減速。"
-                    "「最初の3kmはウォームアップ」としてゆったり入り、後半に余力を残すイーブン〜ネガティブスプリットを意識しましょう。"
-                )
-
-            # 2. 有酸素デカップリング / 心拍ドリフト
-            if decoupling_pct > 8.0 and not is_negative_split:
-                critical_bottlenecks.append(
-                    f"**後半の有酸素デカップリング（{decoupling_pct:+.1f}% 効率低下）**: 後半にかけて速度あたりの心拍コストが上昇。"
-                    "暑熱・脱水または前半の力みにより後半のランニングエコノミーが低下しています。5kmごとの給水を習慣化しましょう。"
-                )
-            elif hr_drift_val >= 10 and not is_negative_split and dist >= 6.0:
-                critical_bottlenecks.append(
-                    f"**後半の心拍上昇（+{int(round(hr_drift_val))} bpm）**: ペース維持に対して後半の心肺コストが高まっています。"
-                    "肩甲骨主導の脱力した腕振りとリラックスした呼吸リズムの安定を意識しましょう。"
-                )
-
-            # 3. 低ピッチ（実走行ピッチで判定）
-            if running_cadence < 168 and running_cadence > 0:
-                critical_bottlenecks.append(
-                    f"**ピッチの改善余地（実走行平均 {running_cadence} spm）**: 回転数が170未満になると接地時間が長くなり、ブレーキ着地になりやすくなります。骨盤の真下へ素早く足を置く 172〜176 spm を目指しましょう。"
-                )
-
-            # 4. 流しによるエコノミー改善の提案（すでに流し・ラストスパートを実施している場合は提案しない）
-            row_max_pace = row.get("max_pace_sec", 9999.0) if pd.notna(row.get("max_pace_sec")) else 9999.0
-            has_strides = best_lap_pace <= 260 or row_max_pace <= 240 or (series_analysis and series_analysis.get("max_speed_kmh", 0) >= 18.0)
-            if dist >= 4.0 and pace_sec >= 330 and not has_strides:
-                critical_bottlenecks.append(
-                    "**ジョグ後の流し（ウィンドスプリント）常設**: 走り終わりに100m×2〜3本の流し（80〜90%疾走）を入れることで、"
-                    "筋腱のバネ（伸張反射）を活性化させ、普段の巡航ペースにおける心拍数とエネルギー消費を抑えられます。"
-                )
-
-        if not critical_bottlenecks:
-            critical_bottlenecks.append(
-                "**次なるステップへの負荷設定**: ペース配分・心拍コントロール・ピッチともに非常に高い完成度です。疲労を溜めない範囲で、LT巡航区間の距離をあと1km伸ばす挑戦が有効です。"
-            )
-
-        # --- ◎ 客観的な収穫・強み (Strong Points) の抽出 ---
-        strong_points = []
-        if is_lsd:
-            strong_points.append(
-                f"**Zone 2 低心拍の徹底維持（平均 {avg_hr} bpm / 最大 {max_hr} bpm）**: **{row['duration_str']}** の長丁場を通して心拍の暴走を完全に抑え込み、毛細血管網の新生と脂質代謝能力を最大限に引き出す理想的なLSDを完遂。"
-            )
-            strong_points.append(
-                f"**{dist:.2f}km 走破の脚作り（ハーフ・フル対策）**: 獲得標高 **{elevation}m** のタフなコースを最後まで走り切り、11月ハーフ・12月フルマラソン完走に直結する着地耐性と時間耐久力を実証。"
-            )
-            if abs(hr_drift_val) <= 5.0:
-                strong_points.append(
-                    f"**驚異の心拍安定性（前後半差 {hr_drift_val:+.1f} bpm）**: 2時間超の走行でも心血管ドリフトを5bpm以内に抑え、上り坂で無理をしない賢明なペースコントロールを発揮。"
-                )
-        else:
-            if best_lap_pace <= TARGET_PACE_SEC:
-                strong_points.append(
-                    f"**キロ5分を切るスピード出力（最速ラップ {seconds_to_pace_str(best_lap_pace)}/km）**: 目標である10km 50分ペース（5:00/km）を上回るスピードを実戦で刻み、十分な速筋出力とフォームの伸びを実証。"
-                )
-            if sub50_sustained_km >= 2.0:
-                strong_points.append(
-                    f"**サブ50ペース連続維持（{sub50_sustained_km:.1f}km）**: キロ5:00以内を連続 **{sub50_sustained_km:.1f}km** キープし、スピード持続力を着実に強化。"
-                )
-            if decoupling_pct <= 3.5 and dist >= 4.5:
-                strong_points.append(
-                    f"**極めて優秀な有酸素エコノミー（Pw:Hr {decoupling_pct:+.1f}% / Grade {series_analysis.get('decoupling_grade')}）**: 後半にかけてペースを上げても速度対心拍の効率が一切落ちず、高いスタミナベースを発揮。"
-                )
-            if running_cadence >= 173:
-                strong_points.append(
-                    f"**理想的なハイピッチ巡航（{running_cadence} spm）**: 175 spm 前後の軽快なリズムが完全に定着し、着地衝撃を逃がす効率的なフォームで走行。"
-                )
-            if is_negative_split or is_buildup:
-                strong_points.append(
-                    f"**理想的なビルドアップ配分（後半 +{abs(series_analysis.get('speed_diff_pct', 0.0)):.1f}% 加速）**: 序盤に余力を蓄え、終盤に向けて段階的にギアを上げるレースさながらのペースマネジメントを達成。"
-                )
-            if dist >= 9.5:
-                strong_points.append(
-                    f"**10km距離走破の持久力**: **{dist:.2f} km** を安定したリズムで完走し、10km〜ハーフに向けた有酸素持久力を強化。"
-                )
-
-        if not strong_points:
-            strong_points.append(
-                f"**着実な有酸素刺激の継続**: **{dist:.2f}km（{pace_str}/km）** を走り切り、走力向上の土台となる継続性を維持。"
-            )
-
-        # --- 【総括 (Overall Verdict)】 ---
-        if is_lsd:
-            overall_verdict = (
-                f"**【特A評価：完璧な有酸素ベース＆時間耐久LSD】走行距離 {dist:.2f}km（{row['duration_str']}）を平均心拍 {avg_hr} bpm で完走。** "
-                f"獲得標高 {elevation}m の起伏に合わせ、上りで心拍を跳ね上げず前後半の心拍ドリフトを **{hr_drift_val:+.1f} bpm** に抑え込んだ模範的なロング走です。"
-                "11月末のハーフ・12月初旬のフルマラソン完走に向けた『2時間超を動き続ける脚と脂質代謝エンジン』が確実に仕上がっています。"
-            )
-        elif is_buildup:
-            best_f_str = seconds_to_pace_str(best_lap_pace)
-            if best_lap_pace <= TARGET_PACE_SEC:
-                overall_verdict = (
-                    f"**【理想的なビルドアップ＆サブ50刺激注入】平均 {pace_str}/km（最速ラップ {best_f_str}/km）で {dist:.2f}km を完走。** "
-                    f"序盤のイージー導入から段階的にペースを引き上げ、終盤にキロ5分を切る **{best_f_str}/km** のスピード刺激を見事に注入できています。"
-                    f"有酸素デカップリングも **{decoupling_pct:+.1f}%** と極めて優秀で、スピード余裕度とペース配分技術の両面で大きな収穫となるポイント練習です。"
-                )
-            else:
-                overall_verdict = (
-                    f"**【質の高いビルドアップ走】前半から後半にかけて段階的に加速し、平均 {pace_str}/km（最速 {best_f_str}/km）で {dist:.2f}km を走破。** "
-                    "後半に向けて出力を高める理想的なネガティブスプリットを実践できています。このリズムをベースに、終盤ラップを5:10〜5:00/kmへ少しずつ近づけていきましょう。"
-                )
-        elif is_interval:
-            best_f_str = seconds_to_pace_str(best_lap_pace)
-            overall_verdict = (
-                f"**【特A評価：1km交代走による乳酸シャトル＆VO2max強化】最速疾走 {best_f_str}/km を刻み、平均心拍 {avg_hr} bpm（Max {max_hr} bpm）の超高負荷を消化。** "
-                f"疾走区間で乳酸を大量発生させ、つなぎ区間で有酸素的に乳酸を再利用する実戦的な刺激注入に成功しています。"
-                "10kmサブ50突破およびヨロンハーフサブ2に向けた最も攻撃的なポイント練習を完遂しました。"
-            )
-        elif is_tempo_run:
-            overall_verdict = (
-                f"**【質の高いLT巡航走】平均 {pace_str}/km（平均心拍 {avg_hr} bpm）で安定巡航。** "
-                f"乳酸性作業閾値（Zone 4: 168〜174bpm）を的確に刺激し、ヨロンハーフ（サブ2 / 5:27〜5:38/km）および10kmサブ50の巡航余裕度を大きく引き上げる模範的なテンポ走です。"
-            )
-        elif pace_sec >= 390:
-            overall_verdict = (
-                f"**【有酸素基礎・毛細血管構築ジョグ】走行距離 {dist:.2f}km を平均 {pace_str}/km（平均心拍 {avg_hr} bpm）で完走。** "
-                "心肺に過度な負担をかけず、毛細血管網の新生と筋腱の着地耐性をじっくり養う重要な土台作りセッションです。"
-            )
-        elif dist >= 8.0:
-            overall_verdict = (
-                f"**【安定した有酸素ペース走】走行距離 {dist:.2f}km を平均 {pace_str}/km（平均心拍 {avg_hr} bpm・ピッチ {running_cadence} spm）で完走。** "
-                "大崩れすることなく一定のリズムで距離を踏み切っており、10km〜ハーフマラソンに向けた確かな巡航スタミナが養われています。"
-            )
-        else:
-            overall_verdict = (
-                f"**【テンポ・スピード維持セッション】走行距離 {dist:.2f}km を平均 {pace_str}/km（平均心拍 {avg_hr} bpm）で走破。** "
-                f"ピッチ **{running_cadence} spm** の軽快な接地リズムを確認できた実りあるランです。ロング走と組み合わせることで走力が一段引き上がります。"
-            )
-
-        # --- 【🔥 次回への是正アクション (Actionable Focus)】 ---
-        if is_lsd:
-            actionable_focus = (
-                "次回は【48〜72時間の積極的休養後、5〜6kmの疲労抜きイージージョグ（6:30〜7:00/km）】を実施し、"
-                "脚の張りが完全に抜けてから【5:25〜5:35/km のビルドアップまたはテンポ走】へつなげること。"
-            )
-        elif is_interval:
-            actionable_focus = (
-                "次回は【48時間の回復後、心拍 138〜145 bpm のZone 2 リカバリージョグ＋流し2本】で脚をリフレッシュし、"
-                "次回のポイント練習では【適正LT巡航走（5:15〜5:25/km・心拍168〜174bpm）で連続4〜5km巡航】を狙うこと。"
-            )
-        elif is_buildup and best_lap_pace <= TARGET_PACE_SEC:
-            actionable_focus = (
-                "次回は【Zone 2 低心拍ジョグまたはLSD（心拍 135〜145 bpm）】で高強度刺激からの超回復を促し、"
-                "次回のポイント練習では【5:15〜5:25/km 巡航区間を3〜4km連続維持】に挑戦すること。"
-            )
-        elif is_tempo_run:
-            actionable_focus = (
-                "次回は【翌日に低心拍アクティブレスト（または完全休養）】を挟み、"
-                "週末に向けて【15〜21kmの長距離LSD】で毛細血管と心肥大を積み増すスタックを作ること。"
-            )
-        elif decoupling_pct > 8.0:
-            actionable_focus = "次回は【前半3kmを控えめに入り、心拍 145〜155 bpm で余裕を残す配分】を徹底し、後半の失速を防ぐこと。"
-        else:
-            actionable_focus = "次回は【ピッチ 175 spm のリズムを維持したまま、中盤〜終盤の3kmを 5:20〜5:30/km で巡航するテンポ走】に取り組むこと。"
-
         # 分析テキスト
         cadence_eval = (
-            f"実走行時の平均ピッチは **{running_cadence} spm**（信号・ウォーク込み全体平均 {cadence} spm、最高 {row['max_cadence']} spm）。リズム良く接地衝撃を分散できています。"
+            f"実走行時の平均ピッチは **{running_cadence} spm**（信号・ウォーク込み全体平均 {cadence} spm、最高 {row['max_cadence']} spm）。"
             if running_cadence != cadence and cadence < 160
-            else (
-                f"平均ピッチは **{cadence} spm**（最高 {row['max_cadence']} spm）。接地時間が短く、着地衝撃を効率よく推進力に変えられています。"
-                if cadence >= 172
-                else f"平均ピッチ **{cadence} spm**。骨盤の真下に着地する意識で172〜176 spm前後に保つとさらに省エネになります。"
-            )
+            else f"平均ピッチは **{cadence} spm**（最高 {row['max_cadence']} spm）。"
         )
 
         analysis_body = {
@@ -975,42 +775,19 @@ def calculate_activity_insights(
         }
 
         # 次回おすすめメニュー & リカバリー提案
-        if is_lsd:
-            next_menu_title = "48〜72時間の休養 → 5〜6km 疲労抜きイージージョグ（6:30〜7:00/km）"
-            next_menu_desc = (
-                f"今回は **{dist:.2f}km・{row['duration_str']}のロングLSD** を平均心拍 **{avg_hr} bpm** で完璧に完遂しました。"
-                "心肺の疲労は穏やかですが、2時間超・2万歩以上の連続着地により筋線維や腱には大きな機械的負荷がかかっています。"
-                "まずは2日間しっかり休養・栄養補給して超回復させ、次回は脚の状態を確かめるイージージョグから再開しましょう。"
-            )
-            form_advice = "再開ジョグではスピードを追わず、クッション性の高いシューズで脱力して股関節から脚を運ぶ感覚を大切にしてください。"
-            recovery_hours = "48〜72時間"
-            recovery_tips = "炭水化物（グリコーゲン補充）＋たんぱく質（筋修復）を多めに摂取し、ふくらはぎ・大腿四頭筋・臀部のフォームローラーケアを推奨します。"
-        elif is_buildup or workout_structure.get("is_interval") or max_hr >= 182:
-            next_menu_title = "Zone 2 リカバリージョグ（5〜6km / 心拍140bpm前後）または 90分 LSD"
-            next_menu_desc = (
-                f"今回は最速 **{seconds_to_pace_str(best_lap_pace)}/km**（最大心拍 **{max_hr} bpm**）までしっかり刺激を入れた質の高いポイント練習でした。"
-                "次回はあえてスピードを出さず、**心拍数 135〜145 bpm のZone 2 ジョグまたはLSD** を組み合わせることで、ポラライズド（二極化）効果により有酸素ベースとスピード持久力が同時に伸びていきます。"
-            )
-            form_advice = "ポイント練習の翌走は腕振りと肩の力を抜き、接地音を静かに保つリラックスフォームを意識しましょう。"
-            recovery_hours = "36〜48時間"
-            recovery_tips = "ハムストリングス・ふくらはぎのストレッチと温冷交代浴、クエン酸・アミノ酸の補給で速筋線維の回復を促しましょう。"
-        elif avg_hr >= 170 or dist >= 10.0:
-            next_menu_title = "5〜6km イージージョグ（心拍 140〜148 bpm）"
-            next_menu_desc = (
-                "しっかりとした距離・心拍負荷を消化できています。疲労を翌週へ持ち越さないよう、"
-                "次回は **心拍数 145 bpm 以下** を目安に、呼吸が弾まないイージージョグで毛細血管の血流を促進させましょう。"
-            )
-            form_advice = "無理にストライドを広げず、足裏全体で柔らかく着地する感覚を意識してください。"
-            recovery_hours = "36〜48時間"
-            recovery_tips = "股関節周りとふくらはぎの入念なストレッチ、十分な睡眠と水分・たんぱく質の補給を重視してください。"
+        if note and "recommendation" in note:
+            ai_rec = note["recommendation"]
+            next_menu_title = ai_rec.get("menu_title", "コンディション確認ジョグ")
+            next_menu_desc = ai_rec.get("menu_desc", "疲労を抜いて次のポイント練習に備えます。")
+            form_advice = ai_rec.get("form_advice", "骨盤の真下に柔らかく着地するフォームを意識しましょう。")
+            recovery_hours = ai_rec.get("recovery_hours", "24〜48時間")
+            recovery_tips = ai_rec.get("recovery_tips", "入浴と十分な睡眠で身体を休めてください。")
         else:
-            next_menu_title = "7〜8km ビルドアップ走（6:00 → 5:20/km）"
-            next_menu_desc = (
-                "安定したピッチで走れています。次回は **前半3〜4kmを 6:00/km 前後で入り、後半にかけて 5:30〜5:15/km へ段階的に引き上げるビルドアップ走** を行うと、サブ50に向けた巡航余裕度が大きく向上します。"
-            )
-            form_advice = "ペースを上げる際も力まず、175 spm 前後のピッチを保ちながら骨盤の前傾で自然に歩幅を伸ばしましょう。"
-            recovery_hours = "24〜36時間"
-            recovery_tips = "入浴後の股関節・ハムストリングスのモビリティストレッチを行い、フレッシュな状態で次走に臨みましょう。"
+            next_menu_title = "コンディション確認ジョグ"
+            next_menu_desc = "疲労を抜いて次のポイント練習に備えます。"
+            form_advice = "骨盤の真下に柔らかく着地するフォームを意識しましょう。"
+            recovery_hours = "24〜48時間"
+            recovery_tips = "入浴と十分な睡眠で身体を休めてください。"
 
         evaluation_dict = {
             "overall_verdict": overall_verdict,
