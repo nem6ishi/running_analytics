@@ -820,8 +820,10 @@ def calculate_activity_insights(
                     f"**ピッチの改善余地（実走行平均 {running_cadence} spm）**: 回転数が170未満になると接地時間が長くなり、ブレーキ着地になりやすくなります。骨盤の真下へ素早く足を置く 172〜176 spm を目指しましょう。"
                 )
 
-            # 4. 流しによるエコノミー改善の提案
-            if dist >= 4.0 and pace_sec >= 330:
+            # 4. 流しによるエコノミー改善の提案（すでに流し・ラストスパートを実施している場合は提案しない）
+            row_max_pace = row.get("max_pace_sec", 9999.0) if pd.notna(row.get("max_pace_sec")) else 9999.0
+            has_strides = best_lap_pace <= 260 or row_max_pace <= 240 or (series_analysis and series_analysis.get("max_speed_kmh", 0) >= 18.0)
+            if dist >= 4.0 and pace_sec >= 330 and not has_strides:
                 critical_bottlenecks.append(
                     "**ジョグ後の流し（ウィンドスプリント）常設**: 走り終わりに100m×2〜3本の流し（80〜90%疾走）を入れることで、"
                     "筋腱のバネ（伸張反射）を活性化させ、普段の巡航ペースにおける心拍数とエネルギー消費を抑えられます。"

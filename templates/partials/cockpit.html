@@ -328,12 +328,12 @@
               {% if latest_quality_split.laps_summary %}
               <div class="space-y-1.5">
                 <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                  <span>1km毎のラップ推移（1〜3kmアップ ➔ 4km以降本練習）</span>
+                  <span>1km毎のラップ推移{% if latest_quality_split.has_split %}（1〜3kmアップ ➔ 4km以降本練習）{% else %}（全区間単一巡航）{% endif %}</span>
                   <span>ピッチ {{ latest_insight.running_cadence or latest_insight.cadence }} spm</span>
                 </div>
                 <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5 font-mono">
                   {% for lap in latest_quality_split.laps_summary[:10] %}
-                  <div class="p-1.5 rounded-xl border text-center {% if lap.pace_sec <= 300 %}bg-rose-500/20 border-rose-500/40 text-rose-200{% elif lap.pace_sec <= 338 %}bg-emerald-500/15 border-emerald-500/30 text-emerald-200{% elif lap.lap_index <= 3 %}bg-slate-900/90 border-slate-800 text-slate-400{% else %}bg-slate-900 border-slate-800 text-slate-300{% endif %}">
+                  <div class="p-1.5 rounded-xl border text-center {% if lap.pace_sec <= 300 %}bg-rose-500/20 border-rose-500/40 text-rose-200{% elif lap.pace_sec <= 338 %}bg-emerald-500/15 border-emerald-500/30 text-emerald-200{% elif latest_quality_split.has_split and lap.lap_index <= 3 %}bg-slate-900/90 border-slate-800 text-slate-400{% else %}bg-slate-900 border-slate-800 text-slate-300{% endif %}">
                     <div class="text-[9px] opacity-75">L{{ lap.lap_index }}</div>
                     <div class="text-xs font-black leading-tight">{{ lap.pace_str }}</div>
                     <div class="text-[9px] opacity-75">{{ lap.avg_hr }}bpm</div>
