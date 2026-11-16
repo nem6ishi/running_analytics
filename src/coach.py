@@ -49,16 +49,16 @@ def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any
 
     if not speeds or len(speeds) < 4:
         return {
-            "split_type": "イーブンペース",
-            "split_badge": "⚖️ イーブンペース",
-            "split_desc": "全行程を通して一定の安定したペースで走行しました。",
-            "phase_early": "スタート直後からスムーズにペースに入りました。",
-            "phase_mid": "中盤も安定した巡航ペースを維持しました。",
-            "phase_late": "終盤まで粘り強く走り切りました。",
-            "drift_text": "心拍推移は適正にコントロールされています。",
+            "split_type": "-",
+            "split_badge": "AI未分析",
+            "split_desc": "AIコーチング分析待ち。",
+            "phase_early": "-",
+            "phase_mid": "-",
+            "phase_late": "-",
+            "drift_text": "AIコーチング分析待ち。",
             "decoupling_pct": 0.0,
             "decoupling_grade": "-",
-            "decoupling_status": "データ不足",
+            "decoupling_status": "AI未分析",
             "decoupling_badge": "bg-slate-800 text-slate-400 border-slate-700",
             "decoupling_desc": "時系列データが少ないためデカップリング率は算出対象外です。",
             "running_cadence": None,
@@ -96,19 +96,6 @@ def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any
 
     speed_diff_pct = ((second_half_speed - first_half_speed) / first_half_speed) * 100 if first_half_speed > 0 else 0.0
 
-    if speed_diff_pct > 2.5:
-        split_type = "ネガティブスプリット"
-        split_badge = "🔥 ネガティブスプリット (後半加速)"
-        split_desc = f"前半平均 {first_half_speed:.1f} km/h に対し、後半平均 {second_half_speed:.1f} km/h と **+{speed_diff_pct:.1f}% ペースアップ**。理想的な余力配分とビルドアップができています。"
-    elif speed_diff_pct < -2.5:
-        split_type = "ポジティブスプリット"
-        split_badge = "⚠️ ポジティブスプリット (後半失速)"
-        split_desc = f"前半平均 {first_half_speed:.1f} km/h に対し、後半平均 {second_half_speed:.1f} km/h と **{speed_diff_pct:.1f}% の減速**。"
-    else:
-        split_type = "イーブンペース"
-        split_badge = "⚖️ イーブンペース (高精度巡航)"
-        split_desc = f"前半（{first_half_speed:.1f} km/h）と後半（{second_half_speed:.1f} km/h）の差が極めて小さく、精密なペース配分ができています。"
-
     # 有酸素デカップリング (Aerobic Decoupling: Pw:Hr / Pa:Hr)
     # EF (Efficiency Factor) = 速度(km/h) / 心拍数(bpm)
     ef_first = (first_half_speed / first_half_hr) if first_half_hr > 0 else 0.0
@@ -119,67 +106,25 @@ def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any
     else:
         decoupling_pct = 0.0
 
-    # 心拍ドリフト評価（後半ビルドアップ時の自然な心拍上昇と、失速・同ペースでの心拍ドリフトを明確に区別）
     hr_diff = second_half_hr - first_half_hr
-    if speed_diff_pct > 2.5 and decoupling_pct <= 5.0:
-        drift_text = (
-            f"後半のペースアップ（+{speed_diff_pct:.1f}%）に伴い心拍数が **+{int(round(hr_diff))} bpm** 推移。"
-            f"速度対心拍の有酸素効率は維持されており（Pw:Hr {decoupling_pct:+.1f}%）、ビルドアップに対する正常な生理的応答です。"
-        )
-    elif hr_diff >= 10 and decoupling_pct > 5.0:
-        drift_text = f"後半に心拍数が **+{int(round(hr_diff))} bpm 上昇**（心拍ドリフト）。後半にかけて同じ速度を維持するための心肺コストが増加しています。"
-    elif hr_diff >= 5:
-        drift_text = f"後半に心拍数が約 **+{int(round(hr_diff))} bpm 上昇**。気温・発汗や筋疲労に伴う緩やかな心拍ドリフトが見られます。"
-    else:
-        drift_text = f"前後半の心拍差は **{hr_diff:+.1f} bpm** と極めて安定しており、高い有酸素エコノミーを発揮しています。"
-
-    if decoupling_pct <= 3.0:
-        decoupling_grade = "S"
-        decoupling_status = "極めて安定 (スタミナ十分)"
-        decoupling_badge = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-        decoupling_desc = f"デカップリング率 {decoupling_pct:+.1f}%。前半と後半で有酸素エコノミー（速度÷心拍）が衰えず、高い持久力を発揮しています。"
-    elif decoupling_pct <= 5.0:
-        decoupling_grade = "A"
-        decoupling_status = "適正範囲 (有酸素ベース合格)"
-        decoupling_badge = "bg-teal-500/20 text-teal-300 border-teal-500/30"
-        decoupling_desc = f"デカップリング率 {decoupling_pct:+.1f}%。運動生理学上の合格ライン（5%以内）を維持し、安定した有酸素巡航ができています。"
-    elif decoupling_pct <= 8.0:
-        decoupling_grade = "B"
-        decoupling_status = "軽度デカップリング (後半負荷増)"
-        decoupling_badge = "bg-amber-500/20 text-amber-300 border-amber-500/30"
-        decoupling_desc = f"デカップリング率 {decoupling_pct:+.1f}%。後半の上り勾配や筋疲労により、前半に比べて速度あたりの心拍コストがやや増加しています。"
-    else:
-        decoupling_grade = "C"
-        decoupling_status = "デカップリング大 (後半失速・疲労)"
-        decoupling_badge = "bg-rose-500/20 text-rose-300 border-rose-500/30"
-        decoupling_desc = f"デカップリング率 {decoupling_pct:+.1f}%。後半にかけて減速または心拍上昇が見られ、コース起伏や暑熱・スタミナ消耗の影響が出ています。"
-
-    n = len(speeds)
-    early_hr = hrs[int(n * 0.2)] if hrs else 0
-    max_s = max(speeds)
-    max_h = max(hrs) if hrs else 0
-
-    phase_early = f"**序盤 (0〜{dist_km * 0.25:.1f}km)**: ウォーミングアップから心拍数 {early_hr} bpm へ推移し、ペースを形成。"
-    phase_mid = f"**中盤 ({dist_km * 0.25:.1f}〜{dist_km * 0.75:.1f}km)**: 巡航速度を維持し、フォームとピッチをコントロール。"
-    phase_late = f"**終盤 ({dist_km * 0.75:.1f}〜{dist_km:.1f}km)**: 最高速度 **{max_s:.1f} km/h**、最大心拍 **{max_h} bpm** でフィニッシュ。"
 
     return {
-        "split_type": split_type,
-        "split_badge": split_badge,
-        "split_desc": split_desc,
+        "split_type": "-",
+        "split_badge": "AI未分析",
+        "split_desc": f"前半平均 {first_half_speed:.1f} km/h → 後半平均 {second_half_speed:.1f} km/h（差 {speed_diff_pct:+.1f}%）",
         "speed_diff_pct": round(speed_diff_pct, 1),
         "hr_diff": round(hr_diff, 1),
         "first_half_speed": round(first_half_speed, 1),
         "second_half_speed": round(second_half_speed, 1),
-        "phase_early": phase_early,
-        "phase_mid": phase_mid,
-        "phase_late": phase_late,
-        "drift_text": drift_text,
+        "phase_early": "-",
+        "phase_mid": "-",
+        "phase_late": "-",
+        "drift_text": f"前後半の心拍差: {hr_diff:+.1f} bpm（AIコーチング分析待ち）",
         "decoupling_pct": decoupling_pct,
-        "decoupling_grade": decoupling_grade,
-        "decoupling_status": decoupling_status,
-        "decoupling_badge": decoupling_badge,
-        "decoupling_desc": decoupling_desc,
+        "decoupling_grade": "-",
+        "decoupling_status": "AI未分析",
+        "decoupling_badge": "bg-slate-800 text-slate-400 border-slate-700",
+        "decoupling_desc": f"デカップリング率 {decoupling_pct:+.1f}%（AIコーチング分析待ち）",
         "running_cadence": running_cadence,
     }
 
@@ -329,21 +274,17 @@ def calculate_activity_insights(
             if "decoupling_desc" in ai_eval:
                 series_analysis["decoupling_desc"] = ai_eval["decoupling_desc"]
         else:
-            # フォールバック（ai_coaching.json に未登録の場合の最低限の客観的事実サマリー）
-            overall_verdict = f"走行距離 **{dist:.2f}km** を平均 **{pace_str}/km**（平均心拍 {avg_hr} bpm）で完走。"
+            # ai_coaching.json に未登録の場合は固定ルールによる評価を生成しない
+            overall_verdict = f"走行距離 **{dist:.2f}km**（平均 **{pace_str}/km**・平均心拍 {avg_hr} bpm）の計測データ。AIコーチング分析待ちです。"
             target_status = {
-                "rank": "A",
-                "label": f"有酸素巡航 ({pace_str}/km)",
-                "badge_color": "bg-teal-500/20 text-teal-300 border-teal-500/40"
+                "rank": "-",
+                "label": "AI未分析",
+                "badge_color": "bg-slate-800 text-slate-300 border-slate-700"
             }
             gap_pace_str = f"{gap_sec:+.0f}秒/km" if pace_sec > 0 else "--"
-            critical_bottlenecks = [
-                f"**走行後のコンディション確認**: {dist:.1f}km の走行負荷に対して十分な水分・栄養補給と休息を確保してください。"
-            ]
-            strong_points = [
-                f"**{dist:.2f}km の走行完遂**: 平均ペース {pace_str}/km・心拍 {avg_hr} bpm で安定して走り切りました。"
-            ]
-            actionable_focus = "体調と疲労度に合わせて次のトレーニングを計画すること。"
+            critical_bottlenecks = []
+            strong_points = []
+            actionable_focus = "AIコーチング分析待ち。"
 
         # バッジ付与
         badges = []

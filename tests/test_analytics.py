@@ -16,7 +16,7 @@ def test_analyze_time_series_decoupling():
     }
     res = analyze_time_series(series_even, 4.0)
     assert res["decoupling_pct"] == 0.0
-    assert res["decoupling_grade"] == "S"
+    assert res["decoupling_grade"] == "-"
 
     # 後半に心拍が急上昇した場合 -> デカップリング正値 (心肺効率低下)
     series_drift = {
@@ -27,7 +27,7 @@ def test_analyze_time_series_decoupling():
     }
     res_drift = analyze_time_series(series_drift, 4.0)
     assert res_drift["decoupling_pct"] > 5.0
-    assert res_drift["decoupling_grade"] in ["B", "C"]
+    assert res_drift["decoupling_grade"] == "-"
 
 
 def test_analytics_with_real_csv():

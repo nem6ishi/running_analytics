@@ -222,7 +222,7 @@ const {
                     const barWidth = maxPace > minPace ? Math.max(20, 100 - ((l.pace_sec - minPace) / (maxPace - minPace)) * 60) : 80;
                     const barColor = isFastest ? 'bg-emerald-400' : (isWarmupLap ? 'bg-slate-500' : 'bg-indigo-400');
                     const roleBadge = l.role_badge || 'bg-slate-800 text-slate-400 border-slate-700';
-                    const roleTag = l.role_tag || '巡航';
+                    const roleTag = l.role_tag || '-';
                     return `
                       <tr class="hover:bg-slate-800/30 transition ${isWarmupLap ? 'opacity-85 bg-slate-950/30' : ''}">
                         <td class="py-2.5 px-3 font-semibold text-white whitespace-nowrap font-mono">
