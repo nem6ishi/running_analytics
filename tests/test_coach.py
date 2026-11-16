@@ -2,7 +2,7 @@ import pytest
 import io
 import pandas as pd
 from pathlib import Path
-from src.coach import get_hr_zone, detect_workout_structure, calculate_activity_insights
+from src.coach import get_hr_zone, calculate_activity_insights
 from src.parser import load_activities
 
 
@@ -37,103 +37,11 @@ def test_get_hr_zone_boundaries():
     assert z_over["zone"] == "Zone 5"
 
 
-def test_detect_workout_structure_pace_run():
-    # ラップ数が少ない、または均一ペースの場合は「持続走 (ペース走)」
-    laps_few = [
-        {"lap_index": 1, "distance_km": 1.0, "pace_sec": 330.0, "pace_str": "5:30", "avg_hr": 150},
-        {"lap_index": 2, "distance_km": 1.0, "pace_sec": 332.0, "pace_str": "5:32", "avg_hr": 152},
-    ]
-    res_few = detect_workout_structure(laps_few, 2.0, 331.0, 151)
-    assert not res_few["is_interval"]
-    assert "持続走" in res_few["type"]
-
-    # 5ラップでペース均一
-    laps_steady = [
-        {"lap_index": 1, "distance_km": 1.0, "pace_sec": 300.0, "pace_str": "5:00", "avg_hr": 150},
-        {"lap_index": 2, "distance_km": 1.0, "pace_sec": 302.0, "pace_str": "5:02", "avg_hr": 152},
-        {"lap_index": 3, "distance_km": 1.0, "pace_sec": 298.0, "pace_str": "4:58", "avg_hr": 153},
-        {"lap_index": 4, "distance_km": 1.0, "pace_sec": 301.0, "pace_str": "5:01", "avg_hr": 154},
-        {"lap_index": 5, "distance_km": 1.0, "pace_sec": 300.0, "pace_str": "5:00", "avg_hr": 155},
-    ]
-    res_steady = detect_workout_structure(laps_steady, 5.0, 300.0, 153)
-    assert not res_steady["is_interval"]
-
-
-def test_detect_workout_structure_interval():
-    # インターバル走（疾走ラップとつなぎラップが存在）
-    laps_interval = [
-        {"lap_index": 1, "distance_km": 1.0, "pace_sec": 360.0, "pace_str": "6:00", "avg_hr": 140},
-        {"lap_index": 2, "distance_km": 1.0, "pace_sec": 270.0, "pace_str": "4:30", "avg_hr": 175},
-        {"lap_index": 3, "distance_km": 1.0, "pace_sec": 350.0, "pace_str": "5:50", "avg_hr": 150},
-        {"lap_index": 4, "distance_km": 1.0, "pace_sec": 268.0, "pace_str": "4:28", "avg_hr": 177},
-        {"lap_index": 5, "distance_km": 1.0, "pace_sec": 360.0, "pace_str": "6:00", "avg_hr": 148},
-    ]
-    res = detect_workout_structure(laps_interval, 5.0, 321.0, 158)
-    assert res["is_interval"] or "疾走" in str(res["phases"])
-
-
-def test_detect_workout_structure_lsd():
-    # LSD走（15km、2時間、低心拍ゾーン130-145bpm、坂道によるペースの揺らぎあり）
-    laps_lsd = [
-        {"lap_index": 1, "distance_km": 1.0, "time_sec": 462.0, "pace_sec": 462.0, "pace_str": "7:42", "avg_hr": 129},
-        {"lap_index": 2, "distance_km": 1.0, "time_sec": 577.0, "pace_sec": 577.0, "pace_str": "9:37", "avg_hr": 132},
-        {"lap_index": 3, "distance_km": 1.0, "time_sec": 481.0, "pace_sec": 481.0, "pace_str": "8:01", "avg_hr": 138},
-        {"lap_index": 4, "distance_km": 1.0, "time_sec": 450.0, "pace_sec": 450.0, "pace_str": "7:30", "avg_hr": 135},
-        {"lap_index": 5, "distance_km": 1.0, "time_sec": 461.0, "pace_sec": 461.0, "pace_str": "7:41", "avg_hr": 140},
-        {"lap_index": 6, "distance_km": 1.0, "time_sec": 419.0, "pace_sec": 419.0, "pace_str": "6:59", "avg_hr": 144},
-        {"lap_index": 7, "distance_km": 1.0, "time_sec": 463.0, "pace_sec": 463.0, "pace_str": "7:43", "avg_hr": 139},
-        {"lap_index": 8, "distance_km": 1.0, "time_sec": 453.0, "pace_sec": 453.0, "pace_str": "7:33", "avg_hr": 142},
-        {"lap_index": 9, "distance_km": 1.0, "time_sec": 552.0, "pace_sec": 552.0, "pace_str": "9:12", "avg_hr": 139},
-        {"lap_index": 10, "distance_km": 1.0, "time_sec": 489.0, "pace_sec": 489.0, "pace_str": "8:09", "avg_hr": 143},
-        {"lap_index": 11, "distance_km": 1.0, "time_sec": 551.0, "pace_sec": 551.0, "pace_str": "9:11", "avg_hr": 140},
-        {"lap_index": 12, "distance_km": 1.0, "time_sec": 496.0, "pace_sec": 496.0, "pace_str": "8:16", "avg_hr": 139},
-        {"lap_index": 13, "distance_km": 1.0, "time_sec": 441.0, "pace_sec": 441.0, "pace_str": "7:21", "avg_hr": 144},
-        {"lap_index": 14, "distance_km": 1.0, "time_sec": 500.0, "pace_sec": 500.0, "pace_str": "8:20", "avg_hr": 143},
-        {"lap_index": 15, "distance_km": 1.0, "time_sec": 507.0, "pace_sec": 507.0, "pace_str": "8:27", "avg_hr": 144},
-    ]
-    res = detect_workout_structure(laps_lsd, 15.0, 488.0, 139)
-    assert not res["is_interval"]
-    assert res.get("is_lsd")
-    assert "LSD" in res["type"]
-
-
-def test_detect_workout_structure_lsd_with_final_spurt():
-    # 18.4km LSD（平均139bpm）で最終0.4kmラップのみ流し（6:19/km, 156bpm）が入った場合もファルトレクに誤判定せずLSDと判定されること
-    laps_lsd_spurt = [
-        {"lap_index": i, "distance_km": 1.0, "time_sec": 480.0, "pace_sec": 480.0, "pace_str": "8:00", "avg_hr": 139, "ascent": 20}
-        for i in range(1, 19)
-    ] + [
-        {"lap_index": 19, "distance_km": 0.4, "time_sec": 150.4, "pace_sec": 378.9, "pace_str": "6:19", "avg_hr": 156, "ascent": 5}
-    ]
-    res = detect_workout_structure(laps_lsd_spurt, 18.4, 485.0, 139)
-    assert not res["is_interval"]
-    assert res.get("is_lsd")
-    assert "LSD" in res["type"]
-    assert laps_lsd_spurt[-1]["role_tag"] == "⚡ ラスト流し"
-
-
-def test_detect_workout_structure_buildup_with_cooldown():
-    # 8kmビルドアップ走（7km目に4:52/kmまで加速し、8km目に6:03/kmでクールダウン）がファルトレクではなくビルドアップ走と判定されること
-    laps_buildup = [
-        {"lap_index": 1, "distance_km": 1.0, "pace_sec": 366.0, "pace_str": "6:06", "avg_hr": 144},
-        {"lap_index": 2, "distance_km": 1.0, "pace_sec": 374.0, "pace_str": "6:14", "avg_hr": 157},
-        {"lap_index": 3, "distance_km": 1.0, "pace_sec": 368.0, "pace_str": "6:08", "avg_hr": 161},
-        {"lap_index": 4, "distance_km": 1.0, "pace_sec": 341.0, "pace_str": "5:41", "avg_hr": 166},
-        {"lap_index": 5, "distance_km": 1.0, "pace_sec": 333.0, "pace_str": "5:33", "avg_hr": 170},
-        {"lap_index": 6, "distance_km": 1.0, "pace_sec": 320.0, "pace_str": "5:20", "avg_hr": 175},
-        {"lap_index": 7, "distance_km": 1.0, "pace_sec": 292.0, "pace_str": "4:52", "avg_hr": 182},
-        {"lap_index": 8, "distance_km": 1.0, "pace_sec": 363.0, "pace_str": "6:03", "avg_hr": 173},
-    ]
-    res = detect_workout_structure(laps_buildup, 8.01, 344.0, 165)
-    assert not res["is_interval"]
-    assert res["type"] == "ビルドアップ走"
-
-
 def test_calculate_activity_insights_dummy_df(tmp_path: Path):
     # ダミー CSV を経由して load_activities で読み込み
     csv_content = """アクティビティタイプ,日付,お気に入り,タイトル,距離,カロリー,タイム,平均心拍数,最大心拍数,平均ピッチ,最高ピッチ,平均ペース,最高ペース,総上昇量,総下降量,平均歩幅,Training Stress Score®,ステップ,減圧,ベストラップタイム,ラップ数,移動時間,経過時間,最低高度,最高高度,シューズ
-ラン,2026-10-06 08:00:00,false,那覇市 ラン,10.0,600,00:52:00,160,178,176,184,5:12,4:30,20,20,1.02,0.0,5000,いいえ,00:00:00.0,10,00:52:00,00:52:00,0,20,Nike Pegasus
-ラン,2026-10-05 18:00:00,false,那覇市 ラン,5.0,300,00:25:00,168,185,180,188,5:00,4:20,10,10,1.05,0.0,2500,いいえ,00:00:00.0,5,00:25:00,00:25:00,0,10,Nike Pegasus
+ラン,2099-01-02 08:00:00,false,那覇市 ラン,10.0,600,00:52:00,160,178,176,184,5:12,4:30,20,20,1.02,0.0,5000,いいえ,00:00:00.0,10,00:52:00,00:52:00,0,20,Nike Pegasus
+ラン,2099-01-01 18:00:00,false,那覇市 ラン,5.0,300,00:25:00,168,185,180,188,5:00,4:20,10,10,1.05,0.0,2500,いいえ,00:00:00.0,5,00:25:00,00:25:00,0,10,Nike Pegasus
 """
     csv_path = tmp_path / "Activities.csv"
     csv_path.write_text(csv_content, encoding="utf-8")
@@ -148,4 +56,5 @@ def test_calculate_activity_insights_dummy_df(tmp_path: Path):
         assert ins["evaluation"]["vdot"] is not None
         assert ins["evaluation"]["vdot"] > 0
         assert "analysis" in ins
+        assert ins["analysis"]["workout_structure"]["type"] == "ランニング (AI未分析)"
         assert "recommendation" in ins

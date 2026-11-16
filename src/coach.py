@@ -184,385 +184,6 @@ def analyze_time_series(series: Dict[str, Any], dist_km: float) -> Dict[str, Any
     }
 
 
-def detect_workout_structure(
-    laps: List[Dict[str, Any]], dist_km: float, avg_pace_sec: float, avg_hr: int
-) -> Dict[str, Any]:
-    """ラップデータや時系列からトレーニングの構造（LSD、ビルドアップ、インターバル、ペース走等）を自動判定"""
-    if not laps or len(laps) < 3:
-        return {
-            "type": "持続走 (ペース走)",
-            "badge": "🏃 ペース走",
-            "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
-            "summary_title": f"{dist_km:.1f}km 持続走 (イーブンペース)",
-            "summary_desc": f"全行程（{dist_km:.2f}km）を平均ペース **{seconds_to_pace_str(avg_pace_sec)}/km**、平均心拍 **{avg_hr} bpm** で巡航しました。安定した有酸素ペースを刻むトレーニングです。",
-            "phases": [],
-            "is_interval": False,
-        }
-
-    valid_laps = [l for l in laps if l.get("distance_km", 0) >= 0.4]
-    if len(valid_laps) < 3:
-        return {
-            "type": "持続走 (ペース走)",
-            "badge": "🏃 ペース走",
-            "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
-            "summary_title": f"{dist_km:.1f}km ペース走",
-            "summary_desc": "全行程を通して一定のペースで走行しました。",
-            "phases": [],
-            "is_interval": False,
-        }
-
-    paces = [l["pace_sec"] for l in valid_laps]
-    overall_avg_pace = sum(paces) / len(paces)
-
-    # 0. LSD (Long Slow Distance) 判定
-    # 長時間（75分以上または12km以上）かつ低強度（avg_hr <= 148、メイン区間の心拍が低強度）
-    total_time_estimate = sum(l.get("time_sec", 0) for l in valid_laps)
-    if total_time_estimate <= 0:
-        total_time_estimate = dist_km * avg_pace_sec
-    core_laps = valid_laps[:-1] if len(valid_laps) > 4 else valid_laps
-    max_core_lap_hr = max((l.get("avg_hr", 0) for l in core_laps), default=0)
-
-    if (dist_km >= 12.0 or total_time_estimate >= 4500) and (0 < avg_hr <= 148) and (max_core_lap_hr <= 155):
-        for idx, l in enumerate(valid_laps):
-            if idx == len(valid_laps) - 1 and l["pace_sec"] < overall_avg_pace - 40:
-                l["role_tag"] = "⚡ ラスト流し"
-                l["role_badge"] = "bg-amber-500/20 text-amber-300 border-amber-500/30"
-            elif l.get("ascent", 0) >= 45 and l["pace_sec"] > overall_avg_pace + 15:
-                l["role_tag"] = "⛰️ 登坂コントロール"
-                l["role_badge"] = "bg-teal-500/20 text-teal-300 border-teal-500/30"
-            else:
-                l["role_tag"] = "🌱 低心拍巡航"
-                l["role_badge"] = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-
-        # LSD を序盤・中盤・終盤の3フェーズに要約表示
-        n_l = len(valid_laps)
-        p1_end = max(1, n_l // 3)
-        p2_end = max(p1_end + 1, (n_l * 2) // 3)
-        chunks = [
-            ("序盤ベース導入", "🌱 序盤巡航", "bg-emerald-500/20 text-emerald-300 border-emerald-500/30", valid_laps[:p1_end], "無理なく有酸素ゾーン（Zone 2）へ入り、長丁場に向けたリズムと呼吸を安定化。"),
-            ("中盤イーブン巡航", "🌱 中盤巡航", "bg-teal-500/20 text-teal-300 border-teal-500/30", valid_laps[p1_end:p2_end], "コース起伏に合わせて出力を一定に保ち、心拍の跳ね上がりを抑えて脂質代謝を活性化。"),
-            ("終盤持久・フィニッシュ", "🏁 終盤粘り", "bg-sky-500/20 text-sky-300 border-sky-500/30", valid_laps[p2_end:], "長時間接地による脚疲労の中でも心拍ドリフトを最小限に抑え、余力を残して完走。"),
-        ]
-        lsd_phases = []
-        for title_p, tag_p, badge_p, c_laps, desc_p in chunks:
-            if not c_laps:
-                continue
-            c_dist = round(sum(x["distance_km"] for x in c_laps), 1)
-            c_pace = sum(x["pace_sec"] for x in c_laps) / len(c_laps)
-            c_hr = int(round(sum(x["avg_hr"] for x in c_laps) / len(c_laps)))
-            lsd_phases.append({
-                "name": f"{title_p} ({c_laps[0]['lap_index']}〜{c_laps[-1]['lap_index']}km)",
-                "tag": tag_p,
-                "badge_color": badge_p,
-                "distance_km": c_dist,
-                "pace_str": seconds_to_pace_str(c_pace),
-                "avg_hr": c_hr,
-                "desc": desc_p,
-            })
-
-        return {
-            "type": "LSD (Long Slow Distance)",
-            "badge": "🌱 LSD (有酸素ベース構築)",
-            "badge_color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-            "summary_title": f"【LSD】{dist_km:.1f}km 有酸素ベース構築走（平均 {avg_hr} bpm・低心拍キープ）",
-            "summary_desc": (
-                f"走行距離 **{dist_km:.2f}km（{seconds_to_time_str(int(total_time_estimate))}）** を平均心拍 **{avg_hr} bpm** の有酸素ベースゾーン（Zone 2）で徹底コントロールした理想的なロングスローディスタンス（LSD）です。"
-                "上り坂や信号ストップを挟みながらも心拍の跳ね上がりを完璧に抑え込み、毛細血管網の新生・ミトコンドリア増殖・脚筋の長時間耐性を引き上げています。"
-            ),
-            "phases": lsd_phases,
-            "is_interval": False,
-            "is_lsd": True,
-        }
-
-    # 1. 疾走（fast）ラップの判定:
-    # 本物のインターバル・ファルトレクは「疾走ラップが5:35/km (335秒) 以内」かつ「全体平均より15秒以上速い」かつ「前後より20秒以上速い」
-    lap_roles = []
-    for i, l in enumerate(valid_laps):
-        p = l["pace_sec"]
-        prev_p = valid_laps[i - 1]["pace_sec"] if i > 0 else p
-        next_p = valid_laps[i + 1]["pace_sec"] if i < len(valid_laps) - 1 else p
-
-        is_fast = (p <= 335.0) and (p < overall_avg_pace - 15) and (prev_p - p >= 20 or next_p - p >= 20)
-        lap_roles.append("fast" if is_fast else "base")
-
-    if 0 < avg_hr <= 148:
-        fast_count = 0
-    else:
-        fast_count = lap_roles.count("fast")
-
-    # 2. ビルドアップ走（後半加速 ＋ ラスト1〜2kmスパート ＋ 任意で最終1kmクールダウン）の優先判定
-    # 最終ラップがクールダウン（直前ラップより25秒以上遅い）かどうかをチェック
-    has_cooldown = (
-        len(valid_laps) >= 5
-        and valid_laps[-1]["pace_sec"] - valid_laps[-2]["pace_sec"] >= 25
-        and valid_laps[-2]["pace_sec"] < overall_avg_pace - 10
-    )
-    active_laps = valid_laps[:-1] if has_cooldown else valid_laps
-    active_paces = [l["pace_sec"] for l in active_laps]
-    half_act = len(active_laps) // 2
-    first_half_avg = sum(active_paces[:half_act]) / half_act
-    second_half_avg = sum(active_paces[half_act:]) / (len(active_laps) - half_act)
-
-    # 疾走が「アクティブ区間の最後1〜2ラップのみ」で前半→後半が加速している場合はファルトレクではなくビルドアップ走！
-    fast_indices = [idx for idx, r in enumerate(lap_roles) if r == "fast"]
-    is_end_spurt_only = (
-        len(fast_indices) == 1 and fast_indices[0] >= len(active_laps) - 1
-    )
-
-    # A. 変化走 / ファルトレク / インターバル判定 (複数本の疾走と緩走が交互に存在する場合)
-    if fast_count >= 2 and not is_end_spurt_only and "base" in lap_roles:
-        first_fast_idx = lap_roles.index("fast")
-        last_fast_idx = len(lap_roles) - 1 - list(reversed(lap_roles)).index("fast")
-
-        phases = []
-        if first_fast_idx > 0:
-            wu_laps = valid_laps[:first_fast_idx]
-            wu_dist = sum(l["distance_km"] for l in wu_laps)
-            wu_avg_pace = sum(l["pace_sec"] for l in wu_laps) / len(wu_laps)
-            wu_avg_hr = sum(l["avg_hr"] for l in wu_laps) / len(wu_laps)
-            for l in wu_laps:
-                l["role_tag"] = "アップ"
-                l["role_badge"] = "bg-slate-800 text-slate-300 border-slate-700"
-
-            phases.append({
-                "name": f"ウォーミングアップ (1〜{first_fast_idx}km)",
-                "tag": "ウォーミングアップ",
-                "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
-                "distance_km": round(wu_dist, 1),
-                "pace_str": seconds_to_pace_str(wu_avg_pace),
-                "avg_hr": int(round(wu_avg_hr)),
-                "desc": f"最初の **{wu_dist:.0f}km** は無理をせず平均 **{seconds_to_pace_str(wu_avg_pace)}/km**（心拍 {int(round(wu_avg_hr))} bpm）で走行。徐々に心拍を上げて筋肉を温めるアップ区間です。",
-            })
-
-        fast_seq = 1
-        for i in range(first_fast_idx, last_fast_idx + 1):
-            l = valid_laps[i]
-            role = lap_roles[i]
-            if role == "fast":
-                l["role_tag"] = f"🔥 疾走 {fast_seq}本目"
-                l["role_badge"] = "bg-rose-500/20 text-rose-300 border-rose-500/30"
-                phases.append({
-                    "name": f"疾走 {fast_seq}本目 ({l['lap_index']}km目)",
-                    "tag": f"🔥 疾走 {fast_seq}本目",
-                    "badge_color": "bg-rose-500/20 text-rose-300 border-rose-500/30",
-                    "distance_km": l["distance_km"],
-                    "pace_str": l["pace_str"],
-                    "avg_hr": l["avg_hr"],
-                    "desc": f"ギアを上げ **{l['pace_str']}/km** へ加速（平均心拍 **{l['avg_hr']} bpm**）。スピード持久力と心肺に強い刺激を注入。",
-                })
-                fast_seq += 1
-            else:
-                l["role_tag"] = "🧊 つなぎ・リカバリー"
-                l["role_badge"] = "bg-sky-500/20 text-sky-300 border-sky-500/30"
-                phases.append({
-                    "name": f"つなぎ・リカバリー ({l['lap_index']}km目)",
-                    "tag": "🧊 つなぎ",
-                    "badge_color": "bg-sky-500/20 text-sky-300 border-sky-500/30",
-                    "distance_km": l["distance_km"],
-                    "pace_str": l["pace_str"],
-                    "avg_hr": l["avg_hr"],
-                    "desc": f"**{l['pace_str']}/km** で呼吸と筋疲労を整えながら次の疾走に備えるつなぎ区間。",
-                })
-
-        if last_fast_idx < len(valid_laps) - 1:
-            cd_laps = valid_laps[last_fast_idx + 1:]
-            cd_dist = sum(l["distance_km"] for l in cd_laps)
-            cd_avg_pace = sum(l["pace_sec"] for l in cd_laps) / len(cd_laps)
-            cd_avg_hr = sum(l["avg_hr"] for l in cd_laps) / len(cd_laps)
-            for l in cd_laps:
-                l["role_tag"] = "クールダウン"
-                l["role_badge"] = "bg-slate-800 text-slate-400 border-slate-700"
-
-            phases.append({
-                "name": f"クールダウン ({last_fast_idx + 2}〜{len(valid_laps)}km)",
-                "tag": "クールダウン",
-                "badge_color": "bg-slate-800 text-slate-400 border-slate-700",
-                "distance_km": round(cd_dist, 1),
-                "pace_str": seconds_to_pace_str(cd_avg_pace),
-                "avg_hr": int(round(cd_avg_hr)),
-                "desc": f"疾走終了後の息を整えながら **{seconds_to_pace_str(cd_avg_pace)}/km** でリラックスしてフィニッシュ。",
-            })
-
-        fast_laps = [l for l in valid_laps if "疾走" in l.get("role_tag", "")]
-        base_laps = [l for l in valid_laps if "疾走" not in l.get("role_tag", "")]
-        fast_paces = [l["pace_sec"] for l in fast_laps]
-        base_paces = [l["pace_sec"] for l in base_laps]
-        fast_avg_pace = sum(fast_paces) / len(fast_paces) if fast_paces else overall_avg_pace
-        base_avg_pace = sum(base_paces) / len(base_paces) if base_paces else overall_avg_pace
-        best_fast_pace = min(fast_paces) if fast_paces else overall_avg_pace
-        pace_contrast = base_avg_pace - fast_avg_pace
-
-        wu_title = f"{first_fast_idx}kmアップ ＋ " if first_fast_idx > 0 else ""
-        summary_title = f"【1km交代走】{wu_title}疾走 × {fast_count}本（乳酸シャトル＆VO2max刺激）"
-        summary_desc = (
-            f"最初の{first_fast_idx}kmをウォームアップとして丁寧に身体を温めた後、"
-            f"**「1km疾走（最速 {seconds_to_pace_str(best_fast_pace)}/km） ＋ つなぎジョグ」の交代走を{fast_count}セット** 実施した高強度ポイント練習です。"
-            f"疾走区間で乳酸を大量発生させ、つなぎ区間で脚を止めずに有酸素的に乳酸を再利用する『乳酸シャトル能力』とVO2max（最大酸素摂取量）を極限まで引き上げる実戦的な攻めのメニューです。"
-        )
-
-        return {
-            "type": "1km交代走",
-            "badge": "🔥 1km交代走 (乳酸シャトル)",
-            "badge_color": "bg-rose-500/20 text-rose-300 border-rose-500/30",
-            "summary_title": summary_title,
-            "summary_desc": summary_desc,
-            "phases": phases,
-            "is_interval": True,
-            "fast_count": fast_count,
-            "fast_avg_pace_sec": fast_avg_pace,
-            "best_fast_pace_sec": best_fast_pace,
-            "base_avg_pace_sec": base_avg_pace,
-            "pace_contrast_sec": pace_contrast,
-        }
-
-    # B. ビルドアップ走判定 (前半→後半で12秒以上加速、またはラストスパート注入)
-    if first_half_avg - second_half_avg > 12 or is_end_spurt_only:
-        peak_lap = min(active_laps, key=lambda x: x["pace_sec"])
-        for i, l in enumerate(valid_laps):
-            if has_cooldown and i == len(valid_laps) - 1:
-                l["role_tag"] = "🧊 クールダウン"
-                l["role_badge"] = "bg-sky-500/20 text-sky-300 border-sky-500/30"
-            elif l["lap_index"] == peak_lap["lap_index"] and l["pace_sec"] <= 315:
-                l["role_tag"] = "🔥 最終スパート"
-                l["role_badge"] = "bg-rose-500/20 text-rose-300 border-rose-500/30"
-            elif i < half_act:
-                l["role_tag"] = "前半イージー導入"
-                l["role_badge"] = "bg-slate-800 text-slate-300 border-slate-700"
-            else:
-                l["role_tag"] = "📈 後半ビルドアップ"
-                l["role_badge"] = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-
-        bu_phases = []
-        early_laps = active_laps[:half_act]
-        late_laps = active_laps[half_act:]
-        if early_laps:
-            e_dist = round(sum(x["distance_km"] for x in early_laps), 1)
-            e_pace = sum(x["pace_sec"] for x in early_laps) / len(early_laps)
-            e_hr = int(round(sum(x["avg_hr"] for x in early_laps) / len(early_laps)))
-            bu_phases.append({
-                "name": f"前半：導入巡航 (1〜{early_laps[-1]['lap_index']}km)",
-                "tag": "導入巡航",
-                "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
-                "distance_km": e_dist,
-                "pace_str": seconds_to_pace_str(e_pace),
-                "avg_hr": e_hr,
-                "desc": f"平均 **{seconds_to_pace_str(e_pace)}/km**（心拍 {e_hr} bpm）で余裕を持って入り、後半の加速に向けて脚と心肺を温める導入フェーズ。",
-            })
-        if late_laps:
-            l_dist = round(sum(x["distance_km"] for x in late_laps), 1)
-            l_pace = sum(x["pace_sec"] for x in late_laps) / len(late_laps)
-            l_hr = int(round(sum(x["avg_hr"] for x in late_laps) / len(late_laps)))
-            bu_phases.append({
-                "name": f"後半：ビルドアップ加速 ({late_laps[0]['lap_index']}〜{late_laps[-1]['lap_index']}km)",
-                "tag": "📈 後半加速",
-                "badge_color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-                "distance_km": l_dist,
-                "pace_str": seconds_to_pace_str(l_pace),
-                "avg_hr": l_hr,
-                "desc": f"平均 **{seconds_to_pace_str(l_pace)}/km**（最速 **{peak_lap['pace_str']}/km**）まで段階的にギアを引き上げ、乳酸閾値（LT）〜サブ50ペースの刺激を注入。",
-            })
-        if has_cooldown:
-            cd_l = valid_laps[-1]
-            bu_phases.append({
-                "name": f"クールダウン ({cd_l['lap_index']}km目)",
-                "tag": "🧊 クールダウン",
-                "badge_color": "bg-sky-500/20 text-sky-300 border-sky-500/30",
-                "distance_km": cd_l["distance_km"],
-                "pace_str": cd_l["pace_str"],
-                "avg_hr": cd_l["avg_hr"],
-                "desc": f"ピークラップ（{peak_lap['pace_str']}/km）到達後、**{cd_l['pace_str']}/km** へ落として呼吸と心拍を整える理想的なクールダウン。",
-            })
-
-        return {
-            "type": "ビルドアップ走",
-            "badge": "📈 ビルドアップ走",
-            "badge_color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-            "summary_title": f"【ビルドアップ走】前半 {seconds_to_pace_str(first_half_avg)} → 後半 {seconds_to_pace_str(second_half_avg)}/km（最速 {peak_lap['pace_str']}/km）",
-            "summary_desc": (
-                f"前半（平均 **{seconds_to_pace_str(first_half_avg)}/km**）でリズムを作った後、後半（平均 **{seconds_to_pace_str(second_half_avg)}/km**、最速 **{peak_lap['pace_str']}/km**）にかけて段階的にペースを引き上げたビルドアップ走です。"
-                "余力を残して終盤にサブ50〜LT域のスピード刺激を入れる、実戦的かつ質の高い内容です。"
-            ),
-            "phases": bu_phases,
-            "is_interval": False,
-            "best_fast_pace_sec": peak_lap["pace_sec"],
-        }
-
-    # C. 持続走 / LTテンポ走 / イージージョグ
-    # 4km以上の場合は「最初の3kmアップ ＋ 4km以降の本練習巡航」を反映
-    steady_phases = []
-    if len(valid_laps) >= 4:
-        for idx_l, l in enumerate(valid_laps):
-            if idx_l < 3:
-                l["role_tag"] = "アップ"
-                l["role_badge"] = "bg-slate-800 text-slate-300 border-slate-700"
-            else:
-                l["role_tag"] = "本練習巡航"
-                l["role_badge"] = "bg-teal-500/20 text-teal-300 border-teal-500/30"
-
-        wu_l = valid_laps[:3]
-        mn_l = valid_laps[3:]
-        wu_dist = round(sum(x["distance_km"] for x in wu_l), 1)
-        wu_pace = sum(x["pace_sec"] for x in wu_l) / len(wu_l)
-        wu_hr = int(round(sum(x["avg_hr"] for x in wu_l) / len(wu_l)))
-        steady_phases.append({
-            "name": f"ウォーミングアップ (1〜3km)",
-            "tag": "アップ区間",
-            "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
-            "distance_km": wu_dist,
-            "pace_str": seconds_to_pace_str(wu_pace),
-            "avg_hr": wu_hr,
-            "desc": f"身体と心肺をほぐすルーティンの3kmウォームアップ（平均 **{seconds_to_pace_str(wu_pace)}/km**・心拍 {wu_hr} bpm）。",
-        })
-        mn_dist = round(sum(x["distance_km"] for x in mn_l), 1)
-        mn_pace = sum(x["pace_sec"] for x in mn_l) / len(mn_l)
-        mn_hr = int(round(sum(x["avg_hr"] for x in mn_l) / len(mn_l)))
-        steady_phases.append({
-            "name": f"本練習巡航 (4〜{valid_laps[-1]['lap_index']}km)",
-            "tag": "本練習巡航",
-            "badge_color": "bg-teal-500/20 text-teal-300 border-teal-500/30",
-            "distance_km": mn_dist,
-            "pace_str": seconds_to_pace_str(mn_pace),
-            "avg_hr": mn_hr,
-            "desc": f"アップ完了後の本練習区間。平均 **{seconds_to_pace_str(mn_pace)}/km**（心拍 {mn_hr} bpm）で集中して巡航を維持。",
-        })
-    else:
-        for l in valid_laps:
-            l["role_tag"] = "巡航"
-            l["role_badge"] = "bg-slate-800 text-slate-400 border-slate-700"
-
-    if overall_avg_pace <= TARGET_PACE_SEC:
-        type_name = "サブ50 ペース走"
-        badge_name = "⚡ サブ50 ペース走"
-        badge_col = "bg-rose-500/20 text-rose-300 border-rose-500/30"
-        desc_text = f"全行程を通して目標であるサブ50ペース（5:00/km以内）を果敢に攻め抜いた高強度ペース走です。平均心拍 {avg_hr} bpm での高いスピード持続力を実証。"
-    elif overall_avg_pace <= 335 and avg_hr >= 165:
-        type_name = "LTテンポ巡航走"
-        badge_name = "🔥 LTテンポ走"
-        badge_col = "bg-amber-500/20 text-amber-300 border-amber-500/30"
-        desc_text = f"乳酸閾値（LT）領域（平均 {seconds_to_pace_str(overall_avg_pace)}/km・心拍 {avg_hr} bpm）をターゲットにした質の高いテンポ走。ヨロンハーフ（サブ2）攻略に直結する巡航持久力を強化。"
-    elif overall_avg_pace >= 390:
-        type_name = "イージージョグ"
-        badge_name = "🌱 イージージョグ"
-        badge_col = "bg-sky-500/20 text-sky-300 border-sky-500/30"
-        desc_text = f"無理のないペース（平均 {seconds_to_pace_str(overall_avg_pace)}/km）で着実に距離を踏み、有酸素エンジンの土台と毛細血管の新生を促す基礎ジョグです。"
-    else:
-        type_name = "有酸素持続走"
-        badge_name = "🏃 有酸素持続走"
-        badge_col = "bg-teal-500/20 text-teal-300 border-teal-500/30"
-        desc_text = f"一定のピッチと有酸素リズムを保ち、安定した巡航ペース（平均 {seconds_to_pace_str(overall_avg_pace)}/km）で走り切ったセッションです。"
-
-    return {
-        "type": type_name,
-        "badge": badge_name,
-        "badge_color": badge_col,
-        "summary_title": f"【{type_name}】{dist_km:.1f}km 平均 {seconds_to_pace_str(overall_avg_pace)}/km",
-        "summary_desc": desc_text,
-        "phases": steady_phases,
-        "is_interval": False,
-        "best_fast_pace_sec": min(paces) if paces else overall_avg_pace,
-    }
-
-
 def _load_ai_coaching_notes(data_dir: Optional[Path] = None) -> Dict[str, Any]:
     """data/ai_coaching.json からAIによる柔軟な個別コーチング評価データを読み込む"""
     candidates = []
@@ -641,14 +262,35 @@ def calculate_activity_insights(
                 dist, pace_sec, avg_hr, max_hr, cadence, row["max_cadence"], elevation
             )
 
-        # 4. 時系列グラフの分析 & ワークアウト構造の自動検出
+        # 4. 時系列グラフの分析（固定ルールによる種別自動判定は行わない）
         series_analysis = analyze_time_series(distance_series, dist)
-        workout_structure = detect_workout_structure(distance_series.get("laps", []), dist, pace_sec, avg_hr)
-        is_lsd = workout_structure.get("is_lsd", False)
-        is_buildup = workout_structure.get("type") == "ビルドアップ走"
         running_cadence = series_analysis.get("running_cadence") or cadence
 
-        # 5. VDOT スコアの算出 (ダニエルズ式: 意図的な低心拍LSDはタイムからの単純算出対象外とする)
+        # 5. 【AIコーチング優先】ai_coaching.json に個別評価が存在する場合は最優先で適用
+        note = ai_notes.get(dt_full) or ai_notes.get(date_str)
+        if not note:
+            for k in ai_notes:
+                if k.startswith(date_str):
+                    note = ai_notes[k]
+                    break
+
+        if note and "workout_structure" in note:
+            workout_structure = dict(note["workout_structure"])
+        else:
+            workout_structure = {
+                "type": "ランニング (AI未分析)",
+                "badge": "🏃 ランニング (AI未分析)",
+                "badge_color": "bg-slate-800 text-slate-300 border-slate-700",
+                "summary_title": f"{dist:.2f}km ランニング ({pace_str}/km)",
+                "summary_desc": f"走行距離 {dist:.2f}km、平均ペース {pace_str}/km、平均心拍 {avg_hr} bpm（AIコーチング分析待ち）。",
+                "phases": [],
+                "is_interval": False,
+                "is_lsd": False,
+            }
+
+        is_lsd = workout_structure.get("is_lsd", False)
+
+        # 6. VDOT スコアの算出 (ダニエルズ式: 意図的な低心拍LSDはタイムからの単純算出対象外とする)
         if is_lsd or (0 < avg_hr <= 148 and pace_sec >= 420):
             act_vdot = 0.0
         else:
@@ -666,23 +308,8 @@ def calculate_activity_insights(
             else:
                 current_sustained = 0.0
 
-        # 6. 【AIコーチング優先】ai_coaching.json に個別評価が存在する場合は最優先で適用
-        note = ai_notes.get(date_str)
-        if not note:
-            for k in ai_notes:
-                if k.startswith(date_str):
-                    note = ai_notes[k]
-                    break
-
-        if note and "workout_structure" in note:
-            workout_structure = note["workout_structure"]
-            is_lsd = workout_structure.get("is_lsd", False)
-            is_buildup = workout_structure.get("type") == "ビルドアップ走"
-
         # ターゲット差分の算出
         gap_sec = pace_sec - TARGET_PACE_SEC
-        is_interval = workout_structure.get("is_interval", False)
-        is_tempo_run = workout_structure.get("type") in ["LTテンポ巡航走", "LTテンポ走 / ペース走"] or (pace_sec <= 335 and dist >= 4.0 and not is_buildup and not is_interval)
 
         # AIコーチング note から評価項目を直接取得
         if note and "evaluation" in note:
