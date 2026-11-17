@@ -1298,11 +1298,11 @@ def compute_training_roadmap(df: pd.DataFrame) -> Dict[str, Any]:
             "period": "11/16 (月) 〜 11/22 (日)",
             "start": "2026-11-16",
             "end": "2026-11-22",
-            "planned_km": 46.0,
+            "planned_km": 40.0,
             "theme": "月曜15kmMペース走・木曜10kmガチLT走・日曜15kmビルドアップで仕上げる",
             "days": [
                 {"date": "2026-11-16", "label": "11/16(月)", "type": "long", "menu": "🌟 15km Mペース持続走 (4〜14km 5:58/km)", "target": "Mペース定着"},
-                {"date": "2026-11-18", "label": "11/18(水)", "type": "easy", "menu": "🌱 6km 疲労抜きイージージョグ ＋ 流し2本", "target": "Zone 1〜2厳守"},
+                {"date": "2026-11-18", "label": "11/18(水)", "type": "rest", "menu": "🛀 完全休養 (雨天・右膝ケア)", "target": "72時間超回復"},
                 {"date": "2026-11-19", "label": "11/19(木)", "type": "point", "menu": "🔥 10km ガチLT閾値走 (3kmアップ + 6km 5:05〜5:15/km + 1kmダウン)", "target": "LT巡航力強化"},
                 {"date": "2026-11-22", "label": "11/22(日)", "type": "long", "menu": "🔥 15km ビルドアップ (3kmアップ + 9km + 3km 5:15〜5:25/km)", "target": "ハーフ1週前刺激"},
             ],
