@@ -15,23 +15,23 @@ TARGET_TIME_SEC: int = 3000          # 50分00秒 = 3000秒
 TARGET_PACE_SEC: float = 300.0       # 5:00/km = 300.0秒/km
 TARGET_LABEL: str = "10km 50分切り (サブ50)"
 
-# 2. ハーフマラソン目標: 2026/11/29 ヨロンマラソン (サブ2)
+# 2. ハーフマラソン目標: 2026/11/29 ヨロンマラソン (サブ2: 1:59:59 固定目標)
 HALF_RACE_NAME: str = "ヨロンマラソン (ハーフ)"
 HALF_RACE_DATE: str = "2026-11-29"
 HALF_DISTANCE_KM: float = 21.0975
-HALF_TARGET_TIME_SEC: int = 7199     # 1時間59分59秒 (サブ2 / 目安 1:55〜1:59)
-HALF_OPTIMAL_TIME_SEC: int = 6900    # 1時間55分00秒
-HALF_TARGET_PACE_SEC: float = 335.0  # 5:35/km (5:27〜5:38/km 巡航)
-HALF_TARGET_LABEL: str = "サブ2 (1:55:00〜1:59:59)"
+HALF_TARGET_TIME_SEC: int = 7199     # 1時間59分59秒 (サブ2固定目標)
+HALF_OPTIMAL_TIME_SEC: int = 7199    # 1時間59分59秒
+HALF_TARGET_PACE_SEC: float = 341.2  # 5:41/km (1:59:59平均5:41/km・巡航5:35〜5:40/km)
+HALF_TARGET_LABEL: str = "サブ2 (1:59:59)"
 
-# 3. フルマラソン目標: 2026/12/06 NAHAマラソン (サブ4.5)
+# 3. フルマラソン目標: 2026/12/06 NAHAマラソン (サブ4.5: 4:29:59 固定目標)
 FULL_RACE_NAME: str = "NAHAマラソン (フル)"
 FULL_RACE_DATE: str = "2026-12-06"
 FULL_DISTANCE_KM: float = 42.195
-FULL_TARGET_TIME_SEC: int = 16200    # 4時間30分00秒 (サブ4.5 / 目安 4:15〜4:30)
-FULL_OPTIMAL_TIME_SEC: int = 15300   # 4時間15分00秒
-FULL_TARGET_PACE_SEC: float = 375.0  # 6:15/km (6:00〜6:25/km 巡航)
-FULL_TARGET_LABEL: str = "サブ4.5 (4:15:00〜4:29:59)"
+FULL_TARGET_TIME_SEC: int = 16199    # 4時間29分59秒 (サブ4.5固定目標)
+FULL_OPTIMAL_TIME_SEC: int = 16199   # 4時間29分59秒
+FULL_TARGET_PACE_SEC: float = 383.9  # 6:23/km (4:29:59平均6:23/km・巡航6:18〜6:23/km)
+FULL_TARGET_LABEL: str = "サブ4.5 (4:29:59)"
 
 # ランナー固有ルーティン: 最初の3kmはウォームアップ区間
 WARMUP_DISTANCE_KM: float = 3.0
