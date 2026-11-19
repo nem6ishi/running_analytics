@@ -56,7 +56,7 @@
       <div class="flex flex-wrap items-center gap-2 sm:gap-4">
         <div class="flex items-center gap-1.5">
           <span class="px-2 py-0.5 rounded-full font-mono font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px]">
-            11/29 ヨロンHalf あと11日
+            11/29 ヨロンHalf あと10日
           </span>
           <span class="font-bold text-white">サブ2 (1:59:59)</span>
           <span class="text-slate-400 font-mono text-[11px] hidden sm:inline">(平均 5:41/km • HR 165-172)</span>
@@ -64,7 +64,7 @@
         <span class="text-slate-700 hidden md:inline">|</span>
         <div class="flex items-center gap-1.5">
           <span class="px-2 py-0.5 rounded-full font-mono font-black bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[11px]">
-            12/06 NAHAフル あと18日
+            12/06 NAHAフル あと17日
           </span>
           <span class="font-bold text-white">サブ4.5 (4:29:59)</span>
           <span class="text-slate-400 font-mono text-[11px] hidden sm:inline">(平均 6:23/km • HR 150-156)</span>
@@ -207,14 +207,14 @@
             <div class="text-[11px] font-bold text-white truncate mb-1.5" title=""></div>
             <div class="flex items-baseline justify-between font-mono text-[11px] mb-1">
               <span class="text-emerald-300 font-black">
-                15.01<span class="text-[9px] font-normal text-slate-400"> / 33.0km</span>
+                21.03<span class="text-[9px] font-normal text-slate-400"> / 33.0km</span>
               </span>
               <span class="text-[10px] text-indigo-300">
-                45.0%
+                64.0%
               </span>
             </div>
             <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <div class="h-full rounded-full bg-slate-600" style="width: 45%"></div>
+              <div class="h-full rounded-full bg-slate-600" style="width: 64%"></div>
             </div>
           </div>
           
@@ -1613,16 +1613,16 @@
               </td>
             </tr>
             
-            <tr class="sched-row transition hover:bg-slate-900/60 bg-indigo-950/40 ring-1 ring-indigo-500/50 font-medium"
-                id="today-sched-row"
+            <tr class="sched-row transition hover:bg-slate-900/60 "
+                
                 data-category="rest"
-                data-status="today"
+                data-status="done"
                 data-hasrun="false">
               
               <!-- 日付・曜日 -->
               <td class="py-3 px-3 font-mono shrink-0">
                 <div class="flex items-center space-x-1.5">
-                  <span class="font-bold text-indigo-300 font-black text-sm">
+                  <span class="font-bold text-white">
                     11/18 (水)
                   </span>
                   
@@ -1631,8 +1631,8 @@
 
               <!-- 状態 -->
               <td class="py-3 px-2 whitespace-nowrap">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-indigo-500/20 text-indigo-300 border-indigo-500/40">
-                  📍 本日
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                  ✅ 完了
                 </span>
               </td>
 
@@ -1668,16 +1668,16 @@
               </td>
             </tr>
             
-            <tr class="sched-row transition hover:bg-slate-900/60 "
-                
+            <tr class="sched-row transition hover:bg-slate-900/60 bg-indigo-950/40 ring-1 ring-indigo-500/50 font-medium"
+                id="today-sched-row"
                 data-category="point"
-                data-status="upcoming"
-                data-hasrun="false">
+                data-status="today"
+                data-hasrun="true">
               
               <!-- 日付・曜日 -->
               <td class="py-3 px-3 font-mono shrink-0">
                 <div class="flex items-center space-x-1.5">
-                  <span class="font-bold text-white">
+                  <span class="font-bold text-indigo-300 font-black text-sm">
                     11/19 (木)
                   </span>
                   
@@ -1686,8 +1686,8 @@
 
               <!-- 状態 -->
               <td class="py-3 px-2 whitespace-nowrap">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-amber-500/20 text-amber-300 border-amber-500/30">
-                  🔥 ポイント
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-indigo-500/20 text-indigo-300 border-indigo-500/40">
+                  📍 本日
                 </span>
               </td>
 
@@ -1718,7 +1718,13 @@
               <!-- 実走実績 -->
               <td class="py-3 px-3 font-mono whitespace-nowrap">
                 
-                <span class="text-slate-600 text-center block">-</span>
+                <a href="index.html?act=61#activity" class="block bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/30 rounded-xl p-2 text-center shadow-inner transition group" title="クリックしてこの日の個別分析・グラフを表示">
+                  <div class="text-xs font-black text-emerald-400 group-hover:text-emerald-300 flex items-center justify-center gap-1">
+                    <span>6.02km (5:28)</span>
+                    <span class="text-[10px] text-emerald-500 group-hover:translate-x-0.5 transition-transform">→</span>
+                  </div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">HR 167bpm • 00:32:54</div>
+                </a>
                 
               </td>
             </tr>
