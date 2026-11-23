@@ -228,15 +228,15 @@
             </div>
             <div class="text-[11px] font-bold text-white truncate mb-1.5" title=""></div>
             <div class="flex items-baseline justify-between font-mono text-[11px] mb-1">
-              <span class="text-slate-500">
-                0.0<span class="text-[9px] font-normal text-slate-400"> / 40.1km</span>
+              <span class="text-emerald-300 font-black">
+                10.01<span class="text-[9px] font-normal text-slate-400"> / 36.1km</span>
               </span>
-              <span class="text-[10px] text-slate-500">
-                0.0%
+              <span class="text-[10px] text-indigo-300">
+                28.0%
               </span>
             </div>
             <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <div class="h-full rounded-full bg-slate-600" style="width: 0%"></div>
+              <div class="h-full rounded-full bg-slate-600" style="width: 28%"></div>
             </div>
           </div>
           
@@ -1902,7 +1902,7 @@
                 id="today-sched-row"
                 data-category="point"
                 data-status="today"
-                data-hasrun="false">
+                data-hasrun="true">
               
               <!-- 日付・曜日 -->
               <td class="py-3 px-3 font-mono shrink-0">
@@ -1930,25 +1930,31 @@
 
               <!-- メニュー・内容 -->
               <td class="py-3 px-3 min-w-[200px]">
-                <div class="font-bold text-white tracking-tight text-xs">🔥【午前】10km サブ2本番ドレスリハーサル走</div>
-                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">3kmアップ（6:18〜6:23/km・サブ4.5ペース） ➔ 6km サブ2巡航（5:35〜5:40/km・HR165〜172） ➔ 1kmダウン（膝違和感時はイージージョグへ切替）</div>
+                <div class="font-bold text-white tracking-tight text-xs">【完了】🔥 10.01km サブ2ドレスリハーサル走（5:32/km・4〜9km 5:27/km）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">1〜3km 5:54/km（HR154） ➔ 4〜9km 5:27/km（HR168） ➔ 10km目 4:52/km（HR177/Max181）。右膝無傷で完遂</div>
               </td>
 
               <!-- 設定ペース / 心拍 -->
               <td class="py-3 px-3 font-mono whitespace-nowrap">
                 <div class="text-emerald-400 font-bold">6:20 ➔ 5:35〜5:40/km</div>
-                <div class="text-[10px] text-slate-400">心拍 150 ➔ 165〜172 bpm</div>
+                <div class="text-[10px] text-slate-400">実測 165 / Max 181 bpm</div>
               </td>
 
               <!-- 目的・ポイント -->
               <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
-                レース6日前の最終ポイント走。晴天の午前中に1:59:59突破の巡航リズムを完成させ、翌火曜の悪天候休養へ繋ぐ
+                目標ペースを上回る5:27/km巡航をHR168で押し切り、ヨロンサブ2への仕上がりを完全証明
               </td>
 
               <!-- 実走実績 -->
               <td class="py-3 px-3 font-mono whitespace-nowrap">
                 
-                <span class="text-slate-600 text-center block">-</span>
+                <a href="index.html?act=62#activity" class="block bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/30 rounded-xl p-2 text-center shadow-inner transition group" title="クリックしてこの日の個別分析・グラフを表示">
+                  <div class="text-xs font-black text-emerald-400 group-hover:text-emerald-300 flex items-center justify-center gap-1">
+                    <span>10.01km (5:32)</span>
+                    <span class="text-[10px] text-emerald-500 group-hover:translate-x-0.5 transition-transform">→</span>
+                  </div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">HR 165bpm • 00:55:23</div>
+                </a>
                 
               </td>
             </tr>
@@ -1985,8 +1991,8 @@
 
               <!-- メニュー・内容 -->
               <td class="py-3 px-3 min-w-[200px]">
-                <div class="font-bold text-white tracking-tight text-xs">完全休養（大雨・強風予報のため悪天候回避）</div>
-                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">降水確率70〜90%・強風予報のため休養優先（※好天時は水曜の調整ジョグを前倒し可）</div>
+                <div class="font-bold text-white tracking-tight text-xs">完全休養（雷雨・強風予報回避 ＆ 超回復）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">降水確率60〜70%・雷＆北風強風予報のため休養優先。前日10km走の疲労抜き</div>
               </td>
 
               <!-- 設定ペース / 心拍 -->
@@ -1997,7 +2003,7 @@
 
               <!-- 目的・ポイント -->
               <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
-                テーパリング期の雨風リスク回避・深部疲労の完全抜去
+                テーパリング期の雨風リスク回避・深部疲労の抜去
               </td>
 
               <!-- 実走実績 -->
@@ -2040,8 +2046,8 @@
 
               <!-- メニュー・内容 -->
               <td class="py-3 px-3 min-w-[200px]">
-                <div class="font-bold text-white tracking-tight text-xs">5km サブ4.5リズム確認イージージョグ ＋ 流し2本</div>
-                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">平日夕方 ➔ 6:20〜6:35/km (Zone 1〜2) ➔ 流し100m×2本（※雨天時は休養し木曜へ集約）</div>
+                <div class="font-bold text-white tracking-tight text-xs">🌱 5km サブ4.5リズム確認イージージョグ ＋ 流し2本</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">平日夕方（曇り・降水40%） ➔ 6:20〜6:35/km (Zone 1〜2) ➔ 流し100m×2本</div>
               </td>
 
               <!-- 設定ペース / 心拍 -->
@@ -2052,7 +2058,7 @@
 
               <!-- 目的・ポイント -->
               <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
-                脱力による血流促進と神経筋のバネ刺激（エコノミー維持）
+                23日10km走で刺激は完了済み。今週最良の平日枠で脱力血流促進＋流しで最終調整
               </td>
 
               <!-- 実走実績 -->
@@ -2065,7 +2071,7 @@
             
             <tr class="sched-row transition hover:bg-slate-900/60 "
                 
-                data-category="easy"
+                data-category="rest"
                 data-status="upcoming"
                 data-hasrun="false">
               
@@ -2088,26 +2094,26 @@
 
               <!-- 種別 -->
               <td class="py-3 px-2 whitespace-nowrap">
-                <span class="font-bold text-[11px] text-sky-400">
-                  🌱 ジョグ・調整
+                <span class="font-bold text-[11px] text-slate-400">
+                  🛌 完全休養
                 </span>
               </td>
 
               <!-- メニュー・内容 -->
               <td class="py-3 px-3 min-w-[200px]">
-                <div class="font-bold text-white tracking-tight text-xs">4km 最終刺激入れ ＋ 流し1〜2本</div>
-                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">平日夕方（曇り回復予報） ➔ 3kmアップ (6:20/km) ➔ 1km サブ2ペース (5:35〜5:40/km) ＋ 流し100m×1〜2本</div>
+                <div class="font-bold text-white tracking-tight text-xs">原則・完全休養（雨予報70%回避・中3日ピーキング）</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">降水確率70%予報のため無理せず完全休養（※夕方晴れ間があれば3〜4km超イージー＋流し1本のみ可）</div>
               </td>
 
               <!-- 設定ペース / 心拍 -->
               <td class="py-3 px-3 font-mono whitespace-nowrap">
-                <div class="text-emerald-400 font-bold">5:35〜5:40/km</div>
-                <div class="text-[10px] text-slate-400">心拍 164〜170 bpm</div>
+                <div class="text-emerald-400 font-bold">-</div>
+                <div class="text-[10px] text-slate-400">-</div>
               </td>
 
               <!-- 目的・ポイント -->
               <td class="py-3 px-3 text-[11px] text-slate-300 min-w-[180px] leading-relaxed">
-                本番のサブ2巡航ペース（5:35〜5:40/km）とバネを1kmだけ最終確認し、中2日オフでヨロン本番へ送り出す
+                レース直前の悪天候リスクを避け、疲労を完全に抜いてTSBプラスでヨロン本番へ臨む
               </td>
 
               <!-- 実走実績 -->
