@@ -688,25 +688,39 @@
 
               <!-- 4指標ボックス -->
               <div class="grid grid-cols-4 gap-2 text-center font-mono">
-                <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2.5">
+                <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2.5" title="過去42日間の平均負荷。週2〜3回ランでは20〜25がレース仕上がり水準">
                   <span class="text-[10px] text-slate-400 font-sans block">CTL (体力)</span>
                   <div class="text-lg sm:text-xl font-black text-emerald-400 mt-0.5">21.7</div>
-                  <span class="text-[9px] text-slate-500 font-sans">42日適応</span>
+                  <span class="text-[9px] text-slate-400 font-sans">42日平均 / 目安20+</span>
                 </div>
-                <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2.5">
+                <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2.5" title="過去7日間の平均疲労。ATL÷CTLが1.5倍を超えると急負荷注意">
                   <span class="text-[10px] text-slate-400 font-sans block">ATL (疲労)</span>
                   <div class="text-lg sm:text-xl font-black text-amber-400 mt-0.5">31.0</div>
-                  <span class="text-[9px] text-slate-500 font-sans">7日負荷</span>
+                  <span class="text-[9px] text-slate-400 font-sans">7日負荷 (1.43x)</span>
                 </div>
-                <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2.5">
+                <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2.5" title="体力(CTL)−疲労(ATL)。普段は-10〜-30で鍛え、本番は+0〜+15が理想">
                   <span class="text-[10px] text-slate-400 font-sans block">TSB (調子)</span>
                   <div class="text-lg sm:text-xl font-black text-sky-400 mt-0.5">-9.3</div>
-                  <span class="text-[9px] text-slate-500 font-sans">Form</span>
+                  <span class="text-[9px] text-slate-400 font-sans">体力−疲労</span>
                 </div>
                 <div class="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-2.5">
                   <span class="text-[10px] text-slate-400 font-sans block">今週距離</span>
                   <div class="text-lg sm:text-xl font-black text-white mt-0.5">16.0<span class="text-[10px] font-normal text-slate-400">k</span></div>
                   <span class="text-[9px] text-sky-400 font-sans">前週比51%</span>
+                </div>
+              </div>
+
+              <!-- 数値の目安ガイド -->
+              <div class="bg-slate-950/60 border border-slate-800/70 rounded-2xl px-3 py-2 text-[10px] space-y-1.5">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="text-slate-400 font-bold shrink-0">TSB目安:</span>
+                  <span class="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono">+5〜+25 絶好調(本番)</span>
+                  <span class="px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 font-mono">-5〜+5 回復・調整</span>
+                  <span class="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono">-10〜-30 伸び盛り</span>
+                  <span class="px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-mono">-30以下 要休養</span>
+                </div>
+                <div class="text-slate-400 leading-snug">
+                  💡 <strong class="text-slate-300">CTL</strong>は週2〜3回ランで <span class="text-emerald-300 font-mono font-bold">20〜25</span> がレース仕上がり水準。急負荷の目安は <strong class="text-slate-300">ATL÷CTL 1.5倍以下</strong>。
                 </div>
               </div>
 
