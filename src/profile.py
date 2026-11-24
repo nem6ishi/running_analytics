@@ -6,10 +6,12 @@
 
 import json
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import pandas as pd
 from config import HR_MAX, HR_RESTING, HR_ZONES
 from .parser import clean_numeric
+
+VO2MAX_HISTORY_FILENAME = "vo2max_history.json"
 
 
 def load_profile(data_dir: Path) -> Dict[str, Any]:
@@ -113,4 +115,103 @@ def get_hr_params(
         "hr_resting": hr_resting,
         "hr_resting_source": hr_resting_source,
         "zones": zones,
+    }
+
+
+def load_vo2max_history(data_dir: Optional[Path]) -> List[Dict[str, Any]]:
+    """data_dir / "vo2max_history.json" を読み込む。存在しない場合や破損時は空リストを返す。"""
+    if not data_dir:
+        return []
+    history_file = data_dir / VO2MAX_HISTORY_FILENAME
+    if not history_file.exists():
+        return []
+    try:
+        with open(history_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+def save_vo2max_history(data_dir: Path, records: List[Dict[str, Any]]) -> None:
+    """VO2max 履歴を日付昇順で data_dir / "vo2max_history.json" に保存する。"""
+    data_dir.mkdir(parents=True, exist_ok=True)
+    sorted_records = sorted(
+        [r for r in records if isinstance(r, dict) and r.get("date")],
+        key=lambda r: r["date"],
+    )
+    history_file = data_dir / VO2MAX_HISTORY_FILENAME
+    with open(history_file, "w", encoding="utf-8") as f:
+        json.dump(sorted_records, f, ensure_ascii=False, indent=2)
+
+
+def merge_vo2max_records(
+    existing: List[Dict[str, Any]],
+    new_records: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """既存履歴と新規取得レコードを date キーでマージし、日付昇順で返す。"""
+    merged: Dict[str, Dict[str, Any]] = {}
+    for rec in existing:
+        if isinstance(rec, dict) and rec.get("date"):
+            merged[rec["date"]] = rec
+    for rec in new_records:
+        if isinstance(rec, dict) and rec.get("date"):
+            merged[rec["date"]] = rec
+    return [merged[d] for d in sorted(merged.keys())]
+
+
+def get_vo2max_summary(data_dir: Optional[Path] = None) -> Dict[str, Any]:
+    """保存済みの Garmin VO2max 履歴からサマリー統計を生成する。"""
+    history = load_vo2max_history(data_dir)
+    valid = [
+        r for r in history
+        if r.get("vo2max_precise") is not None or r.get("vo2max") is not None
+    ]
+    if not valid:
+        return {
+            "has_data": False,
+            "latest": None,
+            "latest_date": None,
+            "peak": None,
+            "peak_date": None,
+            "initial": None,
+            "diff": 0.0,
+            "fitness_age": None,
+            "count": 0,
+            "history": [],
+        }
+
+    def _val(r: Dict[str, Any]) -> float:
+        v = r.get("vo2max_precise")
+        if v is None:
+            v = r.get("vo2max")
+        return float(v)
+
+    latest_rec = valid[-1]
+    initial_rec = valid[0]
+    peak_rec = max(valid, key=_val)
+
+    latest_val = round(_val(latest_rec), 1)
+    initial_val = round(_val(initial_rec), 1)
+    peak_val = round(_val(peak_rec), 1)
+
+    return {
+        "has_data": True,
+        "latest": latest_val,
+        "latest_date": latest_rec["date"],
+        "peak": peak_val,
+        "peak_date": peak_rec["date"],
+        "initial": initial_val,
+        "diff": round(latest_val - initial_val, 1),
+        "fitness_age": latest_rec.get("fitness_age"),
+        "count": len(valid),
+        "history": [
+            {
+                "date": r["date"],
+                "vo2max": round(_val(r), 1),
+                "vo2max_display": r.get("vo2max"),
+                "fitness_age": r.get("fitness_age"),
+            }
+            for r in valid
+        ],
     }

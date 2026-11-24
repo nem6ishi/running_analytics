@@ -25,7 +25,7 @@ from config import (
 from .parser import seconds_to_pace_str, seconds_to_time_str
 from .coach import calculate_activity_insights
 from .vdot import calculate_vdot, get_training_paces, predict_race_times_vdot
-from .profile import get_hr_params
+from .profile import get_hr_params, get_vo2max_summary
 from .load import compute_training_load, compute_zone_distribution
 
 
@@ -1402,6 +1402,7 @@ def prepare_full_analytics(
 ) -> Dict[str, Any]:
     """サイト描画に必要な全分析データをまとめる"""
     hr_params = get_hr_params(data_dir=data_dir, df=df)
+    vo2max_data = get_vo2max_summary(data_dir=data_dir)
     overview = compute_overview_stats(df)
     monthly = compute_monthly_stats(df)
     insights = calculate_activity_insights(df, fit_dict, hr_params=hr_params, data_dir=data_dir)
@@ -1530,6 +1531,7 @@ def prepare_full_analytics(
         "calendar_heatmap": calendar_heatmap,
         "rolling_volume": rolling_volume,
         "hr_params": hr_params,
+        "vo2max_data": vo2max_data,
         "aei_stats": aei_stats,
         "chart_data": {
             "dates": chart_dates,

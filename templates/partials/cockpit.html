@@ -533,6 +533,9 @@
                 <div class="flex items-center space-x-2 font-mono text-[11px]">
                   <span class="px-2 py-0.5 rounded-lg bg-slate-950 border border-slate-800 text-rose-300">HRmax {{ hr_params.hr_max }}</span>
                   <span class="px-2 py-0.5 rounded-lg bg-slate-950 border border-slate-800 text-emerald-300">RHR {{ hr_params.hr_resting }}</span>
+                  {% if vo2max_data and vo2max_data.has_data %}
+                  <span class="px-2 py-0.5 rounded-lg bg-slate-950 border border-violet-500/40 text-violet-300" title="Garmin VO2max ({{ vo2max_data.latest_date }}時点 / 過去最高 {{ vo2max_data.peak }})">VO2max {{ vo2max_data.latest }}</span>
+                  {% endif %}
                   <span class="px-2.5 py-0.5 rounded-full border {{ zone_distribution.recent_4w.status_badge }} font-sans font-bold">
                     {{ zone_distribution.recent_4w.status_label }}
                   </span>
@@ -807,6 +810,9 @@
                   <button type="button" id="btn-aei-scatter" onclick="toggleAeiChartMode('scatter')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all">
                     相関散布図
                   </button>
+                  <button type="button" id="btn-aei-vo2max" onclick="toggleAeiChartMode('vo2max')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all">
+                    VO2max
+                  </button>
                 </div>
               </div>
             </div>
@@ -816,6 +822,9 @@
               </div>
               <div id="aei-scatter-container" class="relative h-56 hidden">
                 <canvas id="scatterChart"></canvas>
+              </div>
+              <div id="aei-vo2max-container" class="relative h-56 hidden">
+                <canvas id="vo2maxTrendChart"></canvas>
               </div>
             </div>
           </div>

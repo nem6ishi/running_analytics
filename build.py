@@ -97,6 +97,8 @@ def build():
         form_evolution_json=json.dumps(analytics_data["form_evolution"], ensure_ascii=False, default=json_default),
         hr_params=analytics_data["hr_params"],
         hr_params_json=json.dumps(analytics_data["hr_params"], ensure_ascii=False, default=json_default),
+        vo2max_data=analytics_data["vo2max_data"],
+        vo2max_data_json=json.dumps(analytics_data["vo2max_data"], ensure_ascii=False, default=json_default),
         training_load=analytics_data["training_load"],
         training_load_json=json.dumps(analytics_data["training_load"], ensure_ascii=False, default=json_default),
         zone_distribution=analytics_data["zone_distribution"],

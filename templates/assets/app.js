@@ -14,6 +14,7 @@ const {
   trainingLoad,
   zoneDistribution,
   gearStats,
+  vo2maxData,
 } = window.RUNNING_DATA || {};
 
     // アクティビティ選択描画
@@ -2335,6 +2336,62 @@ const {
     // 3. 有酸素効率 (スピード対心肺機能スコア: AEI時系列推移 & 散布図)
     let aeiTrendChartInstance = null;
     let scatterChartInstance = null;
+    let vo2maxTrendChartInstance = null;
+
+    if (document.getElementById('vo2maxTrendChart') && vo2maxData && vo2maxData.has_data && vo2maxData.history) {
+      const vo2Labels = vo2maxData.history.map(h => h.date);
+      const vo2Values = vo2maxData.history.map(h => h.vo2max);
+      vo2maxTrendChartInstance = new Chart(document.getElementById('vo2maxTrendChart'), {
+        type: 'line',
+        data: {
+          labels: vo2Labels,
+          datasets: [
+            {
+              label: 'Garmin VO2max',
+              data: vo2Values,
+              borderColor: '#a78bfa',
+              backgroundColor: 'rgba(139, 92, 246, 0.14)',
+              borderWidth: 2,
+              pointBackgroundColor: '#c4b5fd',
+              pointBorderColor: '#7c3aed',
+              pointRadius: 3,
+              pointHoverRadius: 6,
+              tension: 0.25,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 7 } },
+            y: {
+              title: { display: true, text: 'VO2max (mL/kg/min)', color: '#94a3b8', font: { size: 10 } },
+              grid: { color: 'rgba(255, 255, 255, 0.06)' },
+              ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } }
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              labels: { color: '#cbd5e1', font: { size: 11 }, boxWidth: 12 }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              titleColor: '#f8fafc',
+              bodyColor: '#c4b5fd',
+              borderColor: 'rgba(139, 92, 246, 0.4)',
+              borderWidth: 1,
+              callbacks: {
+                label: (ctx) => `VO2max: ${ctx.parsed.y} mL/kg/min`
+              }
+            }
+          }
+        }
+      });
+    }
 
     if (document.getElementById('aeiTrendChart') && chartData.aeis) {
       aeiTrendChartInstance = new Chart(document.getElementById('aeiTrendChart'), {
@@ -2461,17 +2518,25 @@ const {
     window.toggleAeiChartMode = function(mode) {
       const btnTrend = document.getElementById('btn-aei-trend');
       const btnScatter = document.getElementById('btn-aei-scatter');
+      const btnVo2max = document.getElementById('btn-aei-vo2max');
       const containerTrend = document.getElementById('aei-trend-container');
       const containerScatter = document.getElementById('aei-scatter-container');
+      const containerVo2max = document.getElementById('aei-vo2max-container');
       const title = document.getElementById('aei-chart-title');
       const desc = document.getElementById('aei-chart-desc');
       const badge = document.getElementById('aei-chart-badge');
 
+      const inactiveBtnClass = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+      if (btnTrend) btnTrend.className = inactiveBtnClass;
+      if (btnScatter) btnScatter.className = inactiveBtnClass;
+      if (btnVo2max) btnVo2max.className = inactiveBtnClass;
+      if (containerTrend) containerTrend.classList.add('hidden');
+      if (containerScatter) containerScatter.classList.add('hidden');
+      if (containerVo2max) containerVo2max.classList.add('hidden');
+
       if (mode === 'trend') {
         if (btnTrend) btnTrend.className = 'px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 font-bold transition-all shadow-sm';
-        if (btnScatter) btnScatter.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
         if (containerTrend) containerTrend.classList.remove('hidden');
-        if (containerScatter) containerScatter.classList.add('hidden');
         if (title) title.textContent = '有酸素効率指数 AEI (心肺機能スコア)';
         if (desc) desc.textContent = '速度(km/h) ÷ 心拍数 × 100。高いほど心肺に余裕を持って速く走れる指標（各走 ＆ 5走移動平均）';
         if (badge && chartData.aei_stats) {
@@ -2481,10 +2546,24 @@ const {
         if (aeiTrendChartInstance) {
           setTimeout(() => aeiTrendChartInstance.resize(), 50);
         }
+      } else if (mode === 'vo2max') {
+        if (btnVo2max) btnVo2max.className = 'px-2.5 py-1 rounded-lg bg-violet-500 text-white font-bold transition-all shadow-sm';
+        if (containerVo2max) containerVo2max.classList.remove('hidden');
+        if (title) title.textContent = 'Garmin VO2max (最大酸素摂取量) 推移';
+        if (desc) {
+          desc.textContent = (vo2maxData && vo2maxData.has_data)
+            ? `Garmin推定値 (過去最高: ${vo2maxData.peak} / 初期比: ${vo2maxData.diff >= 0 ? '+' : ''}${vo2maxData.diff} / フィットネス年齢: ${vo2maxData.fitness_age ?? '--'}歳)`
+            : 'Garmin VO2max 履歴データがありません';
+        }
+        if (badge) {
+          badge.textContent = (vo2maxData && vo2maxData.has_data) ? `最新: ${vo2maxData.latest}` : 'No Data';
+          badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-500/20 text-violet-300 border border-violet-500/30 font-mono';
+        }
+        if (vo2maxTrendChartInstance) {
+          setTimeout(() => vo2maxTrendChartInstance.resize(), 50);
+        }
       } else {
         if (btnScatter) btnScatter.className = 'px-2.5 py-1 rounded-lg bg-indigo-500 text-white font-bold transition-all shadow-sm';
-        if (btnTrend) btnTrend.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
-        if (containerTrend) containerTrend.classList.add('hidden');
         if (containerScatter) containerScatter.classList.remove('hidden');
         if (title) title.textContent = '有酸素効率 (心拍数 vs ペース分布)';
         if (desc) desc.textContent = '左下（低心拍かつ速いペース）にあるほど有酸素能力が高い状態';

@@ -4,9 +4,16 @@ from pathlib import Path
 from unittest.mock import MagicMock
 import pandas as pd
 from config import HR_MAX, HR_RESTING
-from src.profile import load_profile, save_profile, get_hr_params
+from src.profile import (
+    load_profile,
+    save_profile,
+    get_hr_params,
+    merge_vo2max_records,
+    save_vo2max_history,
+    get_vo2max_summary,
+)
 from src.coach import get_hr_zone
-from sync import sync_resting_heart_rate
+from sync import sync_resting_heart_rate, sync_vo2max_history
 
 
 def test_load_save_profile(tmp_path: Path):
@@ -114,3 +121,52 @@ def test_sync_resting_heart_rate(tmp_path: Path):
     client.get_rhr_day.side_effect = Exception("API error 2")
     rhr3 = sync_resting_heart_rate(client, tmp_path)
     assert rhr3 is None
+
+
+def test_vo2max_history_and_sync(tmp_path: Path):
+    # 1. 空ディレクトリでは has_data=False
+    empty_summary = get_vo2max_summary(tmp_path)
+    assert empty_summary["has_data"] is False
+    assert empty_summary["latest"] is None
+
+    # 2. マージとサマリー計算
+    existing = [
+        {"date": "2026-10-01", "vo2max_precise": 50.0, "vo2max": 50.0, "fitness_age": 20},
+        {"date": "2026-10-10", "vo2max_precise": 51.5, "vo2max": 52.0, "fitness_age": 20},
+    ]
+    new_recs = [
+        {"date": "2026-10-10", "vo2max_precise": 51.6, "vo2max": 52.0, "fitness_age": 20},
+        {"date": "2026-10-05", "vo2max_precise": 50.8, "vo2max": 51.0, "fitness_age": 20},
+    ]
+    merged = merge_vo2max_records(existing, new_recs)
+    assert [r["date"] for r in merged] == ["2026-10-01", "2026-10-05", "2026-10-10"]
+    assert merged[2]["vo2max_precise"] == 51.6
+
+    save_vo2max_history(tmp_path, merged)
+    summary = get_vo2max_summary(tmp_path)
+    assert summary["has_data"] is True
+    assert summary["latest"] == 51.6
+    assert summary["peak"] == 51.6
+    assert summary["initial"] == 50.0
+    assert summary["diff"] == 1.6
+    assert summary["count"] == 3
+
+    # 3. sync_vo2max_history のモック検証
+    client = MagicMock()
+    client.get_max_metrics_range.return_value = [
+        {
+            "generic": {
+                "calendarDate": "2026-10-15",
+                "vo2MaxPreciseValue": 52.3,
+                "vo2MaxValue": 52.0,
+                "fitnessAge": 20,
+                "sport": "RUNNING",
+            }
+        }
+    ]
+    changed = sync_vo2max_history(client, tmp_path, fetch_all=False)
+    assert changed >= 1
+    updated_summary = get_vo2max_summary(tmp_path)
+    assert updated_summary["latest"] == 52.3
+    profile = load_profile(tmp_path)
+    assert profile["latest_vo2max"] == 52.3

@@ -288,6 +288,117 @@ def sync_resting_heart_rate(client: Garmin, data_dir: Path) -> Optional[int]:
         return None
 
 
+def _parse_max_metrics_item(item: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Garmin get_max_metrics_range の1要素からランニング VO2max レコードを抽出する。"""
+    if not isinstance(item, dict):
+        return None
+    generic = item.get("generic")
+    if not isinstance(generic, dict):
+        return None
+    cal_date = generic.get("calendarDate")
+    vo2_precise = generic.get("vo2MaxPreciseValue")
+    vo2_val = generic.get("vo2MaxValue")
+    if not cal_date or (vo2_precise is None and vo2_val is None):
+        return None
+    return {
+        "date": str(cal_date),
+        "vo2max_precise": round(float(vo2_precise), 1) if vo2_precise is not None else None,
+        "vo2max": round(float(vo2_val), 1) if vo2_val is not None else None,
+        "fitness_age": int(generic["fitnessAge"]) if generic.get("fitnessAge") is not None else None,
+        "sport": generic.get("sport"),
+    }
+
+
+def _determine_vo2max_start_date(data_dir: Path, today: "date", fetch_all: bool) -> "date":
+    """VO2max 取得開始日を決定する。全期間取得時は Activities.csv の最古日付を基準にする。"""
+    from datetime import date, timedelta
+    from src.profile import VO2MAX_HISTORY_FILENAME
+
+    history_exists = (data_dir / VO2MAX_HISTORY_FILENAME).exists()
+    if not fetch_all and history_exists:
+        return today - timedelta(days=30)
+
+    csv_path = data_dir / "Activities.csv"
+    if csv_path.exists():
+        try:
+            df = pd.read_csv(csv_path, usecols=["日付"])
+            dates = pd.to_datetime(df["日付"], errors="coerce").dropna()
+            if not dates.empty:
+                return dates.min().date() - timedelta(days=7)
+        except Exception:
+            pass
+    return today - timedelta(days=400)
+
+
+def sync_vo2max_history(client: Garmin, data_dir: Path, fetch_all: bool = False) -> int:
+    """Garmin API から VO2max 履歴を取得し、vo2max_history.json と profile.json を更新する。
+
+    Returns:
+        新規または更新されたレコード数
+    """
+    from datetime import date, timedelta
+    from src.profile import (
+        load_profile,
+        save_profile,
+        load_vo2max_history,
+        save_vo2max_history,
+        merge_vo2max_records,
+    )
+
+    today = date.today()
+    start_date = _determine_vo2max_start_date(data_dir, today, fetch_all)
+
+    existing = load_vo2max_history(data_dir)
+    existing_by_date = {r["date"]: r for r in existing if isinstance(r, dict) and r.get("date")}
+
+    fetched_records: List[Dict[str, Any]] = []
+    chunk_days = 90
+    cursor = start_date
+    while cursor <= today:
+        chunk_end = min(cursor + timedelta(days=chunk_days - 1), today)
+        try:
+            raw_list = client.get_max_metrics_range(cursor.isoformat(), chunk_end.isoformat())
+            if isinstance(raw_list, list):
+                for item in raw_list:
+                    parsed = _parse_max_metrics_item(item)
+                    if parsed:
+                        fetched_records.append(parsed)
+        except Exception as e:
+            print(f"⚠️ VO2max 取得失敗 ({cursor.isoformat()} 〜 {chunk_end.isoformat()}): {e}")
+        cursor = chunk_end + timedelta(days=1)
+
+    if not fetched_records:
+        print("ℹ️ 新規の VO2max データは見つかりませんでした。")
+        return 0
+
+    merged = merge_vo2max_records(existing, fetched_records)
+    save_vo2max_history(data_dir, merged)
+
+    changed_count = sum(
+        1 for r in fetched_records
+        if existing_by_date.get(r["date"]) != r
+    )
+
+    # profile.json にも最新 VO2max を反映
+    if merged:
+        latest = merged[-1]
+        latest_val = latest.get("vo2max_precise") or latest.get("vo2max")
+        try:
+            profile = load_profile(data_dir)
+            if latest_val is not None:
+                profile["latest_vo2max"] = latest_val
+            if latest.get("fitness_age") is not None:
+                profile["fitness_age"] = latest["fitness_age"]
+            profile["vo2max_updated_at"] = latest["date"]
+            save_profile(data_dir, profile)
+        except Exception as e:
+            print(f"⚠️ profile.json への VO2max 保存に失敗しました: {e}")
+
+        print(f"🫁 VO2max 履歴を同期しました: 最新 {latest_val} ({latest['date']}) / 累計 {len(merged)} 件 (新規・更新 {changed_count} 件)")
+
+    return changed_count
+
+
 def sync_activities(
     client: Garmin,
     data_dir: Path,
@@ -460,6 +571,12 @@ def sync_activities(
     except Exception as e:
         print(f"⚠️ 安静時心拍数の同期失敗 (処理は継続します): {e}")
 
+    # VO2max 履歴の同期（未作成時は全期間を自動バックフィル）
+    try:
+        sync_vo2max_history(client, data_dir, fetch_all=fetch_all)
+    except Exception as e:
+        print(f"⚠️ VO2max の同期失敗 (処理は継続します): {e}")
+
     return downloaded_count, new_csv_rows
 
 
@@ -543,6 +660,7 @@ def main():
     parser.add_argument("--limit", type=int, default=15, help="チェックする最新アクティビティ件数 (デフォルト: 15)")
     parser.add_argument("--relogin", action="store_true", help="トークンを破棄して再ログインする")
     parser.add_argument("--backfill-gear", action="store_true", help="既存のアクティビティについてGarminからギア（シューズ）情報を補完取得する")
+    parser.add_argument("--backfill-vo2max", action="store_true", help="過去の全期間のVO2max履歴を一括取得する")
     parser.add_argument("--no-build", action="store_true", help="データ同期後に build.py を実行しない")
     parser.add_argument("--push", action="store_true", help="同期＆ビルド後に GitHub に自動 push する")
     parser.add_argument("--open", action="store_true", help="ビルド後にブラウザでダッシュボードを開く")
@@ -570,6 +688,17 @@ def main():
         except Exception as e:
             print(f"⚠️ バックフィル中にエラーが発生しました: {e}")
 
+    # 2.5 VO2max 全期間バックフィル（指定時）
+    vo2max_backfilled = 0
+    if args.backfill_vo2max:
+        print("\n" + "=" * 60)
+        print("🫁 過去全期間の VO2max 履歴を一括取得します...")
+        print("=" * 60)
+        try:
+            vo2max_backfilled = sync_vo2max_history(client, data_dir, fetch_all=True)
+        except Exception as e:
+            print(f"⚠️ VO2max バックフィル中にエラーが発生しました: {e}")
+
     # 3. 同期実行
     try:
         synced_count, new_rows = sync_activities(client, data_dir, limit=args.limit, fetch_all=args.all)
@@ -594,7 +723,7 @@ def main():
 
     # 3. ビルド実行
     if not args.no_build:
-        if synced_count > 0 or backfilled_count > 0 or not (root_dir / "docs" / "index.html").exists():
+        if synced_count > 0 or backfilled_count > 0 or vo2max_backfilled > 0 or not (root_dir / "docs" / "index.html").exists():
             print("\n" + "=" * 60)
             print("🚀 新規データまたはギア更新が検出されたため、ダッシュボードを自動ビルドします...")
             print("=" * 60)
